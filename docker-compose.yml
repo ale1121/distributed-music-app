@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: muzo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: muzo
+      POSTGRES_PASSWORD: muzo
+      POSTGRES_DB: muzodb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web-api:
+    build: ./backend
+    container_name: muzo-web-api
+    depends_on:
+      - postgres
+      - keycloak
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: muzodb
+      DB_USER: muzo
+      DB_PASSWORD: muzo
+
+      KC_URL: http://keycloak:8080
+      KC_PUBLIC_URL: http://localhost:8080
+      KC_REALM: muzo-realm
+      KC_CLIENT_ID: muzo-client
+      KC_REDIRECT_URI: http://localhost:5000/callback
+      SECRET_KEY: topsecretkey
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.0
+    container_name: muzo-keycloak
+    command: start-dev --import-realm
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./keycloak-config:/opt/keycloak/data/import
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  keycloak_data:

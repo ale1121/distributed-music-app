@@ -1,0 +1,98 @@
+{
+  "realm": "muzo-realm",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "registrationEmailAsUsername": false,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "roles": {
+    "realm": [
+      {
+        "name": "ROLE_ADMIN"
+      },
+      {
+        "name": "ROLE_ARTIST"
+      },
+      {
+        "name": "ROLE_USER"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "muzo-client",
+      "name": "muzo",
+      "enabled": true,
+      "redirectUris": [
+        "https://oidcdebugger.com/debug",
+        "http://localhost:5000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:5000",
+        "https://oidcdebugger.com/"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:5000/*"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "user1",
+      "enabled": true,
+      "email": "",
+      "firstName": "",
+      "lastName": "",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass1",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["ROLE_USER"]
+    },
+        {
+      "username": "artist1",
+      "enabled": true,
+      "email": "",
+      "firstName": "",
+      "lastName": "",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass1",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["ROLE_USER", "ROLE_ARTIST"]
+    },
+        {
+      "username": "admin1",
+      "enabled": true,
+      "email": "",
+      "firstName": "",
+      "lastName": "",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass1",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["ROLE_ADMIN"]
+    }
+  ]
+}
