@@ -1,0 +1,101 @@
+:root,
+[data-bs-theme="dark"] {
+  --sidebar-width: 200px;
+  --player-height: 80px;
+
+  --bs-off-white: #f5f5f5;
+  --bs-purple-dark-90: #0c0214;
+  --bs-purple-dark-80: #180527;
+  --bs-purple-dark-70: #25073b;
+  --bs-purple-dark-60: #310a4e;
+  --bs-purple-dark-50: #3d0d62;
+  --bs-purple-dark-40: #490f76;
+  --bs-purple-dark-30: #551289;
+  --bs-purple-dark-20: #62149d;
+  --bs-purple-dark-10: #6e17b0;
+  --bs-purple: #7a19c4;
+  --bs-purple-light-10: #8730ca;
+  --bs-purple-light-20: #9547d0;
+  --bs-purple-light-30: #a25ed6;
+  --bs-purple-light-40: #af75dc;
+  --bs-purple-light-50: #bd8ce2;
+  --bs-purple-light-60: #caa3e7;
+  --bs-purple-light-70: #d7baed;
+  --bs-purple-light-80: #e4d1f3;
+  --bs-purple-light-90: #f2e8f9;
+
+  --bs-body-color: var(--bs-off-white);
+  --bs-body-bg: #232227;
+  --bs-tertiary-bg: #b800c2;
+  --bg-dark: #b800c2;
+
+  .app-sidebar {
+    width: var(--sidebar-width);
+  }
+
+  .app-main {
+    margin-left: var(--sidebar-width);
+    padding-bottom: var(--player-height);
+  }
+
+  .app-player {
+    height: var(--player-height);
+    left: var(--sidebar-width);
+    right: 0;
+  }
+
+  .bg-darker {
+    background-color: #18181a;
+  }
+
+  .btn-primary {
+    --bs-btn-color: var(--bs-off-white);
+    --bs-btn-bg: var(--bs-purple);
+    --bs-btn-hover-bg: var(--bs-purple-dark-20);
+    --bs-btn-active-bg: var(--bs-purple-dark-20);
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-border-color: transparent;
+  }
+
+  .btn-transparent {
+    --bs-btn-font-size: 30px;
+    --bs-btn-color: var(--bs-off-white);
+    --bs-btn-bg: rgba(255, 255, 255, 0.1);
+    --bs-btn-hover-bg: rgba(255, 255, 255, 0.1);
+    --bs-btn-active-bg: rgba(255, 255, 255, 0.1);
+    --bs-btn-hover-color: #afafaf;
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-border-radius: 50px;
+    --bs-btn-padding-x: 7px;
+    --bs-btn-padding-y: 0px;
+  }
+
+  .btn-transparent-sm {
+    --bs-btn-font-size: 30px;
+    --bs-btn-color: var(--bs-off-white);
+    --bs-btn-bg: transparent;
+    --bs-btn-hover-color: #afafaf;
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-padding-x: 0px;
+    --bs-btn-padding-y: 0px;
+  }
+
+  .nav {
+    --bs-nav-link-color: var(--bs-off-white);
+    --bs-nav-link-hover-color: var(--bs-purple-light-70);
+  }
+
+  .nav-pills {
+    --bs-nav-pills-link-active-color: var(--bs-off-white);
+    --bs-nav-pills-link-active-bg: var(--bs-purple-dark-20);
+  }
+
+  .card {
+    --bs-card-border-color: transparent;
+  }
+}

@@ -2,42 +2,21 @@ import json
 import requests
 import jwt
 from jwt import PyJWKClient
-from functools import wraps
 from flask import (
     Blueprint, current_app, redirect, request, session, url_for, render_template
 )
-from .models import db, User, Role
+from ..models import db, User, Role
+
 
 auth_bp = Blueprint('auth', __name__)
 
-def login_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if "user" not in session:
-            print("not logged in: redirrecting")
-            return redirect(url_for("auth.login"))
-        return f(*args, **kwargs)
-    return decorated
 
-def role_required(required_role):
-    """Allow access if user has the required role OR is an admin."""
-    def wrapper(f):
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            if "user" not in session:
-                return redirect(url_for("auth.login"))
-            roles = session["user"].get("realm_access", {}).get("roles", [])
-            if "ROLE_ADMIN" in roles or required_role in roles:
-                return f(*args, **kwargs)
-            return render_template("access_denied.html")
-        return decorated
-    return wrapper
-
-def sync_user_from_token(decoded_token):
+def sync_user_db(decoded_token):
     sub = decoded_token.get('sub')
     email = decoded_token.get('email')
     username = decoded_token.get('preferred_username')
-
+    display_name = decoded_token.get('nickname')
+    current_app.logger.debug(f"display name: {display_name}")
     realm_roles = decoded_token.get('realm_access', {}).get('roles', [])
 
     user = User.query.filter_by(keycloak_id=sub).first()
@@ -46,6 +25,7 @@ def sync_user_from_token(decoded_token):
             keycloak_id=sub,
             email=email,
             username=username,
+            display_name=display_name,
         )
         db.session.add(user)
 
@@ -56,17 +36,6 @@ def sync_user_from_token(decoded_token):
     db.session.commit()
 
     return user
-
-
-@auth_bp.route("/")
-def home():
-    if "user" in session:
-        username = session["user"].get("preferred_username", "User")
-        roles = session["user"].get("realm_access", {}).get("roles", [])
-        role_info = ", ".join(roles) if roles else "No roles"
-
-        return render_template("home.html", user=session["user"], username=username, role_info=role_info)
-    return render_template("home.html", user=None)
 
 
 @auth_bp.route("/login")
@@ -100,12 +69,11 @@ def callback():
     }
 
     # Exchange the authorization code for token
-
     response = requests.post(conf['TOKEN_URL'], data=data)
     if response.status_code != 200:
         return render_template(
             'login_failed.html',
-            reason=f'Token endpoint error: {response.status_code}'), 400
+            message=f'Token endpoint error: {response.status_code}'), 400
 
     # Parse the token and extract: access token and identity token
     tokens = response.json()
@@ -127,20 +95,22 @@ def callback():
             options={"verify_aud": False},
             issuer=conf['ISSUER_URL']
         )
+
+        current_app.logger.debug(decoded_token)
+
+        # Sync user in db
+        user = sync_user_db(decoded_token)
+
+        # Store tokens in the current session
+        session['user'] = decoded_token
+        session['access_token'] = access_token
+        session['id_token'] = id_token
+        session['user_id'] = user.id
+
     except Exception as e:
         return render_template('login_failed.html', message=str(e)), 400
 
-    # Sync user in db
-    user = sync_user_from_token(decoded_token)
-
-    # Store tokens in the current session
-
-    session['user'] = decoded_token
-    session['access_token'] = access_token
-    session['id_token'] = id_token
-    session['user_id'] = user.id
-
-    return redirect(url_for("auth.home"))
+    return redirect(url_for("menu.home"))
 
 
 @auth_bp.route("/logout")
@@ -151,40 +121,10 @@ def logout():
 
     logout_redirect = (
         f"{conf['LOGOUT_URL']}?client_id={conf['KC_CLIENT_ID']}"
-        f"&post_logout_redirect_uri={url_for('auth.home', _external=True)}"
+        f"&post_logout_redirect_uri={url_for('menu.home', _external=True)}"
     )
 
     if id_token:
         logout_redirect += f"&id_token_hint={id_token}"
 
     return redirect(logout_redirect)
-
-
-@auth_bp.route("/user")
-@login_required
-@role_required("ROLE_USER")
-def user_dashboard():
-    username = session["user"].get("preferred_username")
-    return render_template("user_dashboard.html", username=username)
-
-
-@auth_bp.route("/artist")
-@login_required
-@role_required("ROLE_ARTIST")
-def student_dashboard():
-    username = session["user"].get("preferred_username")
-    return render_template("artist_dashboard.html", username=username)
-
-
-@auth_bp.route("/admin")
-@login_required
-@role_required("ROLE_ADMIN")
-def admin_dashboard():
-    username = session["user"].get("preferred_username")
-    return render_template("admin_dashboard.html", username=username)
-
-
-@auth_bp.route("/debug")
-def debug():
-    user_data = json.dumps(session.get('user', {}), indent=2)
-    return render_template("debug.html", user_data=user_data)

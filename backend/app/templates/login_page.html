@@ -1,12 +1,12 @@
 {% extends "base_simple.html" %}
 
-{% block title %}Login Failed{% endblock %}
+{% block title %}Welcome{% endblock %}
 
 {% block card_body %}
     <p class="card-text">
-        {{ message }}
+        Log in or sign up with Keycloak
     </p>
     <a class="btn btn-primary mt-2" href="{{ url_for('auth.login') }}">
-        Retry login
+        Continue with Keycloak
     </a>
 {% endblock %}

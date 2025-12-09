@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex">
+  <div class="app-sidebar position-fixed top-0 bottom-0 start-0 d-flex flex-column justify-content-between p-3 bg-darker">
+    <div>
+      <a href="{{ url_for('menu.home') }}" class="mt-2 mb-4 d-block">
+        <img src="/static/assets/logo.png" width="120">
+      </a>
+      <hr>
+      <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+          <a href="{{ url_for('menu.home') }}"
+            class="nav-link {% if current_path == '/' %}active{% endif %}">
+            <i class="bi bi-house"></i> Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('trending.view') }}"
+            class="nav-link {% if current_path == '/trending' %}active{% endif %}">
+            <i class="bi bi-graph-up-arrow"></i> Trending
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="pb-2">
+      <hr>
+      <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+          <a href="{{ url_for('admin.view') }}"
+            class="nav-link {% if current_path == '/admin' %}active{% endif %}">
+            <i class="bi bi-sliders"></i> Admin
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('artist_acc.view') }}"
+            class="nav-link {% if current_path == '/artist-account' %}active{% endif %}">
+            <i class="bi bi-star-fill"></i> Artist Account
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('account.view') }}"
+            class="nav-link {% if current_path == '/account' %}active{% endif %}">
+            <i class="bi bi-person-circle"></i> My Account
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="app-main">
+    <main class="p-3">
+      {% block main %}{% endblock %}
+    </main>
+  </div>
+
+  {% block player %}
+  <div class="app-player position-fixed bottom-0 bg-darker">
+    <div class="container-fluid h-100">
+      <div class="row h-100 align-items-center flex-nowrap">
+        <div class="col-4 d-flex align-items-center gap-2 overflow-hidden">
+          <img id="player-cover"
+            src="/static/assets/placeholder-cover.png"
+            class="rounded"
+            style="width: 56px; height: 56px; object-fit: cover;">
+          <div class="d-flex flex-column" class="fw-semibold text-truncate">
+            <span id="player-title" class="fw-semibold text-truncate">
+              No song playing
+            </span>
+            <span id="player-album" class="text-muted small text-truncate">
+              Album
+            </span>
+          </div>
+        </div>
+
+        <div class="col-2 d-flex align-items-center justify-content-between">
+          <button class="btn btn-transparent-sm" id="btn-prev">
+            <i class="bi bi-skip-start-fill"></i>
+          </button>
+          <button class="btn btn-transparent" id="btn-play">
+            <i class="bi bi-play-fill"></i>
+          </button>
+          <button class="btn btn-transparent-sm" id="btn-next">
+            <i class="bi bi-skip-end-fill"></i>
+          </button>
+        </div>
+
+        <div class="col-6 d-none d-md-flex align-items-center gap-2 justify-content-end">
+
+        </div>
+      </div>
+
+      <audio id="audio-element"></audio>
+    </div>
+  </div>
+  {% endblock %}
+
+</div>
+{% endblock %}

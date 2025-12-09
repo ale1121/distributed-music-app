@@ -1,8 +1,12 @@
-{% extends "base_page_template.html" %}
+{% extends "base_simple.html" %}
 
 {% block title %}Error{% endblock %}
 
-{% block content %}
-<p>Missing authorization code.</p>
-<p>{{ message }}</p>
+{% block card_body %}
+    <p class="card-text">
+        {{ message }}
+    </p>
+    <a class="btn btn-primary mt-2" href="{{ url_for('menu.home') }}">
+        Return to home page
+    </a>
 {% endblock %}

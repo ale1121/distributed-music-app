@@ -15,13 +15,12 @@ class Config:
     KC_CLIENT_ID = os.getenv('KC_CLIENT_ID')
     KC_REDIRECT_URI = os.getenv('KC_REDIRECT_URI')
 
-    KC_REALM_URL = f"{KC_URL}/realms/{KC_REALM}"
-    KC_REALM_PUBLIC_URL = f"{KC_PUBLIC_URL}/realms/{KC_REALM}"
-
     ISSUER_URL = f"{KC_PUBLIC_URL}/realms/{KC_REALM}"
 
-    AUTH_URL = f"{KC_REALM_PUBLIC_URL}/protocol/openid-connect/auth"
-    TOKEN_URL = f"{KC_REALM_URL}/protocol/openid-connect/token"
-    LOGOUT_URL = f"{KC_REALM_PUBLIC_URL}/protocol/openid-connect/logout"
-    USERINFO_URL = f"{KC_REALM_URL}/protocol/openid-connect/userinfo"
-    JWKS_URL = f"{KC_REALM_URL}/protocol/openid-connect/certs"
+    AUTH_URL = f"{KC_PUBLIC_URL}/realms/{KC_REALM}/protocol/openid-connect/auth"
+    TOKEN_URL = f"{KC_URL}/realms/{KC_REALM}/protocol/openid-connect/token"
+    LOGOUT_URL = f"{KC_PUBLIC_URL}/realms/{KC_REALM}/protocol/openid-connect/logout"
+    USERINFO_URL = f"{KC_URL}/realms/{KC_REALM}/protocol/openid-connect/userinfo"
+    JWKS_URL = f"{KC_URL}/realms/{KC_REALM}/protocol/openid-connect/certs"
+
+    ACCOUNT_URL = f"{KC_PUBLIC_URL}/realms/{KC_REALM}/account"

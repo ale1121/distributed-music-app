@@ -16,6 +16,7 @@ class User(db.Model):
     keycloak_id = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True)
     username = db.Column(db.String(255))
+    display_name = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=dt.datetime.now(dt.timezone.utc))
 
     roles = db.relationship("Role", secondary="user_roles", backref="users")

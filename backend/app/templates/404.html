@@ -1,10 +1,10 @@
 {% extends "base_simple.html" %}
 
-{% block title %}Access Denied{% endblock %}
+{% block title %}Page Not Found{% endblock %}
 
 {% block card_body %}
     <p class="card-text">
-        You don't have permission to view this page.
+        The page you're looking for doesn't exist.
     </p>
     <a class="btn btn-primary mt-2" href="{{ url_for('menu.home') }}">
         Return to home page
