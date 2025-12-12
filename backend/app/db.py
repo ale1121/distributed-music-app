@@ -12,6 +12,3 @@ Session = scoped_session(sessionmaker(bind=engine, autoflush=False, autocommit=F
 
 class Base(DeclarativeBase):
     pass
-
-def create_all():
-    Base.metadata.create_all(bind=engine)

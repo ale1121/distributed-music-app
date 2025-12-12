@@ -2,7 +2,7 @@
 
 {% block main %}
 
-<div class="p-3">
+<div class="px-3">
   <h1 class="mb-4">Admin Dashboard</h1>
 
   <h5>Keycloak admin console</h5>
@@ -32,7 +32,7 @@
         <td>{{ user.display_name }}</td>
         <td>{{ req.created_at | format_dt }}</td>
         <td>
-          <a href="{{admin_console_link}}/users/{{req.keycloak_id}}/role-mapping" target="_blank"
+          <a href="{{admin_console_link}}/users/{{user.keycloak_id}}/role-mapping" target="_blank"
             rel="noopener noreferrer" class="btn btn-sm btn-table">
             Admin console
           </a>

@@ -1,5 +1,5 @@
 import datetime as dt
-from sqlalchemy import String, Integer, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import String, Integer, DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .db import Base
 
@@ -13,7 +13,7 @@ class User(Base):
     display_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), 
-        default=dt.datetime.now(dt.timezone.utc),
+        default=func.now(),
         nullable=False
     )
     artist: Mapped["Artist | None"] = relationship(
@@ -41,7 +41,7 @@ class ArtistRequest(Base):
     )
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), 
-        default=dt.datetime.now(dt.timezone.utc),
+        default=func.now(),
         nullable=False
     )
     
