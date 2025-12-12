@@ -22,20 +22,21 @@
     <thead>
       <th>Username</th>
       <th>Display name</th>
-      <th></th>
+      <th>Created at</th>
       <th></th>
     </thead>
     <tbody>
-      {% for req in artist_requests %}
+      {% for user, req in artist_requests %}
       <tr>
-        <td>{{ req.username }}</td>
-        <td>{{ req.display_name }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.display_name }}</td>
+        <td>{{ req.created_at | format_dt }}</td>
         <td>
           <a href="{{admin_console_link}}/users/{{req.keycloak_id}}/role-mapping" target="_blank"
             rel="noopener noreferrer" class="btn btn-sm btn-table">
             Admin console
           </a>
-          <button class="btn btn-sm btn-table delete-btn" data-delete-url="{{ url_for('artist_req.delete', request_id=req.id) }}">
+          <button class="btn btn-sm btn-table delete-btn" data-delete-url="{{ url_for('artist_req.delete', request_id=user.id) }}">
             <i class="bi bi-check-lg"></i>
           </button>
         </td>

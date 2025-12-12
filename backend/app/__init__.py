@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, jsonify
-from werkzeug.exceptions import HTTPException
+from flask import Flask
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import logging
-from .config import Config
-from .db import Session, create_all
+from .config.config import Config
+from .config.jinja_filters import format_dt
+from .db import Session
 from . import models
 from .routes.auth import auth_bp
 from .routes.menu import menu_bp
@@ -11,6 +13,7 @@ from .routes.artist_account import artist_acc_bp
 from .routes.admin import admin_bp
 from .routes.trending import trending_bp
 from .routes.artist_request import artist_req_bp
+from .errors import register_error_handlers
 
 def create_app():
     app = Flask(__name__)
@@ -24,37 +27,16 @@ def create_app():
     app.register_blueprint(trending_bp)
     app.register_blueprint(artist_req_bp)
 
-    logging.basicConfig(level=logging.DEBUG)
+    register_error_handlers(app)
 
-    @app.errorhandler(HTTPException)
-    def handle_http_exception(e):
-        if request.accept_mimetypes.best == "application/json":
-            return jsonify({
-                "error": e.name,
-                "message": e.description
-            }), e.code
-        return render_template(
-            "error.html", code=e.code, name=e.name, message=e.description
-        ), e.code
-    
-    @app.errorhandler(Exception)
-    def handle_any_exception(e):
-        return render_template(
-            "error.html",
-            code=500,
-            name="Internal Server Error",
-            message=str(e)
-        ), 500
+    app.jinja_env.filters["format_dt"] = format_dt
+
+    logging.basicConfig(level=logging.DEBUG)    
 
     @app.teardown_request
     def remove_session(e):
         if e is not None:
             Session.rollback()
         Session.remove()
-
-    @app.get("/dev/init-db")
-    def dev_init_db():
-        create_all()
-        return {"ok": True}
     
     return app

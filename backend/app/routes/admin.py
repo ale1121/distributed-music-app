@@ -11,10 +11,10 @@ admin_bp = Blueprint('admin', __name__)
 @login_required
 @role_required("ROLE_ADMIN")
 def view():
-    stmt = select(User).join(ArtistRequest, User.id == ArtistRequest.user_id)
-    requests = list(Session.scalars(stmt).all())
-    # current_app.logger.debug(f"---REQUESTS: {requests}")
-    # return jsonify(requests), 200
+    stmt = select(User, ArtistRequest).join(ArtistRequest, User.id == ArtistRequest.user_id)
+    requests = Session.execute(stmt).all()
+
+    current_app.logger.debug(f"---REQUESTS: {requests}")
 
     return render_template("admin_dashboard.html",
                            admin_console_link=current_app.config['ADMIN_URL'],

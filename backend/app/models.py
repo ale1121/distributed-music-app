@@ -39,5 +39,11 @@ class ArtistRequest(Base):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), 
+        default=dt.datetime.now(dt.timezone.utc),
+        nullable=False
+    )
     
     user: Mapped["User"] = relationship(back_populates="artist_request")
+    

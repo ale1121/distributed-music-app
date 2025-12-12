@@ -92,7 +92,6 @@ def callback():
             options={"verify_aud": False},
             issuer=conf['ISSUER_URL']
         )
-        current_app.logger.debug(decoded_token)
 
         # Sync user in db
         user = sync_user_db(decoded_token)
