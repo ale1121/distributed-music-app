@@ -1,14 +1,25 @@
-from flask import Blueprint, session, render_template
-from app.auth.decorators import login_required, role_required
-
+import requests
+from flask import Blueprint, session, render_template, current_app
+from app.decorators import login_required, role_required
+from app.db import Session
+from app.models import ArtistRequest
 account_bp = Blueprint('account', __name__)
 
 @account_bp.route("/account")
 @login_required
-@role_required("ROLE_USER")
 def view():
     username = session["user"].get("preferred_username")
-    display_name = session["user"].get("nickname", "altceva")
+    display_name = session["user"].get("display_name")
+    email = session["user"].get("email")
+    is_artist = "ROLE_ARTIST" in session["user"].get("realm_access", {}).get("roles", [])
+
+    user_id = session["user_id"]
+    artist_req_active = Session.get(ArtistRequest, user_id) is not None
+
     return render_template("account_page.html", 
                            username=username, display_name=display_name,
+                           email=email, is_artist=is_artist,
+                           manage_acc_url=current_app.config['ACCOUNT_URL'],
+                           artist_req_active=artist_req_active,
                            current_path='/account')
+

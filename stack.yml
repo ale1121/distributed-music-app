@@ -1,8 +1,8 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: muzo-postgres
-    restart: unless-stopped
+    # container_name: muzo-postgres
+    # restart: unless-stopped
     environment:
       POSTGRES_USER: muzo
       POSTGRES_PASSWORD: muzo
@@ -13,8 +13,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   web-api:
-    build: ./backend
-    container_name: muzo-web-api
+    image: muzo-web-api
+    # container_name: muzo-web-api
     depends_on:
       - postgres
       - keycloak
@@ -38,7 +38,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:25.0.0
-    container_name: muzo-keycloak
+    # container_name: muzo-keycloak
     command: start-dev --import-realm
     environment:
       KEYCLOAK_ADMIN: admin

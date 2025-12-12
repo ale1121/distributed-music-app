@@ -1,11 +1,10 @@
-import json
 import requests
 import jwt
 from jwt import PyJWKClient
-from flask import (
-    Blueprint, current_app, redirect, request, session, url_for, render_template
-)
-from ..models import db, User, Role
+from flask import Blueprint, current_app, redirect, request, session, url_for, render_template
+from sqlalchemy import select
+from app.db import Session
+from app.models import User
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -15,11 +14,9 @@ def sync_user_db(decoded_token):
     sub = decoded_token.get('sub')
     email = decoded_token.get('email')
     username = decoded_token.get('preferred_username')
-    display_name = decoded_token.get('nickname')
-    current_app.logger.debug(f"display name: {display_name}")
-    realm_roles = decoded_token.get('realm_access', {}).get('roles', [])
+    display_name = decoded_token.get('display_name')
 
-    user = User.query.filter_by(keycloak_id=sub).first()
+    user = Session.scalar(select(User).where(User.keycloak_id == sub))
     if not user:
         user = User(
             keycloak_id=sub,
@@ -27,14 +24,14 @@ def sync_user_db(decoded_token):
             username=username,
             display_name=display_name,
         )
-        db.session.add(user)
+        Session.add(user)
+    else:
+        user.email = email
+        user.display_name = display_name
 
-    if realm_roles:
-        db_roles = Role.query.filter(Role.name.in_(realm_roles)).all()
-        user.roles = db_roles
-
-    db.session.commit()
-
+    Session.commit()
+    Session.refresh(user)
+    
     return user
 
 
@@ -73,7 +70,7 @@ def callback():
     if response.status_code != 200:
         return render_template(
             'login_failed.html',
-            message=f'Token endpoint error: {response.status_code}'), 400
+            message=f'{response.reason}'), 400
 
     # Parse the token and extract: access token and identity token
     tokens = response.json()
@@ -95,7 +92,6 @@ def callback():
             options={"verify_aud": False},
             issuer=conf['ISSUER_URL']
         )
-
         current_app.logger.debug(decoded_token)
 
         # Sync user in db

@@ -1,8 +1,0 @@
-/account account.view
-/admin admin.view
-/artist-account artist_acc.view
-/login auth.login
-/callback auth.callback
-/logout auth.logout
-/trending trending.view
-/ menu.home

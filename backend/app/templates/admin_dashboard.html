@@ -2,7 +2,74 @@
 
 {% block main %}
 
-<p>Username: @{{ username }}</p>
-<p>Display Name: {{display_name}}</p>
+<div class="p-3">
+  <h1 class="mb-4">Admin Dashboard</h1>
+
+  <h5>Keycloak admin console</h5>
+  <p>Visit the keycloak admin console to manage users and roles</p>
+  <a class="btn btn-primary" href="{{ admin_console_link }}" target="_blank" rel="noopener noreferrer">
+    Admin console
+  </a>
+  <hr>
+
+  <h5 class="mt-4">Artist requests</h5>
+  <p>
+    Go to the Keycloak admin console to assign ROLE_ARTIST to a user. <br>
+    Click the check button to close and remove the request.
+  </p>
+
+  <table class="table align-middle">
+    <thead>
+      <th>Username</th>
+      <th>Display name</th>
+      <th></th>
+      <th></th>
+    </thead>
+    <tbody>
+      {% for req in artist_requests %}
+      <tr>
+        <td>{{ req.username }}</td>
+        <td>{{ req.display_name }}</td>
+        <td>
+          <a href="{{admin_console_link}}/users/{{req.keycloak_id}}/role-mapping" target="_blank"
+            rel="noopener noreferrer" class="btn btn-sm btn-table">
+            Admin console
+          </a>
+          <button class="btn btn-sm btn-table delete-btn" data-delete-url="{{ url_for('artist_req.delete', request_id=req.id) }}">
+            <i class="bi bi-check-lg"></i>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+        const deleteUrl = btn.dataset.deleteUrl;
+
+        try {
+          const res = await fetch(deleteUrl, {
+            method: "DELETE",
+            headers: { "Accept": "application/json" }
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) throw new Error(data.message || "Something went wrong");
+          
+          btn.closest("tr")?.remove();
+
+          showSuccessToast("Request removed");
+        } catch (err) {
+          showErrorToast(err.message || "Something went wrong");
+        }
+    });
+  });
+</script>
+
+
 
 {% endblock %}
