@@ -1525,7 +1525,7 @@
   },
   "users": [
     {
-      "username": "admin",
+      "username": "muzo-admin",
       "enabled": true,
       "credentials": [
         {
