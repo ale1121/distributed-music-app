@@ -1,4 +1,5 @@
 import os
+import time
 from flask import (
     Blueprint, session, render_template, request, current_app,
     jsonify, send_from_directory
@@ -46,8 +47,17 @@ def upload_profile_image():
     if not artist:
         raise NotFound("Artist not found")
     
+    if artist.avatar_path:
+        try:
+            os.remove(artist.avatar_path)
+        except:
+            pass
+        finally:
+            artist.avatar_path = None
+    
     out_dir = current_app.config['AVATARS_PATH']
-    out_path = os.path.join(out_dir, f"profile-{artist_id}.jpg")
+    ts = time.strftime("%Y%m%d_%H%M%S")
+    out_path = os.path.join(out_dir, f"profile-{artist_id}-{ts}.webp")
 
     try:
         crop_resize_save_image(request.files["image"], out_path, size=512)
@@ -76,8 +86,8 @@ def delete_profile_image():
         os.remove(artist.avatar_path)
     except FileNotFoundError:
         raise NotFound("Image not found")
-
-    artist.avatar_path = None
-    Session.commit()
+    finally:
+        artist.avatar_path = None
+        Session.commit()
 
     return jsonify(ok=True), 200

@@ -18,4 +18,4 @@ def crop_resize_save_image(in_file, out_path, size=512):
     img = img.resize((size, size))
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    img.save(out_path, "JPEG")
+    img.save(out_path, "WEBP")

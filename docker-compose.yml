@@ -40,7 +40,7 @@ services:
       - "5000:5000"
     volumes:
       - ./backend:/app
-      - ./images_data:/uploads
+      - images_data:/uploads
 
   keycloak:
     image: quay.io/keycloak/keycloak:25.0.0
@@ -58,3 +58,4 @@ services:
 volumes:
   postgres_data:
   keycloak_data:
+  images_data:
