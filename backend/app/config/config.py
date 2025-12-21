@@ -19,3 +19,9 @@ class Config:
 
     ACCOUNT_URL = f"{KC_PUBLIC_URL}/realms/{KC_REALM}/account"
     ADMIN_URL = f"{KC_PUBLIC_URL}/admin/{KC_REALM}/console/#/{KC_REALM}"
+
+    UPLOADS_PATH = os.getenv('UPLOADS_PATH', '/uploads')
+    AVATARS_PATH = os.path.join(UPLOADS_PATH, "avatars")
+    ALBUM_COVERS_PATH = os.path.join(UPLOADS_PATH, 'covers')
+
+    DEFAULT_AVATAR = '/static/assets/placeholder-avatar.png'

@@ -2,41 +2,16 @@
 
 {% block main %}
 
-<script>
-  async function sendArtistRequest(btn) {
-    btn.disabled = true;
-
-    try {
-      const res = await fetch("{{ url_for('artist_req.create') }}", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        }
-      });
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || "Something went wrong");
-      
-      btn.textContent = "Request sent";
-      showSuccessToast("Request sent");
-      
-    } catch (err) {
-      btn.disabled = false;
-      showErrorToast(err.message || "Something went wrong");
-    }
-  }
-</script>
-
 <div class="px-3">
   <h1>Account Overview</h1>
 
-  <div class="row align-items-center">
-    <div class="col-sm-12 col-md-3 col-lg-3">
-      <i class="bi bi-person-circle" style="font-size: 100px; color: var(--bs-gray-light-5)"></i>
+  <div class="row align-items-center my-4">
+    <div class="col col-sm-12 col-md-3 col-lg-3">
+      <img src="/static/assets/placeholder-avatar.png"
+        class="rounded-circle" width="70%" style="max-width: 200px;">
     </div>
 
-    <div class="col-sm-12 col-md-9 col-lg-9">
+    <div class="col col-sm-12 col-md-9 col-lg-9">
       <div class="d-flex align-items-center gap-3">
         <div class="d-flex flex-column mt-1" style="font-weight: bold;">
           <div class="mb-1">Username</div>
@@ -50,7 +25,6 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <h4 class="mt-3">Account settings</h4>
@@ -83,5 +57,31 @@
     <i class="bi bi-box-arrow-right"></i> Logout
   </a>
 </div>
+
+<script>
+  async function sendArtistRequest(btn) {
+    btn.disabled = true;
+
+    try {
+      const res = await fetch("{{ url_for('artist_req.create') }}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+      
+      btn.textContent = "Request sent";
+      showSuccessToast("Request sent");
+      
+    } catch (err) {
+      btn.disabled = false;
+      showErrorToast(err.message || "Something went wrong");
+    }
+  }
+</script>
 
 {% endblock %}

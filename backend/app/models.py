@@ -1,7 +1,8 @@
 import datetime as dt
-from sqlalchemy import String, Integer, DateTime, ForeignKey, func
+from sqlalchemy import String, Integer, DateTime, ForeignKey, func, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .db import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -27,10 +28,15 @@ class User(Base):
 class Artist(Base):
     __tablename__ = "artists"
 
-    artist_id: Mapped[int] = mapped_column(
+    id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
+    avatar_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    
     user: Mapped["User"] = relationship(back_populates="artist")
+    albums: Mapped[list["Album"]] = relationship(
+        back_populates="artist", cascade="all, delete-orphan"
+    )
 
 
 class ArtistRequest(Base):
@@ -46,4 +52,55 @@ class ArtistRequest(Base):
     )
     
     user: Mapped["User"] = relationship(back_populates="artist_request")
-    
+
+
+class Album(Base):
+    __tablename__ = "albums"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    cover_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    release_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    artist_id: Mapped[int] = mapped_column(
+        ForeignKey("artists.id", ondelete="CASCADE"),
+        nullable=False, index=True
+    )
+
+    artist: Mapped["Artist"] = relationship(back_populates="albums")
+    songs: Mapped[list["Song"]] = relationship(
+        back_populates="album", cascade="all, delete-orphan"
+    )
+
+
+class Song(Base):
+    __tablename__ = "songs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    genre: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    audio_path: Mapped[str] = mapped_column(String(255), nullable=False)
+    album_id: Mapped[int] = mapped_column(
+        ForeignKey("albums.id", ondelete="CASCADE"),
+        nullable=False, index=True
+    )
+
+    album: Mapped["Album"] = relationship(back_populates="songs")
+
+
+class Play(Base):
+    __tablename__ = "plays"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    timestamp: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), 
+        default=func.now(),
+        nullable=False, index=True
+    )
+    song_id: Mapped[int] = mapped_column(
+        ForeignKey("songs.id", ondelete="CASCADE"),
+        nullable=False, index=True
+    )
+    user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True, index=True
+    )

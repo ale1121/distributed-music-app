@@ -50,4 +50,6 @@ services:
 
 volumes:
   postgres_data:
+    driver: local
   keycloak_data:
+    driver: local

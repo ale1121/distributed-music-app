@@ -13,6 +13,7 @@ from .routes.artist_account import artist_acc_bp
 from .routes.admin import admin_bp
 from .routes.trending import trending_bp
 from .routes.artist_request import artist_req_bp
+from .routes.uploads import uploads_bp
 from .errors import register_error_handlers
 
 def create_app():
@@ -26,6 +27,7 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(trending_bp)
     app.register_blueprint(artist_req_bp)
+    app.register_blueprint(uploads_bp)
 
     register_error_handlers(app)
 

@@ -1,6 +1,7 @@
 from flask import render_template, request, jsonify
 from werkzeug.exceptions import HTTPException
 
+
 def register_error_handlers(app):
     @app.errorhandler(HTTPException)
     def handle_http_exception(e):
@@ -15,9 +16,12 @@ def register_error_handlers(app):
     
     @app.errorhandler(Exception)
     def handle_any_exception(e):
+        if request.accept_mimetypes.best == "application/json":
+            return jsonify({
+                "error": "Internal server error",
+                "message": str(e)
+            }), 500
         return render_template(
-            "error.html",
-            code=500,
-            name="Internal Server Error",
-            message=str(e)
+            "error.html", code=500, name="Internal server error", message=str(e)
         ), 500
+    

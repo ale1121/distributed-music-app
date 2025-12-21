@@ -32,6 +32,8 @@
   --bs-purple-light-90: #f2e8f9;
 
   --bs-danger: #ff4989;
+  --bs-danger-bg: #5e1b33;
+  --bs-danger-bg-hover: #792442;
   --bs-success: #79fdff;
 
   --bs-body-color: var(--bs-off-white);
@@ -81,9 +83,17 @@
   .btn-secondary {
     --bs-btn-color: var(--bs-off-white);
     --bs-btn-bg: var(--bs-gray-light-3);
-    --bs-btn-hover-bg: var(--bs-gray-light-4);
+    --bs-btn-hover-bg: var(--bs-gray-light-5);
     --bs-btn-active-bg: var(--bs-gray-light-3);
     --bs-btn-disabled-bg: var(--bs-gray-light-3);
+    --bs-btn-border-width: 0px;
+  }
+
+  .btn-danger {
+    --bs-btn-color: var(--bs-off-white);
+    --bs-btn-bg: var(--bs-danger-bg);
+    --bs-btn-hover-bg: var(--bs-danger-bg-hover);
+    --bs-btn-active-bg: var(--bs-danger-bg);
     --bs-btn-border-width: 0px;
   }
 
@@ -136,5 +146,21 @@
     --bs-toast-border-width: 0px;
     --bs-toast-font-size: 15px;
     --bs-toast-zindex: 1100;
+  }
+
+  .form-control::file-selector-button {
+    color: var(--bs-off-white);
+    background-color: var(--bs-gray-light-3);
+    border: none;
+  }
+
+  .form-control[type="file"] {
+    background-color: transparent;
+    border-color: var(--bs-gray-light-3);
+  }
+
+  .form-control[type="file"]:focus {
+    border-color: var(--bs-gray-light-3);
+    box-shadow: 0 0 0 0 transparent;
   }
 }

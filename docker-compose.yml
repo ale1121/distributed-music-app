@@ -34,10 +34,13 @@ services:
       SECRET_KEY: topsecretkey
 
       TIMEZONE: Europe/Bucharest
+
+      UPLOADS_PATH: /uploads
     ports:
       - "5000:5000"
     volumes:
       - ./backend:/app
+      - ./images_data:/uploads
 
   keycloak:
     image: quay.io/keycloak/keycloak:25.0.0

@@ -4,7 +4,7 @@ from jwt import PyJWKClient
 from flask import Blueprint, current_app, redirect, request, session, url_for, render_template
 from sqlalchemy import select
 from app.db import Session
-from app.models import User
+from app.models import User, Artist
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -28,6 +28,12 @@ def sync_user_db(decoded_token):
     else:
         user.email = email
         user.display_name = display_name
+        
+    if 'ROLE_ARTIST' in decoded_token.get('realm_access', {}).get('roles', []):
+        artist = Session.get(Artist, user.id)
+        if not artist:
+            artist = Artist(id=user.id)
+            Session.add(artist)
 
     Session.commit()
     Session.refresh(user)

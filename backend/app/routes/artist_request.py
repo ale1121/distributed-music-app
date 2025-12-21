@@ -26,7 +26,6 @@ def create():
     return jsonify(status="ok")
 
 @artist_req_bp.route('/artist-requests/<int:request_id>', methods=['DELETE'])
-@login_required
 @role_required('ROLE_ADMIN')
 def delete(request_id):
     req = Session.get(ArtistRequest, request_id)

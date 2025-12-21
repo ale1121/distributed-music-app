@@ -2,7 +2,130 @@
 
 {% block main %}
 
-<p>Username: @{{ username }}</p>
-<p>Display Name: {{display_name}}</p>
+<div class="px-3">
+  <h1>Artist Account</h1>
+
+  <div class="row my-4">
+    <div class="col-12 col-md-auto col-lg-auto" width="250px">
+      <img id="avatarImg" src="{{ avatar_path if avatar_path else default_avatar_path }}"
+        class="rounded-circle" width="200px">
+    </div>
+
+    <div class="col-12 col-md col-lg mt-3">
+      <h6>Profile picture</h6>
+      
+      <div class="mb-2 d-flex align-items-center gap-2">
+        <label id="imageUploadBtn" class="btn btn-sm btn-secondary">
+          <i class="bi bi-file-earmark-image"></i> Upload
+          <input id="imageInput" type="file" accept="image/*" hidden>
+        </label>
+
+        <div id="imageUploadForm" class="d-flex align-items-center gap-2 d-none">
+          <div id="imageName" style="color: var(--bs-purple-light-50);">No file chosen</div>
+          <button id="imageSaveBtn" class="btn btn-sm btn-secondary">
+            <i class="bi bi-check-lg"></i> Save
+          </button>
+          <button id="imageCancelBtn" class="btn btn-sm btn-secondary">
+             Cancel
+          </button>
+        </div>
+      </div>
+      <div>
+        <button id="imageRemoveBtn" class="btn btn-sm btn-danger {{ '' if avatar_path else 'd-none' }}">
+          <i class="bi bi-trash3-fill"></i> Remove
+        </button>
+      </div>
+
+      <h6 class="mt-3">Account settings</h6>
+      <a href="{{ url_for('account.view') }}" class="btn btn-sm btn-secondary">
+        <i class="bi bi-gear-fill"></i> Account
+      </a>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const imageInput = document.getElementById("imageInput");
+  const imageName = document.getElementById("imageName");
+  const imageUploadForm = document.getElementById("imageUploadForm");
+  const imageUploadBtn = document.getElementById("imageUploadBtn");
+  const imageSaveBtn = document.getElementById("imageSaveBtn");
+  const imageCancelBtn = document.getElementById("imageCancelBtn");
+  const imageRemoveBtn = document.getElementById("imageRemoveBtn");
+  const avatarImg = document.getElementById("avatarImg");
+
+
+  imageInput.addEventListener("change", () => {
+    if (imageInput.files.length > 0) {
+      imageName.textContent = imageInput.files[0].name;
+    } else {
+      imageName.textContent = "No file chosen";
+    }
+  });
+
+  imageUploadBtn.addEventListener("click", () => {
+    imageUploadForm.classList.remove("d-none");
+    imageUploadBtn.classList.add("disabled");
+  });
+
+  imageCancelBtn.addEventListener("click", () => {
+    imageUploadForm.classList.add("d-none");
+    imageUploadBtn.classList.remove("disabled");
+  });
+
+  imageSaveBtn.addEventListener("click", async () => {
+    const file = imageInput.files?.[0];
+    if (!file) showErrorToast("Choose an image");
+
+    const form = new FormData();
+    form.append("image", file);
+
+    try {
+      const res = await fetch("{{ url_for('artist_acc.upload_profile_image') }}", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json"
+        },
+        body: form
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+      
+      showSuccessToast("Profile image updated");
+      avatarImg.src = data["profile_url"];
+      imageRemoveBtn.classList.remove("d-none");
+    } catch (err) {
+      showErrorToast(err.message || "Something went wrong");
+    }
+
+    imageName.textContent = "No file chosen";
+    imageUploadForm.classList.add("d-none");
+    imageUploadBtn.classList.remove("disabled");
+  });
+
+  imageRemoveBtn.addEventListener("click", async () => {
+    try {
+      const res = await fetch("{{ url_for('artist_acc.delete_profile_image')}}", {
+        method: "DELETE",
+        headers: {
+          "Accept": "application/json"
+        }
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong")
+
+      showSuccessToast("Profile image removed");
+      avatarImg.src = "{{ default_avatar_path }}";
+      imageRemoveBtn.classList.add("d-none");
+    } catch (err) {
+      showErrorToast(err.message || "Something went wrong")
+    }
+  })
+
+</script>
 
 {% endblock %}

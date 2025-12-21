@@ -30,7 +30,7 @@
 </div>
 
 <script>
-  window.showErrorToast = function (msg){
+  window.showErrorToast = function (msg) {
     const errorToast = document.getElementById("errorToast");
     const errorMsg = document.getElementById("errorToastMsg");
     if (!errorToast || !errorMsg) return;
@@ -39,7 +39,7 @@
     bootstrap.Toast.getOrCreateInstance(errorToast).show();
   };
 
-  window.showSuccessToast = function (msg){
+  window.showSuccessToast = function (msg) {
     const successToast = document.getElementById("successToast");
     const successMsg = document.getElementById("successToastMsg");
     if (!successToast || !successMsg) return;
