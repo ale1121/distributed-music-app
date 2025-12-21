@@ -35,6 +35,11 @@
           <i class="bi bi-trash3-fill"></i> Remove
         </button>
       </div>
+      <div id="confirmDelete" class="d-flex align-items-center gap-2 d-none">
+        <div>Delete image?</div>
+        <button id="confirmDeleteImgBtn" class="btn btn-sm btn-danger">Delete</button>
+        <button id="cancelDeleteImgBtn" class="btn btn-sm btn-secondary">Cancel</button>
+      </div>
 
       <h6 class="mt-3">Account settings</h6>
       <a href="{{ url_for('account.view') }}" class="btn btn-sm btn-secondary">
@@ -54,6 +59,9 @@
   const imageSaveBtn = document.getElementById("imageSaveBtn");
   const imageCancelBtn = document.getElementById("imageCancelBtn");
   const imageRemoveBtn = document.getElementById("imageRemoveBtn");
+  const confirmDeleteImgBtn = document.getElementById("confirmDeleteImgBtn");
+  const cancelDeleteImgBtn = document.getElementById("cancelDeleteImgBtn");
+  const confirmDelete = document.getElementById("confirmDelete");
   const avatarImg = document.getElementById("avatarImg");
 
 
@@ -73,6 +81,7 @@
   imageCancelBtn.addEventListener("click", () => {
     imageUploadForm.classList.add("d-none");
     imageUploadBtn.classList.remove("disabled");
+    imageName.textContent = "No file chosen";
   });
 
   imageSaveBtn.addEventListener("click", async () => {
@@ -106,7 +115,17 @@
     imageUploadBtn.classList.remove("disabled");
   });
 
-  imageRemoveBtn.addEventListener("click", async () => {
+  imageRemoveBtn.addEventListener("click", () => {
+    imageRemoveBtn.classList.add("d-none");
+    confirmDelete.classList.remove("d-none");
+  });
+
+  cancelDeleteImgBtn.addEventListener("click", () => {
+    imageRemoveBtn.classList.remove("d-none");
+    confirmDelete.classList.add("d-none");
+  })
+
+  confirmDeleteImgBtn.addEventListener("click", async () => {
     try {
       const res = await fetch("{{ url_for('artist_acc.delete_profile_image')}}", {
         method: "DELETE",
@@ -120,7 +139,7 @@
 
       showSuccessToast("Profile image removed");
       avatarImg.src = "{{ default_avatar_path }}";
-      imageRemoveBtn.classList.add("d-none");
+      confirmDelete.classList.add("d-none");
     } catch (err) {
       showErrorToast(err.message || "Something went wrong")
     }
