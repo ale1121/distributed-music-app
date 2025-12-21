@@ -11,6 +11,8 @@ admin_bp = Blueprint('admin', __name__)
 @admin_bp.route("/admin")
 @role_required("ROLE_ADMIN")
 def view():
+    """ View 'Admin' page """
+
     stmt = select(User, ArtistRequest).join(ArtistRequest, User.id == ArtistRequest.user_id)
     requests = Session.execute(stmt).all()
 

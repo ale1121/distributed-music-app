@@ -11,6 +11,8 @@ account_bp = Blueprint('account', __name__)
 @account_bp.route("/account")
 @login_required
 def view():
+    """ View 'My Account' page """
+    
     username = session["user"].get("preferred_username")
     display_name = session["user"].get("display_name")
     email = session["user"].get("email")

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Error toast -->
 <div class="toast-container position-fixed end-0 p-3">
   <div id="errorToast" class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex align-items-center">
@@ -15,6 +16,7 @@
   </div>
 </div>
 
+<!-- Success toast -->
 <div class="toast-container position-fixed end-0 p-3">
   <div id="successToast" class="toast align-items-center" role="status" aria-live="polite" aria-atomic="true">
     <div class="d-flex align-items-center">
@@ -50,12 +52,14 @@
 </script>
 
 <div class="d-flex">
+  <!-- Sidebar -->
   <div class="app-sidebar position-fixed top-0 bottom-0 start-0 d-flex flex-column justify-content-between p-3 bg-darker">
     <div>
       <a href="{{ url_for('menu.home') }}" class="mt-2 mb-4 d-block">
         <img src="/static/assets/logo.png" width="120">
       </a>
       <hr>
+
       <ul class="nav nav-pills flex-column">
         <li class="nav-item">
           <a href="{{ url_for('menu.home') }}"
@@ -97,13 +101,14 @@
     </div>
   </div>
 
+  <!-- Main content -->
   <div class="app-main">
     <main class="p-3">
       {% block main %}{% endblock %}
     </main>
   </div>
 
-  {% block player %}
+  <!-- Player -->
   <div class="app-player position-fixed bottom-0 bg-darker">
     <div class="container-fluid h-100">
       <div class="row h-100 align-items-center flex-nowrap">
@@ -142,7 +147,6 @@
       <audio id="audio-element"></audio>
     </div>
   </div>
-  {% endblock %}
 
 </div>
 {% endblock %}

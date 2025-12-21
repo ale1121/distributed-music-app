@@ -11,6 +11,10 @@ auth_bp = Blueprint('auth', __name__)
 
 
 def sync_user_db(decoded_token):
+    """
+    Update or create user in db with token details
+    """
+
     sub = decoded_token.get('sub')
     email = decoded_token.get('email')
     username = decoded_token.get('preferred_username')

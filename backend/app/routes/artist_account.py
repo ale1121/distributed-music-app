@@ -16,6 +16,8 @@ artist_acc_bp = Blueprint('artist_acc', __name__)
 @artist_acc_bp.route("/artist-account")
 @role_required("ROLE_ARTIST")
 def view():
+    """ View 'Artist Account' page """
+
     artist = Session.get(Artist, session["user_id"])
     if not artist:
         raise NotFound("Artist not found")
@@ -33,6 +35,8 @@ def view():
 @artist_acc_bp.route("/artist-account/avatar", methods=['POST'])
 @role_required("ROLE_ARTIST")
 def upload_profile_image():
+    """ Upload artist avatar """
+
     if "image" not in request.files:
         raise BadRequest("Missing image")
     
@@ -56,9 +60,11 @@ def upload_profile_image():
     return jsonify(profile_url=out_path), 201
 
 
-@artist_acc_bp.route("/artiest-account/avatar", methods=["DELETE"])
+@artist_acc_bp.route("/artist-account/avatar", methods=["DELETE"])
 @role_required("ROLE_ARTIST")
 def delete_profile_image():
+    """ Delete artist avatar """
+
     artist = Session.get(Artist, session["user_id"])
     
     if not artist:

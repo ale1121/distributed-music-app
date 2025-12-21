@@ -12,6 +12,8 @@ artist_req_bp = Blueprint('artist_req', __name__)
 @artist_req_bp.route('/artist-requests', methods=['POST'])
 @login_required
 def create():
+    """ Create new artist request for current user """
+
     user_id = session["user_id"]
     user = Session.get(User, user_id)
     if not user:
@@ -31,6 +33,8 @@ def create():
 @artist_req_bp.route('/artist-requests/<int:request_id>', methods=['DELETE'])
 @role_required('ROLE_ADMIN')
 def delete(request_id):
+    """ Delete artist request """
+
     req = Session.get(ArtistRequest, request_id)
     if not req:
         raise NotFound("Request not found")
