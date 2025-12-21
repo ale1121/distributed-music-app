@@ -1,5 +1,6 @@
 from flask import Blueprint, session, render_template
 
+
 menu_bp = Blueprint('menu', __name__)
 
 

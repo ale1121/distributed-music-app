@@ -1,6 +1,7 @@
 import os
 from PIL import Image
 
+
 def crop_resize_save_image(in_file, out_path, size=512):
     img = Image.open(in_file.stream).convert("RGB")
     width, height = img.size

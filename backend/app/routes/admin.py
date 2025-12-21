@@ -7,6 +7,7 @@ from app.decorators import login_required, role_required
 
 admin_bp = Blueprint('admin', __name__)
 
+
 @admin_bp.route("/admin")
 @role_required("ROLE_ADMIN")
 def view():

@@ -3,7 +3,10 @@ from flask import Blueprint, session, render_template, current_app
 from app.decorators import login_required, role_required
 from app.db import Session
 from app.models import ArtistRequest
+
+
 account_bp = Blueprint('account', __name__)
+
 
 @account_bp.route("/account")
 @login_required

@@ -16,6 +16,7 @@ from .routes.artist_request import artist_req_bp
 from .routes.uploads import uploads_bp
 from .errors import register_error_handlers
 
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
