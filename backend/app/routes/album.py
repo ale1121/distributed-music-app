@@ -25,7 +25,7 @@ def edit_view(album_id):
     stmt = select(Song).where(Song.album == album)
     songs = Session.scalars(stmt)
     
-    return render_template('album.html',
+    return render_template('album_edit.html',
                             album=album, songs=songs,
                             default_cover=current_app.config['DEFAULT_COVER'])
 
