@@ -15,6 +15,7 @@ from .routes.trending import trending_bp
 from .routes.artist_request import artist_req_bp
 from .routes.uploads import uploads_bp
 from .routes.album import album_bp
+from .routes.song import song_bp
 from .errors import register_error_handlers
 
 
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(artist_req_bp)
     app.register_blueprint(uploads_bp)
     app.register_blueprint(album_bp)
+    app.register_blueprint(song_bp)
 
     register_error_handlers(app)
 
