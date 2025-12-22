@@ -47,7 +47,7 @@
   <p>Your request is pending admin approval.</p>
   {% else %}
   <p>Sign up for an artist account to publish your own songs and albums.</p>
-  <button id="artist-req-btn" class="btn btn-sm btn-secondary" onclick="sendArtistRequest(this)">
+  <button id="sendArtistReqBtn" class="btn btn-sm btn-secondary">
     Request artist account
   </button>
   {% endif %}
@@ -59,8 +59,10 @@
 </div>
 
 <script>
-  async function sendArtistRequest(btn) {
-    btn.disabled = true;
+  const sendArtistReqBtn = document.getElementById("sendArtistReqBtn");
+
+  if (sendArtistReqBtn) sendArtistReqBtn.addEventListener("click", async () => {
+    sendArtistReqBtn.disabled = true;
 
     try {
       const res = await fetch("{{ url_for('artist_req.create') }}", {
@@ -74,14 +76,14 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Something went wrong");
       
-      btn.textContent = "Request sent";
+      sendArtistReqBtn.textContent = "Request sent";
       showSuccessToast("Request sent");
       
     } catch (err) {
-      btn.disabled = false;
+      sendArtistReqBtn.disabled = false;
       showErrorToast(err.message || "Something went wrong");
     }
-  }
+  });
 </script>
 
 {% endblock %}

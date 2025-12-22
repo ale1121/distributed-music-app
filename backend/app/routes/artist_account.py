@@ -5,9 +5,10 @@ from flask import (
     jsonify, send_from_directory
 )
 from werkzeug.exceptions import BadRequest, NotFound
+from sqlalchemy import select
 from app.decorators import role_required
 from app.db import Session
-from app.models import Artist
+from app.models import Artist, Album
 from app.utils.image import crop_resize_save_image
 
 
@@ -23,14 +24,19 @@ def view():
     if not artist:
         raise NotFound("Artist not found")
     
-    default_avatar_path = current_app.config['DEFAULT_AVATAR']
+    stmt = select(Album).where(Album.artist == artist).order_by(Album.release_year.desc())
+    albums = Session.scalars(stmt)
+
+    current_app.logger.debug(f"---ALBUMS: {albums}")
     
     username = session["user"].get("preferred_username")
     display_name = session["user"].get("display_name")
     return render_template("artist_dashboard.html",
-                           username=username, display_name=display_name,
-                           avatar_path=artist.avatar_path, default_avatar_path=default_avatar_path,
-                           current_path='/artist-account')
+                avatar_path=artist.avatar_path,
+                default_avatar=current_app.config['DEFAULT_AVATAR'],
+                albums=albums,
+                default_cover=current_app.config['DEFAULT_COVER'],
+                current_path='/artist-account')
 
 
 @artist_acc_bp.route("/artist-account/avatar", methods=['POST'])

@@ -13,7 +13,9 @@ admin_bp = Blueprint('admin', __name__)
 def view():
     """ View 'Admin' page """
 
-    stmt = select(User, ArtistRequest).join(ArtistRequest, User.id == ArtistRequest.user_id)
+    stmt = select(User, ArtistRequest) \
+        .join(ArtistRequest, User.id == ArtistRequest.user_id) \
+        .order_by(ArtistRequest.created_at.desc())
     requests = Session.execute(stmt).all()
 
     current_app.logger.debug(f"---REQUESTS: {requests}")

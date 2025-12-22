@@ -33,7 +33,8 @@ CREATE TABLE albums (
         id SERIAL NOT NULL,
         title VARCHAR(255) NOT NULL,
         cover_path VARCHAR(255),
-        release_year INTEGER,
+        release_year INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),
+        published BOOLEAN NOT NULL DEFAULT false,
         artist_id INTEGER NOT NULL,
         PRIMARY KEY (id),
         FOREIGN KEY (artist_id) REFERENCES artists (id) ON DELETE CASCADE

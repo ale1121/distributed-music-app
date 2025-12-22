@@ -11,6 +11,7 @@
   --bs-gray-light-3: #43404a;
   --bs-gray-light-4: #4e4b56;
   --bs-gray-light-5: #5d5a67;
+  --bs-gray-light-6: #9f9bae;
   --bs-purple-dark-90: #0c0214;
   --bs-purple-dark-80: #180527;
   --bs-purple-dark-70: #25073b;
@@ -32,8 +33,8 @@
   --bs-purple-light-90: #f2e8f9;
 
   --bs-danger: #ff4989;
-  --bs-danger-bg: #5e1b33;
-  --bs-danger-bg-hover: #792442;
+  --bs-danger-bg: #48212f;
+  --bs-danger-bg-hover: #611d35;
   --bs-success: #79fdff;
 
   --bs-body-color: var(--bs-off-white);
@@ -61,6 +62,10 @@
 
   .bg-darker {
     background-color: var(--bs-gray-dark);
+  }
+
+  .bg-gray {
+    background-color: var(--bs-gray-light-1);
   }
 
   .btn-close {
@@ -97,7 +102,7 @@
     --bs-btn-border-width: 0px;
   }
 
-  .btn-transparent {
+  .btn-play {
     --bs-btn-font-size: 30px;
     --bs-btn-color: var(--bs-off-white);
     --bs-btn-bg: rgba(93, 90, 103, 0.3);
@@ -110,7 +115,7 @@
     --bs-btn-padding-y: 0px;
   }
 
-  .btn-transparent-sm {
+  .btn-player-controls {
     --bs-btn-font-size: 30px;
     --bs-btn-color: var(--bs-off-white);
     --bs-btn-bg: transparent;
@@ -118,6 +123,10 @@
     --bs-btn-border-width: 0px;
     --bs-btn-padding-x: 0px;
     --bs-btn-padding-y: 0px;
+  }
+
+  .btn-transparent {
+    --bs-btn-bg: transparent;
   }
 
   .btn-table {
@@ -140,6 +149,10 @@
     --bs-card-border-color: transparent;
   }
 
+  .list-card {
+    background-color: var(--bs-gray-light-2);
+  }
+
   .toast {
     --bs-toast-color: var(--bs-off-white);
     --bs-toast-bg: var(--bs-gray-light-2);
@@ -148,19 +161,27 @@
     --bs-toast-zindex: 1100;
   }
 
-  .form-control::file-selector-button {
-    color: var(--bs-off-white);
-    background-color: var(--bs-gray-light-3);
-    border: none;
-  }
-
-  .form-control[type="file"] {
+  .form-control {
     background-color: transparent;
     border-color: var(--bs-gray-light-3);
   }
 
-  .form-control[type="file"]:focus {
+  .form-control:focus {
     border-color: var(--bs-gray-light-3);
     box-shadow: 0 0 0 0 transparent;
+  }
+
+  .text-gray {
+    color: var(--bs-gray-light-6);
+  }
+
+  .list-group-songs {
+    --bs-list-group-border-color: var(--bs-gray-light-3);
+    --bs-list-group-color: var(--bs-off-white);
+    --bs-list-group-bg: transparent;
+    --bs-list-group-action-color: var(--bs-off-white);
+    --bs-list-group-action-hover-color: var(--bs-off-white);
+    --bs-list-group-action-hover-bg: var(--bs-gray-light-1);
+    --bs-list-group-action-active-bg: var(--bs-gray-light-1);
   }
 }

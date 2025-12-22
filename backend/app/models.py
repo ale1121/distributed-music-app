@@ -1,5 +1,5 @@
 import datetime as dt
-from sqlalchemy import String, Integer, DateTime, ForeignKey, func, Index
+from sqlalchemy import String, Integer, DateTime, ForeignKey, func, extract, Index, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .db import Base
 
@@ -60,7 +60,11 @@ class Album(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     cover_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    release_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    release_year: Mapped[int] = mapped_column(
+        Integer, nullable=False,
+        server_default=extract("year", func.current_date())
+    )
+    published: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     artist_id: Mapped[int] = mapped_column(
         ForeignKey("artists.id", ondelete="CASCADE"),
         nullable=False, index=True

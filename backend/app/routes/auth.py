@@ -32,6 +32,9 @@ def sync_user_db(decoded_token):
     else:
         user.email = email
         user.display_name = display_name
+
+    Session.commit()
+    Session.refresh(user)
         
     if 'ROLE_ARTIST' in decoded_token.get('realm_access', {}).get('roles', []):
         artist = Session.get(Artist, user.id)

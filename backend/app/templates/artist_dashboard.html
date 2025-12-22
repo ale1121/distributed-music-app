@@ -7,7 +7,8 @@
 
   <div class="row my-4">
     <div class="col-12 col-md-auto col-lg-auto" width="250px">
-      <img id="avatarImg" src="{{ avatar_path if avatar_path else default_avatar_path }}"
+      <img id="avatarImg" src="{{ avatar_path if avatar_path else default_avatar }}"
+        onerror="this.src='{{ default_avatar }}'"
         class="rounded-circle" width="200px">
     </div>
 
@@ -28,6 +29,7 @@
           <button id="imageCancelBtn" class="btn btn-sm btn-secondary">
              Cancel
           </button>
+          <div id="saveImageSpinner" class="spinner-border spinner-border-sm d-none" role="status"></div>
         </div>
       </div>
       <div>
@@ -49,6 +51,35 @@
     </div>
   </div>
 
+  <div class="d-flex align-items-center justify-content-between" style="max-width: 500px;">
+    <h4>Albums</h4>
+    <form method="post" action="{{ url_for('album.create_album') }}">
+      <button class="btn btn-sm btn-primary">
+        <i class="bi bi-plus-lg"></i> New album
+      </button>
+    </form>
+  </div> 
+  
+
+  {% for album in albums %}
+  <a href="{{ url_for('album.edit_view', album_id=album.id) }}"
+    class="card list-card p-2 my-2" style="text-decoration: none; width: 500px;">
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <img src="{{ album.cover_path if album.cover_path else default_cover }}" 
+          class="rounded" width="70px">
+        <div>
+          <div class="fw-semibold">{{ album.title }}</div>
+          <div class="text-gray small">{{ album.release_year }}</div>
+        </div>
+      </div>
+      <i class="bi mx-3 {{ 'bi-globe-americas' if album.published else 'bi-lock-fill' }}"
+        style="color: var(--bs-gray-light-6);">
+      </i>
+    </div>
+  </a>
+  {% endfor %}
+
 </div>
 
 <script>
@@ -63,7 +94,7 @@
   const cancelDeleteImgBtn = document.getElementById("cancelDeleteImgBtn");
   const confirmDelete = document.getElementById("confirmDelete");
   const avatarImg = document.getElementById("avatarImg");
-
+  const saveImageSpinner = document.getElementById("saveImageSpinner");
 
   imageInput.addEventListener("change", () => {
     if (imageInput.files.length > 0) {
@@ -91,6 +122,8 @@
     const form = new FormData();
     form.append("image", file);
 
+    saveImageSpinner.classList.remove("d-none");
+
     try {
       const res = await fetch("{{ url_for('artist_acc.upload_profile_image') }}", {
         method: "POST",
@@ -108,11 +141,12 @@
       imageRemoveBtn.classList.remove("d-none");
     } catch (err) {
       showErrorToast(err.message || "Something went wrong");
+    } finally {
+      saveImageSpinner.classList.add("d-none");
+      imageName.textContent = "No file chosen";
+      imageUploadForm.classList.add("d-none");
+      imageUploadBtn.classList.remove("disabled");
     }
-
-    imageName.textContent = "No file chosen";
-    imageUploadForm.classList.add("d-none");
-    imageUploadBtn.classList.remove("disabled");
   });
 
   imageRemoveBtn.addEventListener("click", () => {
@@ -138,13 +172,12 @@
       if (!res.ok) throw new Error(data.message || "Something went wrong")
 
       showSuccessToast("Profile image removed");
-      avatarImg.src = "{{ default_avatar_path }}";
+      avatarImg.src = "{{ default_avatar }}";
       confirmDelete.classList.add("d-none");
     } catch (err) {
       showErrorToast(err.message || "Something went wrong")
     }
-  })
-
+  });
 </script>
 
 {% endblock %}
