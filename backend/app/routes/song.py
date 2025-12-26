@@ -14,13 +14,34 @@ song_bp = Blueprint('song', __name__)
 @song_bp.route("/album/<int:album_id>/song/<int:song_id>/edit", methods=["POST"])
 @role_required("ROLE_ARTIST")
 def save_details(album_id, song_id):
-    return jsonify(ok=True, song_id=song_id), 200
+    """ Update song tile """
+
+    song = get_song(album_id, song_id)
+
+    data = request.get_json()
+
+    title = data["title"].strip()
+    if len(title) > 100:
+        raise BadRequest("Title too long")
+
+    song.title = title
+
+    Session.commit()
+    
+    return jsonify(ok=True), 200
 
 
-@song_bp.route("/album/<int:album_id>/song/<int:song_id>/delete", methods=["POST"])
+@song_bp.route("/album/<int:album_id>/song/<int:song_id>", methods=["DELETE"])
 @role_required("ROLE_ARTIST")
 def delete_song(album_id, song_id):
-    return jsonify(ok=True, song_id=song_id), 200
+    """ Delete song """
+
+    song = get_song(album_id, song_id)
+    Session.delete(song)
+    Session.commit()
+
+    return jsonify(ok=True), 200
+
 
 def get_song(album_id, song_id):
     album = Session.get(Album, album_id)

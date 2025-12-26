@@ -33,7 +33,7 @@ def edit_view(album_id):
 @album_bp.route("/album/<int:album_id>/edit", methods=["POST"])
 @role_required("ROLE_ARTIST")
 def save_details(album_id):
-    """ Save album tile and release year """
+    """ Update album tile and release year """
 
     album = get_album(album_id)
 

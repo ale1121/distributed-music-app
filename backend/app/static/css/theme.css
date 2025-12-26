@@ -127,6 +127,9 @@
 
   .btn-transparent {
     --bs-btn-bg: transparent;
+    --bs-btn-border-width: 0px;
+    --bs-btn-color: var(--bs-off-white);
+    --bs-btn-hover-color: var(--bs-gray-light-6);
   }
 
   .btn-table {
