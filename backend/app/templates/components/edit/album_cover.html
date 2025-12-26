@@ -76,8 +76,11 @@
 
   imageSaveBtn.addEventListener("click", async () => {
     const file = imageInput.files?.[0];
-    if (!file) showErrorToast("Choose an image");
-
+    if (!file) {
+      showErrorToast("Choose an image");
+      return;
+    }
+    
     const form = new FormData();
     form.append("image", file);
 
