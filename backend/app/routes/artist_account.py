@@ -31,11 +31,9 @@ def view():
     
     username = session["user"].get("preferred_username")
     display_name = session["user"].get("display_name")
-    return render_template("artist_dashboard.html",
+    return render_template("pages/artist_dashboard.html",
                 avatar_path=artist.avatar_path,
-                default_avatar=current_app.config['DEFAULT_AVATAR'],
                 albums=albums,
-                default_cover=current_app.config['DEFAULT_COVER'],
                 current_path='/artist-account')
 
 

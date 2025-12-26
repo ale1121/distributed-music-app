@@ -24,6 +24,3 @@ class Config:
     UPLOADS_PATH = os.getenv('UPLOADS_PATH', '/uploads')
     AVATARS_PATH = os.path.join(UPLOADS_PATH, "avatars")
     COVERS_PATH = os.path.join(UPLOADS_PATH, 'covers')
-
-    DEFAULT_AVATAR = '/static/assets/placeholder-avatar.png'
-    DEFAULT_COVER = '/static/assets/placeholder-cover.png'

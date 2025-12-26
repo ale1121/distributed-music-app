@@ -1,0 +1,22 @@
+{% extends "layout/base.html" %}
+
+{% block body %}
+
+{% include "components/layout/toasts.html" %}
+
+<div class="d-flex">
+  <!-- Sidebar -->
+  {% include "components/layout/sidebar.html" %}
+
+  <!-- Content -->
+  <div class="app-main">
+    <main class="p-3">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <!-- Player -->
+  {% include "components/layout/player.html" %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,132 @@
+<!-- Title -->
+<div class="d-flex align-items-start justify-content-between mt-2 gap-2">
+  <div>
+    <h2 id="albumTitle" class="text-wrap text-break">{{ album.title }}</h2>
+    <span id="publishedStatusBadge" class="badge bg-gray" style="color: var(--bs-gray-light-6);">
+      {% if album.published %}
+      Published <i class="bi bi-globe-americas"></i>
+      {% else %}
+      Private <i class="bi bi-lock-fill"></i>
+      {% endif %}
+    </span>
+  </div>
+  {% if not album.published %}
+  <button id="publishAlbumBtn" class="btn btn-primary mt-1">
+    <i class="bi bi-globe-americas"></i> Publish
+  </button>
+  {% endif %}
+</div>
+
+<!-- Album details -->
+<div class="row mt-3">
+  <div class="col-12 col-md-auto col-lg-auto" style="width: 600px;">
+    <div class="d-flex align-items-center justify-content-between mt-2" style="max-width: 500px;">
+      <h5>Album Details</h5>
+      <button id="saveAlbumDetailsBtn" class="btn btn-sm btn-primary">
+        <i class="bi bi-check-lg"></i> Save
+      </button>
+    </div>
+
+    <!-- Album details form -->
+    <div class="my-2" style="width: 500px">
+      <div class="row mb-1">
+        <label for="inputAlbumTitle" class="col-sm-3 col-form-label">Title</label>
+        <div class="col-sm-9">
+          <input id="inputAlbumTitle" value="{{ album.title }}" type="text" maxlength="100" class="form-control">
+        </div>
+      </div>
+      <div class="row mb-1">
+        <label for="inputAlbumYear" class="col-sm-3 col-form-label">Release year</label>
+        <div class="col-sm-9">
+          <input id="inputAlbumYear" value="{{ album.release_year }}" type="number" class="form-control">
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete album -->
+    <div class="d-flex mt-4">
+      <button id="deleteAlbumBtn" class="btn btn-sm btn-danger align-self-end">
+        <i class="bi bi-trash3-fill"></i> Delete album
+      </button>
+      <div id="confirmDeleteAlbum" class="d-flex align-items-center gap-2 d-none">
+        <div>Delete album?</div>
+        <form method="post" action="{{ url_for('album.delete_album', album_id=album.id) }}">
+          <button class="btn btn-sm btn-danger">Delete</button>
+        </form>
+        <button id="cancelDeleteAlbumBtn" class="btn btn-sm btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cover -->
+  {% include "components/edit/album_cover.html" %}
+</div>
+
+<script>
+  const saveAlbumDetailsBtn = document.getElementById("saveAlbumDetailsBtn");
+
+  saveAlbumDetailsBtn.addEventListener("click", async () => {
+    const title = document.getElementById("inputAlbumTitle").value;
+    const year = parseInt(document.getElementById("inputAlbumYear").value);
+    const formData = {
+      title: title,
+      release_year: year
+    };
+
+    try {
+      const res = await fetch("{{ url_for('album.save_details', album_id=album.id) }}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+    
+      document.getElementById("albumTitle").textContent = title;
+      showSuccessToast("Album details updated");
+
+    } catch (err) {
+      showErrorToast(err.message || "Something went wrong");
+    }
+  });
+
+  const publishAlbumBtn = document.getElementById("publishAlbumBtn");
+
+  if (publishAlbumBtn) publishAlbumBtn.addEventListener("click", async () => {
+    try {
+      const res = await fetch("{{ url_for('album.publish_album', album_id=album.id) }}", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json"
+        }
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+
+      document.getElementById("publishedStatusBadge").innerHTML = `Published <i class="bi bi-globe-americas"></i>`;
+      publishAlbumBtn.classList.add("d-none");
+      showSuccessToast("Album published");
+    } catch (err) {
+      showErrorToast(err.message || "Something went wrong");
+    }
+  });
+
+  const deleteAlbumBtn = document.getElementById("deleteAlbumBtn");
+  const confirmDeleteAlbum = document.getElementById("confirmDeleteAlbum");
+  const cancelDeleteAlbumBtn = document.getElementById("cancelDeleteAlbumBtn");
+  
+  deleteAlbumBtn.addEventListener("click", () => {
+    confirmDeleteAlbum.classList.remove("d-none");
+    deleteAlbumBtn.classList.add("d-none");
+  });
+
+  cancelDeleteAlbumBtn.addEventListener("click", () => {
+    confirmDeleteAlbum.classList.add("d-none");
+    deleteAlbumBtn.classList.remove("d-none");
+  });
+</script>

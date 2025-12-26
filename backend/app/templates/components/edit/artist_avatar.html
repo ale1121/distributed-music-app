@@ -1,0 +1,127 @@
+<div class="mb-2 d-flex align-items-center gap-2">
+  <label id="imageUploadBtn" class="btn btn-sm btn-secondary">
+    <i class="bi bi-file-earmark-image"></i> Upload
+    <input id="imageInput" type="file" accept="image/*" hidden>
+  </label>
+
+  <div id="imageUploadForm" class="d-flex align-items-center gap-2 d-none">
+    <div id="imageName" style="color: var(--bs-purple-light-50);">
+      No file chosen
+    </div>
+    <button id="imageSaveBtn" class="btn btn-sm btn-secondary">
+      <i class="bi bi-check-lg"></i> Save
+    </button>
+    <button id="imageCancelBtn" class="btn btn-sm btn-secondary">
+      Cancel
+    </button>
+    <div id="saveImageSpinner" class="spinner-border spinner-border-sm d-none" role="status"></div>
+  </div>
+</div>
+<div>
+  <button id="imageRemoveBtn" class="btn btn-sm btn-danger {{ '' if avatar_path else 'd-none' }}">
+    <i class="bi bi-trash3-fill"></i> Remove
+  </button>
+</div>
+<div id="confirmDelete" class="d-flex align-items-center gap-2 d-none">
+  <div>Delete image?</div>
+  <button id="confirmDeleteImgBtn" class="btn btn-sm btn-danger">Delete</button>
+  <button id="cancelDeleteImgBtn" class="btn btn-sm btn-secondary">Cancel</button>
+</div>
+
+<script>
+  const imageInput = document.getElementById("imageInput");
+  const imageName = document.getElementById("imageName");
+  const imageUploadForm = document.getElementById("imageUploadForm");
+  const imageUploadBtn = document.getElementById("imageUploadBtn");
+  const imageSaveBtn = document.getElementById("imageSaveBtn");
+  const imageCancelBtn = document.getElementById("imageCancelBtn");
+  const imageRemoveBtn = document.getElementById("imageRemoveBtn");
+  const confirmDeleteImgBtn = document.getElementById("confirmDeleteImgBtn");
+  const cancelDeleteImgBtn = document.getElementById("cancelDeleteImgBtn");
+  const confirmDelete = document.getElementById("confirmDelete");
+  const avatarImg = document.getElementById("avatarImg");
+  const saveImageSpinner = document.getElementById("saveImageSpinner");
+
+  imageInput.addEventListener("change", () => {
+    if (imageInput.files.length > 0) {
+      imageName.textContent = imageInput.files[0].name;
+    } else {
+      imageName.textContent = "No file chosen";
+    }
+  });
+
+  imageUploadBtn.addEventListener("click", () => {
+    imageUploadForm.classList.remove("d-none");
+    imageUploadBtn.classList.add("disabled");
+  });
+
+  imageCancelBtn.addEventListener("click", () => {
+    imageUploadForm.classList.add("d-none");
+    imageUploadBtn.classList.remove("disabled");
+    imageName.textContent = "No file chosen";
+  });
+
+  imageSaveBtn.addEventListener("click", async () => {
+    const file = imageInput.files?.[0];
+    if (!file) showErrorToast("Choose an image");
+
+    const form = new FormData();
+    form.append("image", file);
+
+    saveImageSpinner.classList.remove("d-none");
+
+    try {
+      const res = await fetch("{{ url_for('artist_acc.upload_profile_image') }}", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json"
+        },
+        body: form
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+      
+      showSuccessToast("Profile image updated");
+      avatarImg.src = data["profile_url"];
+      imageRemoveBtn.classList.remove("d-none");
+    } catch (err) {
+      showErrorToast(err.message || "Something went wrong");
+    } finally {
+      saveImageSpinner.classList.add("d-none");
+      imageName.textContent = "No file chosen";
+      imageUploadForm.classList.add("d-none");
+      imageUploadBtn.classList.remove("disabled");
+    }
+  });
+
+  imageRemoveBtn.addEventListener("click", () => {
+    imageRemoveBtn.classList.add("d-none");
+    confirmDelete.classList.remove("d-none");
+  });
+
+  cancelDeleteImgBtn.addEventListener("click", () => {
+    imageRemoveBtn.classList.remove("d-none");
+    confirmDelete.classList.add("d-none");
+  })
+
+  confirmDeleteImgBtn.addEventListener("click", async () => {
+    try {
+      const res = await fetch("{{ url_for('artist_acc.delete_profile_image')}}", {
+        method: "DELETE",
+        headers: {
+          "Accept": "application/json"
+        }
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong")
+
+      showSuccessToast("Profile image removed");
+      avatarImg.src = "{{ url_for('static', filename='assets/placeholder-avatar.png') }}";
+      confirmDelete.classList.add("d-none");
+    } catch (err) {
+      showErrorToast(err.message || "Something went wrong")
+    }
+  });
+</script>

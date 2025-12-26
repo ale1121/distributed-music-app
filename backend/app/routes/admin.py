@@ -20,7 +20,7 @@ def view():
 
     current_app.logger.debug(f"---REQUESTS: {requests}")
 
-    return render_template("admin_dashboard.html",
+    return render_template("pages/admin_dashboard.html",
                            admin_console_link=current_app.config['ADMIN_URL'],
                            artist_requests=requests,
                            current_path='/admin')

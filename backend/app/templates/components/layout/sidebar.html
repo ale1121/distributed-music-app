@@ -1,0 +1,43 @@
+<div class="app-sidebar position-fixed top-0 bottom-0 start-0 d-flex flex-column justify-content-between p-3 bg-darker">
+  <div>
+    <a href="{{ url_for('menu.home') }}" class="mt-2 mb-4 d-block">
+      <img src="{{ url_for('static', filename='assets/logo.png') }}" width="120">
+    </a>
+    <hr>
+
+    <ul class="nav nav-pills flex-column">
+      <li class="nav-item">
+        <a href="{{ url_for('menu.home') }}" class="nav-link {{ 'active' if current_path == '/' else '' }}">
+          <i class="bi bi-house"></i> Home
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{{ url_for('trending.view') }}" class="nav-link {{ 'active' if current_path == '/trending' else '' }}">
+          <i class="bi bi-graph-up-arrow"></i> Trending
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="pb-2">
+    <hr>
+    <ul class="nav nav-pills flex-column">
+      <li class="nav-item">
+        <a href="{{ url_for('admin.view') }}" class="nav-link {{ 'active' if current_path == '/admin' else '' }}">
+          <i class="bi bi-sliders"></i> Admin
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{{ url_for('artist_acc.view') }}"
+          class="nav-link {{ 'active' if current_path == '/artist-account' else '' }}">
+          <i class="bi bi-star-fill"></i> Artist Account
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{{ url_for('account.view') }}" class="nav-link {{ 'active' if current_path == '/account' else '' }}">
+          <i class="bi bi-person-circle"></i> My Account
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

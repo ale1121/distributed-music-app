@@ -67,7 +67,7 @@ def callback():
     # Extract auth code from the URL query parameters sent by Keycloak    
     code = request.args.get("code")
     if not code:
-        return render_template('login_failed.html', message='Missing code'), 404
+        return render_template('errors/login_failed.html', message='Missing code'), 404
 
 
     # Prepare the data for the token exchange request
@@ -82,7 +82,7 @@ def callback():
     response = requests.post(conf['TOKEN_URL'], data=data)
     if response.status_code != 200:
         return render_template(
-            'login_failed.html',
+            'errors/login_failed.html',
             message=f'{response.reason}'), 400
 
     # Parse the token and extract: access token and identity token
@@ -91,7 +91,7 @@ def callback():
     id_token = tokens.get("id_token")
 
     if not access_token:
-        return render_template("login_failed.html", message="No access token in response")
+        return render_template("errors/login_failed.html", message="No access token in response")
 
     # Decode JWT
     jwks_client = PyJWKClient(conf['JWKS_URL'])
@@ -116,7 +116,7 @@ def callback():
         session['user_id'] = user.id
 
     except Exception as e:
-        return render_template('login_failed.html', message=str(e)), 400
+        return render_template('errors/login_failed.html', message=str(e)), 400
 
     return redirect(url_for("menu.home"))
 

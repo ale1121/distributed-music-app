@@ -1,0 +1,12 @@
+{% extends "layout/simple_layout.html" %}
+
+{% block title %}Login Failed{% endblock %}
+
+{% block card_body %}
+<p class="card-text">
+  {{ message }}
+</p>
+<a class="btn btn-primary mt-2" href="{{ url_for('auth.login') }}">
+  Retry login
+</a>
+{% endblock %}

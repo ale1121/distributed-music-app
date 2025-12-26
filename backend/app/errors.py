@@ -11,7 +11,7 @@ def register_error_handlers(app):
                 "message": e.description
             }), e.code
         return render_template(
-            "error.html", code=e.code, name=e.name, message=e.description
+            "errors/error.html", name=e.name, message=e.description
         ), e.code
     
     @app.errorhandler(Exception)
@@ -22,6 +22,6 @@ def register_error_handlers(app):
                 "message": str(e)
             }), 500
         return render_template(
-            "error.html", code=500, name="Internal server error", message=str(e)
+            "errors/error.html", code=500, name="Internal server error", message=str(e)
         ), 500
     

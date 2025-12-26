@@ -9,5 +9,5 @@ def home():
     """ View home page """
 
     if "user" in session:
-        return render_template("search_page.html", current_path='/')
-    return render_template("login_page.html")
+        return render_template("pages/search_page.html", current_path='/')
+    return render_template("pages/login.html")

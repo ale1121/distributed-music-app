@@ -1,0 +1,49 @@
+<!-- Error toast -->
+<div class="toast-container position-fixed end-0 p-3">
+  <div id="errorToast" class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex align-items-center">
+      <div class="ms-3 me-2 d-flex align-items-center">
+        <i class="bi bi-exclamation-circle fs-4" style="color: var(--bs-danger)"></i>
+      </div>
+      <div id="errorToastMsg" class="toast-body">Something went wrong</div>
+      <button type="button" class="btn btn-close-custom me-1 m-auto" data-bs-dismiss="toast" aria-label="Close">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Success toast -->
+<div class="toast-container position-fixed end-0 p-3">
+  <div id="successToast" class="toast align-items-center" role="status" aria-live="polite" aria-atomic="true">
+    <div class="d-flex align-items-center">
+      <div class="ms-3 me-2 d-flex align-items-center">
+        <i class="bi bi-check-circle fs-4" style="color: var(--bs-success)"></i>
+      </div>
+      <div id="successToastMsg" class="toast-body">Something went wrong</div>
+      <button type="button" class="btn btn-close-custom me-1 m-auto" data-bs-dismiss="toast" aria-label="Close">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.showErrorToast = function (msg) {
+    const errorToast = document.getElementById("errorToast");
+    const errorMsg = document.getElementById("errorToastMsg");
+    if (!errorToast || !errorMsg) return;
+
+    errorMsg.textContent = msg || 'Something went wrong';
+    bootstrap.Toast.getOrCreateInstance(errorToast).show();
+  };
+
+  window.showSuccessToast = function (msg) {
+    const successToast = document.getElementById("successToast");
+    const successMsg = document.getElementById("successToastMsg");
+    if (!successToast || !successMsg) return;
+
+    successMsg.textContent = msg || 'Done';
+    bootstrap.Toast.getOrCreateInstance(successToast).show();
+  };
+</script>

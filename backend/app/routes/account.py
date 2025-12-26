@@ -21,7 +21,7 @@ def view():
     user_id = session["user_id"]
     artist_req_active = Session.get(ArtistRequest, user_id) is not None
 
-    return render_template("account_page.html", 
+    return render_template("pages/account.html", 
                            username=username, display_name=display_name,
                            email=email, is_artist=is_artist,
                            manage_acc_url=current_app.config['ACCOUNT_URL'],

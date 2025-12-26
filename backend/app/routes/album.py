@@ -25,9 +25,8 @@ def edit_view(album_id):
     stmt = select(Song).where(Song.album == album)
     songs = Session.scalars(stmt)
     
-    return render_template('album_edit.html',
-                            album=album, songs=songs,
-                            default_cover=current_app.config['DEFAULT_COVER'])
+    return render_template('pages/album_edit.html',
+                            album=album, songs=songs)
 
 
 @album_bp.route("/album/<int:album_id>/edit", methods=["POST"])
