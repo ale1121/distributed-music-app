@@ -1,0 +1,261 @@
+<div class="d-flex align-items-center justify-content-between my-2" style="width: 500px;">
+  <h5>Songs</h5>
+  <button id="addSongBtn" class="btn btn-sm btn-primary">
+    <i class="bi bi-plus-lg"></i> Add song
+  </button>
+</div>
+
+<div id="newSongCard" class="card bg-gray my-2 d-none" style="width: 500px;">
+  <div class="card-body">
+    <div class="card-title d-flex align-items-center justify-content-between mb-3">
+      <h6>New song</h6>
+      <div>
+        <button id="newSongCancelBtn" class="btn btn-sm btn-secondary">
+          Cancel
+        </button>
+        <button id="newSongSaveBtn" class="btn btn-sm btn-primary">
+          <i class="bi bi-check-lg"></i> Save
+        </button>
+      </div>
+    </div>
+
+    <div class="row mb-1 align-items-center">
+      <label for="newSongTitleInput" class="col-sm-3 col-form-label">Title</label>
+      <div class="col-sm-9">
+        <input id="newSongTitleInput" value="" type="text" maxlength="100" class="form-control form-control-sm">
+      </div>
+    </div>
+
+    <div class="row mb-1 align-items-center">
+      <label for="newSongFileName" class="col-sm-3 col-form-label">Audio file</label>
+      <div class="col-sm-9">
+        <div class="input-group">
+          <input id="newSongFileName" type="text" class="form-control form-control-sm" placeholder="No file chosen"
+            readonly>
+          <label id="newSongFileBtn" class="btn btn-sm btn-secondary">
+            Upload
+            <input id="newSongFileInput" type="file" accept="audio/mpeg,.mp3" hidden>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ul class="list-group list-group-flush list-group-songs" style="width: 500px;">
+  {% for song in songs %}
+  <li id="listItem{{ song.id }}" class="list-group-item list-group-item-action">
+    <div class="d-flex align-items-center justify-content-between">
+      <div id="songTitle{{ song.id }}" class="fw-semibold text-wrap text-break">{{ song.title }}</div>
+      <button class="btn btn-sm btn-transparent edit-song-btn" id="editSongBtn{{ song.id }}"
+        data-song-id="{{ song.id }}">
+        <i class="bi bi-pencil-fill"></i>
+      </button>
+    </div>
+
+    <div id="editSongCard{{ song.id }}" class="card bg-gray my-2 d-none" style="width: 470px;">
+      <div class="card-body">
+        <div class="card-title d-flex align-items-center justify-content-between mb-3">
+          <h6>Edit song</h6>
+          <div>
+            <button class="btn btn-sm btn-secondary cancel-edit-song-btn" data-song-id="{{ song.id }}">
+              Cancel
+            </button>
+            <button class="btn btn-sm btn-primary save-edit-song-btn" data-song-id="{{ song.id }}"
+              data-save-url="{{ url_for('song.save_details', album_id=album.id, song_id=song.id) }}">
+              <i class="bi bi-check-lg"></i> Save
+            </button>
+          </div>
+        </div>
+
+        <div class="row mb-1 align-items-center">
+          <label for="inputSongTitle{{ song.id }}" class="col-sm-2 col-form-label">Title</label>
+          <div class="col-sm-10">
+            <input id="inputSongTitle{{ song.id }}" value="" type="text" maxlength="100"
+              class="form-control form-control-sm">
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button class="btn btn-sm btn-danger delete-song-btn" id="deleteSongBtn{{ song.id }}"
+            data-song-id="{{ song.id }}">
+            <i class="bi bi-trash3-fill"></i> Delete
+          </button>
+          <div class="d-flex align-items-center gap-2 d-none confirm-delete-song" id="confirmDeleteSong{{ song.id }}">
+            <div>Delete song?</div>
+            <button class="btn btn-sm btn-danger confirm-delete-song-btn" data-song-id="{{ song.id }}"
+              data-delete-url="{{ url_for('song.delete_song', album_id=album.id, song_id=song.id) }}">
+              Delete
+            </button>
+            <button class="btn btn-sm btn-secondary cancel-delete-song-btn" data-song-id="{{ song.id }}">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+
+
+<!-- Add song -->
+<script>
+  const addSongBtn = document.getElementById("addSongBtn");
+  const newSongCard = document.getElementById("newSongCard");
+  const newSongTitleInput = document.getElementById("newSongTitleInput");
+  const newSongFileName = document.getElementById("newSongFileName");
+  const newSongFileInput = document.getElementById("newSongFileInput");
+  const newSongCancelBtn = document.getElementById("newSongCancelBtn");
+  const newSongSaveBtn = document.getElementById("newSongSaveBtn");
+
+  addSongBtn.addEventListener("click", () => {
+    newSongCard.classList.remove("d-none");
+  });
+
+  newSongCancelBtn.addEventListener("click", () => {
+    newSongTitleInput.value = null;
+    newSongFileName.value = null;
+    newSongCard.classList.add("d-none");
+  });
+
+  newSongFileInput.addEventListener("change", () => {
+    if (newSongFileInput.files.length > 0) {
+      newSongFileName.value = newSongFileInput.files[0].name;
+    } else {
+      newSongFileName.value = null;
+    }
+  });
+
+  newSongSaveBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const file = newSongFileInput.files?.[0];
+    const title = newSongTitleInput.value;
+    if (!file) showErrorToast("Missing audio file");
+    if (!title) showErrorToast("Missing song title");
+
+    const form = new FormData();
+    form.append("title", title);
+    form.append("audio", file);
+
+    try {
+      const res = await fetch("{{ url_for('song.add_song', album_id=album.id) }}", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json"
+        },
+        body: form
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+
+      showSuccessToast("Song added");
+      location.reload();
+
+    } catch (err) {
+      showErrorToast(err.message || "Something went wrong");
+    }
+  });
+</script>
+
+<!-- Edit song -->
+<script>
+  document.querySelectorAll(".edit-song-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const songId = btn.dataset.songId;
+      const songTitle = document.getElementById("songTitle" + songId)?.textContent;
+
+      document.getElementById("editSongCard" + songId)?.classList.remove("d-none");
+      document.getElementById("inputSongTitle" + songId).value = songTitle;
+      document.getElementById("listItem" + songId)?.classList.remove("list-group-item-action");
+      btn.classList.add("d-none");
+    })
+  });
+
+  document.querySelectorAll(".cancel-edit-song-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const songId = btn.dataset.songId;
+      document.getElementById("editSongCard" + songId)?.classList.add("d-none");
+      document.getElementById("editSongBtn" + songId)?.classList.remove("d-none");
+      document.getElementById("listItem" + songId)?.classList.add("list-group-item-action");
+    })
+  });
+
+  document.querySelectorAll(".save-edit-song-btn").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const songId = btn.dataset.songId;
+      const saveUrl = btn.dataset.saveUrl;
+      const title = document.getElementById("inputSongTitle" + songId)?.value;
+      if (!title) {
+        showErrorToast("Missing song title");
+        return;
+      }
+      const formData = { title: title };
+
+      try {
+        const res = await fetch(saveUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Something went wrong");
+
+        document.getElementById("songTitle" + songId).textContent = title;
+        document.getElementById("editSongCard" + songId)?.classList.add("d-none");
+        document.getElementById("editSongBtn" + songId)?.classList.remove("d-none");
+        document.getElementById("listItem" + songId)?.classList.add("list-group-item-action");
+        showSuccessToast("Song details updated");
+      } catch (err) {
+        showErrorToast(err.message || "Something went wrong");
+      }
+    })
+  });
+
+  document.querySelectorAll(".delete-song-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const songId = btn.dataset.songId;
+      document.getElementById("confirmDeleteSong" + songId)?.classList.remove("d-none");
+      btn.classList.add("d-none");
+    })
+  });
+
+  document.querySelectorAll(".cancel-delete-song-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const songId = btn.dataset.songId;
+      document.getElementById("confirmDeleteSong" + songId)?.classList.add("d-none");
+      document.getElementById("deleteSongBtn" + songId)?.classList.remove("d-none");
+    })
+  });
+
+
+  document.querySelectorAll(".confirm-delete-song-btn").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const songId = btn.dataset.songId;
+      const deleteUrl = btn.dataset.deleteUrl;
+
+      try {
+        const res = await fetch(deleteUrl, {
+          method: "DELETE",
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Something went wrong");
+
+        document.getElementById("listItem" + songId)?.classList.add("d-none");
+        showSuccessToast("The song was deleted");
+      } catch (err) {
+        showErrorToast(err.message || "Something went wrong");
+      }
+    })
+  });
+</script>
