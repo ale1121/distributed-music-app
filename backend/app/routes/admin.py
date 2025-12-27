@@ -3,6 +3,7 @@ from app.db import Session
 from app.models import ArtistRequest, User
 from flask import Blueprint, session, render_template, current_app, jsonify
 from app.utils.decorators import login_required, role_required
+from app.utils.user_roles import get_user_roles
 
 
 admin_bp = Blueprint('admin', __name__)
@@ -23,4 +24,5 @@ def view():
     return render_template("pages/admin_dashboard.html",
                            admin_console_link=current_app.config['ADMIN_URL'],
                            artist_requests=requests,
-                           current_path='/admin')
+                           current_path='/admin',
+                           roles=get_user_roles())

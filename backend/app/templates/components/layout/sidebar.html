@@ -22,17 +22,21 @@
   <div class="pb-2">
     <hr>
     <ul class="nav nav-pills flex-column">
+      {% if roles.admin %}
       <li class="nav-item">
         <a href="{{ url_for('admin.view') }}" class="nav-link {{ 'active' if current_path == '/admin' else '' }}">
           <i class="bi bi-sliders"></i> Admin
         </a>
       </li>
+      {% endif %}
+      {% if roles.artist %}
       <li class="nav-item">
         <a href="{{ url_for('artist_acc.view') }}"
           class="nav-link {{ 'active' if current_path == '/artist-account' else '' }}">
           <i class="bi bi-star-fill"></i> Artist Account
         </a>
       </li>
+      {% endif %}
       <li class="nav-item">
         <a href="{{ url_for('account.view') }}" class="nav-link {{ 'active' if current_path == '/account' else '' }}">
           <i class="bi bi-person-circle"></i> My Account

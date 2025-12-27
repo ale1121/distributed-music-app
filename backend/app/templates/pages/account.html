@@ -38,7 +38,7 @@
   <hr>
 
   <h6>Artist account</h6>
-  {% if is_artist %}
+  {% if roles.artist %}
   <p>You already have an artist account. To manage your uploads, visit your artist page.</p>
   <a class="btn btn-sm btn-secondary" href="{{ url_for('artist_acc.view') }}">
     Artist account

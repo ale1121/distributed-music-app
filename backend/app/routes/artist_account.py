@@ -10,6 +10,7 @@ from app.utils.decorators import role_required
 from app.db import Session
 from app.models import Artist, Album
 from app.utils.image import crop_resize_save_image
+from app.utils.user_roles import get_user_roles
 
 
 artist_acc_bp = Blueprint('artist_acc', __name__)
@@ -34,7 +35,8 @@ def view():
     return render_template("pages/artist_dashboard.html",
                 avatar_path=artist.avatar_path,
                 albums=albums,
-                current_path='/artist-account')
+                current_path='/artist-account',
+                roles=get_user_roles())
 
 
 @artist_acc_bp.route("/artist-account/avatar", methods=['POST'])

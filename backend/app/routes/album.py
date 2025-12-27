@@ -6,11 +6,12 @@ from flask import (
 )
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 from sqlalchemy import select
-from app.utils.decorators import role_required
+from app.utils.decorators import role_required, login_required
 from app.db import Session
-from app.models import Album, Song
+from app.models import Album, Song, Artist
 from app.utils.image import crop_resize_save_image
 from app.utils.db_helpers import get_album
+from app.utils.user_roles import get_user_roles
 
 
 album_bp = Blueprint('album', __name__)
@@ -27,7 +28,8 @@ def edit_view(album_id):
     songs = Session.scalars(stmt)
     
     return render_template('pages/album_edit.html',
-                            album=album, songs=songs)
+                            album=album, songs=songs,
+                            roles=get_user_roles())
 
 
 @album_bp.route("/album/<int:album_id>/edit", methods=["POST"])
