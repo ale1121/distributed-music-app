@@ -24,3 +24,5 @@ class Config:
     UPLOADS_PATH = os.getenv('UPLOADS_PATH', '/uploads')
     AVATARS_PATH = os.path.join(UPLOADS_PATH, "avatars")
     COVERS_PATH = os.path.join(UPLOADS_PATH, 'covers')
+    
+    AUDIO_PATH = os.getenv('AUDIO_PATH', '/data/audio')

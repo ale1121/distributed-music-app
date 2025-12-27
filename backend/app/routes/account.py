@@ -1,6 +1,6 @@
 import requests
 from flask import Blueprint, session, render_template, current_app
-from app.decorators import login_required, role_required
+from app.utils.decorators import login_required, role_required
 from app.db import Session
 from app.models import ArtistRequest
 

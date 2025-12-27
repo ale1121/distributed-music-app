@@ -6,7 +6,7 @@ from flask import (
 )
 from werkzeug.exceptions import BadRequest, NotFound
 from sqlalchemy import select
-from app.decorators import role_required
+from app.utils.decorators import role_required
 from app.db import Session
 from app.models import Artist, Album
 from app.utils.image import crop_resize_save_image

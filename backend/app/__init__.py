@@ -16,7 +16,7 @@ from .routes.artist_request import artist_req_bp
 from .routes.uploads import uploads_bp
 from .routes.album import album_bp
 from .routes.song import song_bp
-from .errors import register_error_handlers
+from .utils.errors import register_error_handlers
 
 
 def create_app():

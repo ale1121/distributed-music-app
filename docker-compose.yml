@@ -36,11 +36,13 @@ services:
       TIMEZONE: Europe/Bucharest
 
       UPLOADS_PATH: /uploads
+      AUDIO_PATH: /data/audio
     ports:
       - "5000:5000"
     volumes:
       - ./backend:/app
       - images_data:/uploads
+      - ./audio_data:/data/audio
 
   keycloak:
     image: quay.io/keycloak/keycloak:25.0.0
@@ -57,5 +59,10 @@ services:
 
 volumes:
   postgres_data:
+    driver: local
   keycloak_data:
+    driver: local
   images_data:
+    driver: local
+  audio_data:
+    driver: local

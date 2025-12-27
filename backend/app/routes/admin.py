@@ -2,7 +2,7 @@ from sqlalchemy import select
 from app.db import Session
 from app.models import ArtistRequest, User
 from flask import Blueprint, session, render_template, current_app, jsonify
-from app.decorators import login_required, role_required
+from app.utils.decorators import login_required, role_required
 
 
 admin_bp = Blueprint('admin', __name__)

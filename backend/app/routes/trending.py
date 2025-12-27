@@ -1,5 +1,5 @@
 from flask import Blueprint, session, render_template
-from app.decorators import login_required, role_required
+from app.utils.decorators import login_required, role_required
 
 
 trending_bp = Blueprint('trending', __name__)

@@ -1,15 +1,16 @@
 import os
-import time
+import uuid
 from datetime import datetime
 from flask import (
     Blueprint, render_template, request, current_app, session, jsonify, redirect, url_for
 )
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 from sqlalchemy import select
-from app.decorators import role_required
+from app.utils.decorators import role_required
 from app.db import Session
 from app.models import Album, Song
 from app.utils.image import crop_resize_save_image
+from app.utils.db_helpers import get_album
 
 
 album_bp = Blueprint('album', __name__)
@@ -20,7 +21,7 @@ album_bp = Blueprint('album', __name__)
 def edit_view(album_id):
     """ View album edit page """
 
-    album = get_album(album_id)
+    album = get_album(album_id, artist_required=True)
 
     stmt = select(Song).where(Song.album == album)
     songs = Session.scalars(stmt)
@@ -34,10 +35,12 @@ def edit_view(album_id):
 def save_details(album_id):
     """ Update album tile and release year """
 
-    album = get_album(album_id)
+    album = get_album(album_id, artist_required=True)
 
     data = request.get_json()
-
+    if "release_year" not in data or "title" not in data:
+        raise BadRequest("Missing album details")
+        
     release_year = int(data["release_year"])
     if release_year < 1000 or release_year > datetime.now().year:
         raise BadRequest("Invalid release year")
@@ -59,7 +62,7 @@ def save_details(album_id):
 def publish_album(album_id):
     """ Make album public """
 
-    album = get_album(album_id)
+    album = get_album(album_id, artist_required=True)
     album.published = True
     Session.commit()
 
@@ -71,7 +74,19 @@ def publish_album(album_id):
 def delete_album(album_id):
     """ Delete album """
 
-    album = get_album(album_id)
+    album = get_album(album_id, artist_required=True)
+
+    if album.cover_path:
+        try: os.remove(album.cover_path)
+        except: pass
+
+    songs = Session.scalars(select(Song).where(Song.album == album))
+    for song in songs:
+        if song.audio_path:
+            try: os.remove(song.audio_path)
+            except: pass
+        Session.delete(song)
+
     Session.delete(album)
     Session.commit()
 
@@ -86,19 +101,15 @@ def upload_cover_image(album_id):
     if "image" not in request.files:
         raise BadRequest("Missing image")
     
-    album = get_album(album_id)
+    album = get_album(album_id, artist_required=True)
     
     if album.cover_path:
-        try:
-            os.remove(album.cover_path)
-        except:
-            pass
-        finally:
-            album.cover_path = None
+        try: os.remove(album.cover_path)
+        except: pass
+        finally: album.cover_path = None
 
     out_dir = current_app.config['COVERS_PATH']
-    ts = time.strftime("%Y%m%d_%H%M%S")
-    out_path = os.path.join(out_dir, f"cover-{album_id}-{ts}.webp")
+    out_path = os.path.join(out_dir, f"cover-{album_id}-{uuid.uuid4().hex}.webp")
 
     try:
         crop_resize_save_image(request.files["image"], out_path, size=512)
@@ -116,7 +127,7 @@ def upload_cover_image(album_id):
 def delete_cover_image(album_id):
     """ Delete album cover """
 
-    album = get_album(album_id)
+    album = get_album(album_id, artist_required=True)
     if not album.cover_path:
         raise NotFound("Image path not found")
     
@@ -146,16 +157,3 @@ def create_album():
     Session.refresh(album)
 
     return redirect(url_for('album.edit_view', album_id=album.id), code=303)
-
-
-def get_album(album_id):
-    """
-    Get album from db, check if user can edit album
-    """
-
-    album = Session.get(Album, album_id)
-    if not album:
-        raise NotFound("Album not found")
-    if album.artist_id != session["user_id"]:
-        raise Forbidden("You don't have permission to edit this album")
-    return album

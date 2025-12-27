@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, session
 from werkzeug.exceptions import NotFound, Conflict
-from app.decorators import login_required, role_required
+from app.utils.decorators import login_required, role_required
 from sqlalchemy import select
 from app.db import Session
 from app.models import User, Artist, ArtistRequest
