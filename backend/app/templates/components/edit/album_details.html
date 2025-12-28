@@ -10,11 +10,16 @@
       {% endif %}
     </span>
   </div>
-  {% if not album.published %}
-  <button id="publishAlbumBtn" class="btn btn-primary mt-1">
+
+  <a id="viewAlbumBtn"
+    href="{{ url_for('album.view', album_id=album.id) }}"
+    class="btn btn-primary mt-1 {{ '' if album.published else 'd-none' }}">
+    View
+  </a>
+  <button id="publishAlbumBtn"
+    class="btn btn-primary mt-1 {{ 'd-none' if album.published else '' }}">
     <i class="bi bi-globe-americas"></i> Publish
   </button>
-  {% endif %}
 </div>
 
 <!-- Album details -->
@@ -119,6 +124,8 @@
 
       document.getElementById("publishedStatusBadge").innerHTML = `Published <i class="bi bi-globe-americas"></i>`;
       publishAlbumBtn.classList.add("d-none");
+      document.getElementById("viewAlbumBtn").classList.remove("d-none");
+
       showSuccessToast("Album published");
     } catch (err) {
       showErrorToast(err.message || "Something went wrong");
