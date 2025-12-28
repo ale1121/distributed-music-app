@@ -2,7 +2,7 @@
 <div class="d-flex align-items-start justify-content-between mt-2 gap-2">
   <div>
     <h2 id="albumTitle" class="text-wrap text-break">{{ album.title }}</h2>
-    <span id="publishedStatusBadge" class="badge bg-gray" style="color: var(--bs-gray-light-6);">
+    <span id="publishedStatusBadge" class="badge">
       {% if album.published %}
       Published <i class="bi bi-globe-americas"></i>
       {% else %}
@@ -67,7 +67,16 @@
 
   saveAlbumDetailsBtn.addEventListener("click", async () => {
     const title = document.getElementById("inputAlbumTitle").value;
-    const year = parseInt(document.getElementById("inputAlbumYear").value);
+    const yearRaw = document.getElementById("inputAlbumYear").value;
+    if (!title) {
+      showErrorToast("Missing album title");
+      return;
+    }
+    if (!yearRaw) {
+      showErrorToast("Missing release year");
+      return;
+    }
+    year = parseInt(yearRaw, 10) || 0;
     const formData = {
       title: title,
       release_year: year

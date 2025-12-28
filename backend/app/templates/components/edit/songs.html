@@ -22,7 +22,13 @@
     <div class="row mb-1 align-items-center">
       <label for="newSongTitleInput" class="col-sm-3 col-form-label">Title</label>
       <div class="col-sm-9">
-        <input id="newSongTitleInput" value="" type="text" maxlength="100" class="form-control form-control-sm">
+        <input id="newSongTitleInput" value="" type="text" maxlength="100" class="form-control form-control-sm" required>
+      </div>
+    </div>
+      <div class="row mb-1 align-items-center">
+      <label for="newSongPosInput" class="col-sm-3 col-form-label">Position</label>
+      <div class="col-sm-9">
+        <input id="newSongPosInput" value="0" type="number" class="form-control form-control-sm" required>
       </div>
     </div>
 
@@ -34,7 +40,7 @@
             readonly>
           <label id="newSongFileBtn" class="btn btn-sm btn-secondary">
             Upload
-            <input id="newSongFileInput" type="file" accept="audio/mpeg,.mp3" hidden>
+            <input id="newSongFileInput" type="file" accept="audio/mpeg,.mp3" hidden required>
           </label>
         </div>
       </div>
@@ -42,61 +48,69 @@
   </div>
 </div>
 
-<ul class="list-group list-group-flush list-group-songs" style="width: 500px;">
+<ol class="list-group list-group-flush list-group-numbered list-group-songs" style="width: 500px;">
   {% for song in songs %}
-  <li id="listItem{{ song.id }}" class="list-group-item list-group-item-action">
-    <div class="d-flex align-items-center justify-content-between">
-      <div id="songTitle{{ song.id }}" class="fw-semibold text-wrap text-break">{{ song.title }}</div>
-      <button class="btn btn-sm btn-transparent edit-song-btn" id="editSongBtn{{ song.id }}"
-        data-song-id="{{ song.id }}">
-        <i class="bi bi-pencil-fill"></i>
-      </button>
+  <li id="listItem{{ song.id }}"
+    class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-2 ms-2 me-auto">
+      <span id="songPos{{ song.id }}" class="badge">{{ song.position }}</span>
+      <span id="songTitle{{ song.id }}" class="fw-semibold text-wrap text-break">{{ song.title }}</span>
     </div>
-
-    <div id="editSongCard{{ song.id }}" class="card bg-gray my-2 d-none" style="width: 470px;">
-      <div class="card-body">
-        <div class="card-title d-flex align-items-center justify-content-between mb-3">
-          <h6>Edit song</h6>
-          <div>
-            <button class="btn btn-sm btn-secondary cancel-edit-song-btn" data-song-id="{{ song.id }}">
-              Cancel
-            </button>
-            <button class="btn btn-sm btn-primary save-edit-song-btn" data-song-id="{{ song.id }}"
-              data-save-url="{{ url_for('song.save_details', album_id=album.id, song_id=song.id) }}">
-              <i class="bi bi-check-lg"></i> Save
-            </button>
-          </div>
-        </div>
-
-        <div class="row mb-1 align-items-center">
-          <label for="inputSongTitle{{ song.id }}" class="col-sm-2 col-form-label">Title</label>
-          <div class="col-sm-10">
-            <input id="inputSongTitle{{ song.id }}" value="" type="text" maxlength="100"
-              class="form-control form-control-sm">
-          </div>
-        </div>
-
-        <div class="d-flex justify-content-end mt-3">
-          <button class="btn btn-sm btn-danger delete-song-btn" id="deleteSongBtn{{ song.id }}"
-            data-song-id="{{ song.id }}">
-            <i class="bi bi-trash3-fill"></i> Delete
+    <button class="btn btn-sm btn-transparent edit-song-btn" id="editSongBtn{{ song.id }}"
+      data-song-id="{{ song.id }}">
+      <i class="bi bi-pencil-fill"></i>
+    </button>
+  </li>
+  <div id="editSongCard{{ song.id }}" class="card bg-gray my-2 d-none" style="width: 500px;">
+    <div class="card-body">
+      <div class="card-title d-flex align-items-center justify-content-between mb-3">
+        <h6>Edit song</h6>
+        <div>
+          <button class="btn btn-sm btn-secondary cancel-edit-song-btn" data-song-id="{{ song.id }}">
+            Cancel
           </button>
-          <div class="d-flex align-items-center gap-2 d-none confirm-delete-song" id="confirmDeleteSong{{ song.id }}">
-            <div>Delete song?</div>
-            <button class="btn btn-sm btn-danger confirm-delete-song-btn" data-song-id="{{ song.id }}"
-              data-delete-url="{{ url_for('song.delete_song', album_id=album.id, song_id=song.id) }}">
-              Delete
-            </button>
-            <button class="btn btn-sm btn-secondary cancel-delete-song-btn" data-song-id="{{ song.id }}">
-              Cancel
-            </button>
-          </div>
+          <button class="btn btn-sm btn-primary save-edit-song-btn" data-song-id="{{ song.id }}"
+            data-save-url="{{ url_for('song.save_details', album_id=album.id, song_id=song.id) }}">
+            <i class="bi bi-check-lg"></i> Save
+          </button>
+        </div>
+      </div>
+
+      <div class="row mb-1 align-items-center">
+        <label for="inputSongTitle{{ song.id }}" class="col-sm-3 col-form-label">Title</label>
+        <div class="col-sm-9">
+          <input id="inputSongTitle{{ song.id }}" value="" type="text" maxlength="100"
+            class="form-control form-control-sm" required>
+        </div>
+      </div>
+      <div class="row mb-1 align-items-center">
+        <label for="inputSongPos{{ song.id }}" class="col-sm-3 col-form-label">Position</label>
+        <div class="col-sm-9">
+          <input id="inputSongPos{{ song.id }}" value="" type="number" 
+            class="form-control form-control-sm" required>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mt-3">
+        <button class="btn btn-sm btn-danger delete-song-btn" id="deleteSongBtn{{ song.id }}"
+          data-song-id="{{ song.id }}">
+          <i class="bi bi-trash3-fill"></i> Delete
+        </button>
+        <div class="d-flex align-items-center gap-2 d-none confirm-delete-song" id="confirmDeleteSong{{ song.id }}">
+          <div>Delete song?</div>
+          <button class="btn btn-sm btn-danger confirm-delete-song-btn" data-song-id="{{ song.id }}"
+            data-delete-url="{{ url_for('song.delete_song', album_id=album.id, song_id=song.id) }}">
+            Delete
+          </button>
+          <button class="btn btn-sm btn-secondary cancel-delete-song-btn" data-song-id="{{ song.id }}">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
-  </li>
+  </div>
   {% endfor %}
-</ul>
+</ol>
 
 
 <!-- Add song -->
@@ -105,6 +119,7 @@
   const newSongCard = document.getElementById("newSongCard");
   const newSongTitleInput = document.getElementById("newSongTitleInput");
   const newSongFileName = document.getElementById("newSongFileName");
+  const newSongPosInput = document.getElementById("newSongPosInput");
   const newSongFileInput = document.getElementById("newSongFileInput");
   const newSongCancelBtn = document.getElementById("newSongCancelBtn");
   const newSongSaveBtn = document.getElementById("newSongSaveBtn");
@@ -116,6 +131,7 @@
   newSongCancelBtn.addEventListener("click", () => {
     newSongTitleInput.value = null;
     newSongFileName.value = null;
+    newSongPosInput.value = 0;
     newSongCard.classList.add("d-none");
   });
 
@@ -130,14 +146,22 @@
   newSongSaveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const file = newSongFileInput.files?.[0];
     const title = newSongTitleInput.value;
-    if (!file) showErrorToast("Missing audio file");
-    if (!title) showErrorToast("Missing song title");
+    const file = newSongFileInput.files?.[0];
+    const pos = parseInt(newSongPosInput.value, 10) || 0;
+    if (!title) {
+      showErrorToast("Missing song title");
+      return;
+    }
+    if (!file) {
+      showErrorToast("Missing audio file");
+      return;
+    }
 
     const form = new FormData();
     form.append("title", title);
     form.append("audio", file);
+    form.append("position", pos);
 
     try {
       const res = await fetch("{{ url_for('song.add_song', album_id=album.id) }}", {
@@ -166,9 +190,11 @@
     btn.addEventListener("click", (e) => {
       const songId = btn.dataset.songId;
       const songTitle = document.getElementById("songTitle" + songId)?.textContent;
+      const songPos = parseInt(document.getElementById("songPos" + songId)?.textContent, 10) || 0;
 
       document.getElementById("editSongCard" + songId)?.classList.remove("d-none");
       document.getElementById("inputSongTitle" + songId).value = songTitle;
+      document.getElementById("inputSongPos" + songId).value = songPos;
       document.getElementById("listItem" + songId)?.classList.remove("list-group-item-action");
       btn.classList.add("d-none");
     })
@@ -188,11 +214,12 @@
       const songId = btn.dataset.songId;
       const saveUrl = btn.dataset.saveUrl;
       const title = document.getElementById("inputSongTitle" + songId)?.value;
+      const pos = parseInt(document.getElementById("inputSongPos" + songId)?.value, 10) || 0;
       if (!title) {
         showErrorToast("Missing song title");
         return;
       }
-      const formData = { title: title };
+      const formData = { title: title, position: pos };
 
       try {
         const res = await fetch(saveUrl, {
@@ -208,6 +235,7 @@
         if (!res.ok) throw new Error(data.message || "Something went wrong");
 
         document.getElementById("songTitle" + songId).textContent = title;
+        document.getElementById("songPos" + songId).textContent = pos;
         document.getElementById("editSongCard" + songId)?.classList.add("d-none");
         document.getElementById("editSongBtn" + songId)?.classList.remove("d-none");
         document.getElementById("listItem" + songId)?.classList.add("list-group-item-action");

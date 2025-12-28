@@ -44,7 +44,7 @@ CREATE TABLE albums (
 CREATE TABLE songs (
         id SERIAL NOT NULL,
         title VARCHAR(255) NOT NULL,
-        genre VARCHAR(100),
+        position INTEGER NOT NULL DEFAULT 0,
         audio_path VARCHAR(255) NOT NULL,
         album_id INTEGER NOT NULL,
         PRIMARY KEY (id),

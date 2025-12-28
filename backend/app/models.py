@@ -81,7 +81,7 @@ class Song(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
-    genre: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    position: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     audio_path: Mapped[str] = mapped_column(String(255), nullable=False)
     album_id: Mapped[int] = mapped_column(
         ForeignKey("albums.id", ondelete="CASCADE"),

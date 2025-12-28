@@ -8,7 +8,7 @@ from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 from sqlalchemy import select
 from app.utils.decorators import role_required, login_required
 from app.db import Session
-from app.models import Album, Song, Artist
+from app.models import Album, Song, Artist, User
 from app.utils.image import crop_resize_save_image
 from app.utils.db_helpers import get_album
 from app.utils.user_roles import get_user_roles
@@ -24,8 +24,9 @@ def edit_view(album_id):
 
     album = get_album(album_id, artist_required=True)
 
-    stmt = select(Song).where(Song.album == album)
-    songs = Session.scalars(stmt)
+    stmt = select(Song).where(Song.album == album) \
+        .order_by(Song.position).order_by(Song.title)
+    songs = Session.scalars(stmt).all()
     
     return render_template('pages/album_edit.html',
                             album=album, songs=songs,

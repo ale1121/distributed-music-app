@@ -22,14 +22,19 @@ def save_details(album_id, song_id):
     song = get_song(album_id, song_id, artist_required=True)
 
     data = request.get_json()
-    if "title" not in data:
+    if "title" not in data or "position" not in data:
         raise BadRequest("Missing song details")
 
+    position = int(data["position"])
+    if position < 0:
+        raise BadRequest("Invalid position")
+    
     title = data["title"].strip()
     if len(title) > 100:
         raise BadRequest("Title too long")
 
     song.title = title
+    song.position = position
 
     Session.commit()
     
@@ -61,10 +66,15 @@ def add_song(album_id):
     album = get_album(album_id, artist_required=True)
 
     title = (request.form.get("title") or "").strip()
+    position = request.form.get("position") or ""
     audio = request.files.get("audio")
 
-    if not title or not audio or not audio.filename:
+    if not title or not position or not audio or not audio.filename:
         raise BadRequest("Missing song details")
+    
+    position = int(position)
+    if position < 0:
+        raise BadRequest('Invalid position')
 
     file_ext = os.path.splitext(audio.filename)[1]
     if file_ext not in {'.mp3'}:
@@ -78,6 +88,7 @@ def add_song(album_id):
 
     song = Song(
         title=title,
+        position=position,
         audio_path = out_path,
         album_id = album_id
     )

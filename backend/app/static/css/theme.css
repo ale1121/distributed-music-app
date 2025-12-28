@@ -68,6 +68,11 @@
     background-color: var(--bs-gray-light-1);
   }
 
+  .badge {
+    background-color: var(--bs-gray-light-2);
+    --bs-badge-color: var(--bs-gray-light-6);
+  }
+
   .btn-close {
     --bs-btn-close-focus-shadow: transparent;
   }
