@@ -81,6 +81,7 @@ class Song(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
+    duration: Mapped[int] = mapped_column(Integer)
     position: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     audio_path: Mapped[str] = mapped_column(String(255), nullable=False)
     album_id: Mapped[int] = mapped_column(

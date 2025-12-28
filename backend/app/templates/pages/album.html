@@ -31,15 +31,18 @@
     <div style="font-size: 20px; padding-top: 70px;">This album is empty</div>
     {% else %}
     <ol class="list-group list-group-flush list-group-numbered list-group-songs mt-3"
-      style="width: 500px;">
+      style="width: 500px; padding-top: 30px;">
       {% for song in songs %}
       <li id=""
         class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
         <a class="ms-2 me-auto fw-semibold text-wrap text-break link"
           href="#">{{ song.title }}</a>
-        <button class="btn btn-transparent">
-          <i class="bi bi-play-fill fs-4"></i>
-        </button>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-gray">{{ song.duration | format_duration }}</span>
+          <button class="btn btn-transparent">
+            <i class="bi bi-play-fill fs-4"></i>
+          </button>
+        </div>
       </li>
       {% endfor %}
     </ol>

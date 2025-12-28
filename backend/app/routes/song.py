@@ -7,6 +7,7 @@ from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from sqlalchemy import select
 from app.utils.decorators import role_required
 from app.utils.db_helpers import get_album, get_song
+from app.utils.audio import save_audio_file
 from app.db import Session
 from app.models import Album, Song
 
@@ -76,20 +77,18 @@ def add_song(album_id):
     if position < 0:
         raise BadRequest('Invalid position')
 
-    file_ext = os.path.splitext(audio.filename)[1]
-    if file_ext not in {'.mp3'}:
-        raise BadRequest('Unsupported file type')
-    
     out_dir = current_app.config['AUDIO_PATH']
-    os.makedirs(out_dir, exist_ok=True)
 
-    out_path = os.path.join(out_dir, f"audio-{album_id}-{uuid.uuid4().hex}{file_ext}")
-    audio.save(out_path)
+    try:
+        out_path, duration = save_audio_file(audio, album_id, out_dir)
+    except Exception as e:
+        raise BadRequest(str(e))
 
     song = Song(
         title=title,
         position=position,
         audio_path = out_path,
+        duration = duration,
         album_id = album_id
     )
     Session.add(song)

@@ -3,7 +3,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import logging
 from .config.config import Config
-from .config.jinja_filters import format_dt
+from .config.jinja_filters import format_dt, format_duration
 from .db import Session
 from . import models
 from .routes.auth import auth_bp
@@ -37,6 +37,7 @@ def create_app():
     register_error_handlers(app)
 
     app.jinja_env.filters["format_dt"] = format_dt
+    app.jinja_env.filters["format_duration"] = format_duration
 
     logging.basicConfig(level=logging.DEBUG)    
 
