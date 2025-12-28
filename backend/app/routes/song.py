@@ -1,11 +1,11 @@
 import os
 import uuid
 from flask import (
-    Blueprint, request, current_app, session, jsonify
+    Blueprint, request, current_app, session, jsonify, render_template
 )
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from sqlalchemy import select
-from app.utils.decorators import role_required
+from app.utils.decorators import role_required, login_required
 from app.utils.db_helpers import get_album, get_song
 from app.utils.audio import save_audio_file
 from app.db import Session
@@ -20,7 +20,7 @@ song_bp = Blueprint('song', __name__)
 def save_details(album_id, song_id):
     """ Update song tile """
 
-    song = get_song(album_id, song_id, artist_required=True)
+    song, _ = get_song(album_id, song_id, artist_required=True)
 
     data = request.get_json()
     if "title" not in data or "position" not in data:
@@ -47,7 +47,7 @@ def save_details(album_id, song_id):
 def delete_song(album_id, song_id):
     """ Delete song """
 
-    song = get_song(album_id, song_id, artist_required=True)
+    song, _ = get_song(album_id, song_id, artist_required=True)
 
     if song.audio_path:
         try: os.remove(song.audio_path)
@@ -78,7 +78,6 @@ def add_song(album_id):
         raise BadRequest('Invalid position')
 
     out_dir = current_app.config['AUDIO_PATH']
-
     try:
         out_path, duration = save_audio_file(audio, album_id, out_dir)
     except Exception as e:

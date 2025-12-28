@@ -32,4 +32,4 @@ def get_song(album_id, song_id, artist_required=False):
     if song.album != album:
         raise NotFound("The song doesn't exist in this album")
     
-    return song
+    return song, album
