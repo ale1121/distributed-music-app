@@ -1,5 +1,4 @@
 import os
-import uuid
 from flask import (
     Blueprint, request, current_app, session, jsonify, render_template
 )
@@ -7,6 +6,7 @@ from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from sqlalchemy import select
 from app.utils.decorators import role_required, login_required
 from app.utils.db_helpers import get_album, get_song
+from app.utils.user_roles import get_user_roles
 from app.utils.audio import save_audio_file
 from app.db import Session
 from app.models import Album, Song
@@ -20,7 +20,7 @@ song_bp = Blueprint('song', __name__)
 def save_details(album_id, song_id):
     """ Update song tile """
 
-    song, _ = get_song(album_id, song_id, artist_required=True)
+    song = get_song(album_id, song_id, artist_required=True)
 
     data = request.get_json()
     if "title" not in data or "position" not in data:
@@ -47,7 +47,7 @@ def save_details(album_id, song_id):
 def delete_song(album_id, song_id):
     """ Delete song """
 
-    song, _ = get_song(album_id, song_id, artist_required=True)
+    song = get_song(album_id, song_id, artist_required=True)
 
     if song.audio_path:
         try: os.remove(song.audio_path)

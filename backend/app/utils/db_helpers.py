@@ -6,7 +6,9 @@ from app.models import Album, Song
 
 def get_album(album_id, artist_required=False):
     """
-    Get album from db, optionally check if user can edit album
+    Get album from db
+    If artist_required, check if the user owns the album
+    Else check if the album is published
     """
     album = Session.get(Album, album_id)
     if not album:
@@ -22,14 +24,23 @@ def get_album(album_id, artist_required=False):
 
 def get_song(album_id, song_id, artist_required=False):
     """
-    Get song from db, optionally check if user can edit song
+    Get song from db
+    If artist_required, check if the user owns the album the song is on
+    Else check if the album is published
     """
-    album = get_album(album_id, artist_required=artist_required)
     
     song = Session.get(Song, song_id)
     if not song:
         raise NotFound("Song not found")
-    if song.album != album:
+    if song.album_id != album_id:
         raise NotFound("The song doesn't exist in this album")
     
-    return song, album
+    if artist_required:
+        if song.album.artist_id != session["user_id"]:
+            raise Forbidden("You don;t have permission to edit this song")
+    else:
+        if not song.album.published:
+            raise Forbidden("This song is in a private album")
+
+    return song
+

@@ -21,12 +21,9 @@ album_bp = Blueprint('album', __name__)
 @login_required
 def view(album_id):
     album = get_album(album_id)
-    artist = Session.scalar(select(Artist).where(Artist.id == album.artist_id))
-    if not artist:
-        raise NotFound("Artist not found")
-    artist_user = Session.get(User, artist.id)
-    if not artist_user:
-        raise NotFound("Artist account not found")
+    artist = album.artist
+    artist_user = artist.user
+
     stmt = select(Song).where(Song.album == album) \
         .order_by(Song.position).order_by(Song.title)
     songs = Session.scalars(stmt).all()
