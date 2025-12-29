@@ -1,0 +1,67 @@
+{% extends "layout/app_layout.html" %}
+
+{% block content %}
+
+<div class="row" style="padding-top: 40px; padding-left: 40px;">
+  <div class="col-12 col-md-auto col-lg-auto d-flex flex-column align-items-center justify-content-between">
+    <img
+      src="{{ album.cover_path if album.cover_path else url_for('static', filename='assets/placeholder-cover.png') }}"
+      style="border-radius: 5%;" width="230px">
+    <div class="d-flex align-items-center">
+      <button class="btn btn-transparent">
+        <i class="bi bi-play-circle-fill" style="font-size: 45px;"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="col-12 col-md col-lg ms-3 mt-5" style="max-width: 600px;">
+    <span class="text-gray">Song • {{ song.duration | format_duration }} </span>
+    <h2 class="mt-1 text-break text-wrap">{{ song.title }}</h2>
+    <div class="d-flex align-items-center gap-1" style="line-height: 17px;">
+      <a href="{{ url_for('album.view', album_id=album.id) }}"
+        class="fw-semibold link text-wrap text-break">
+        {{ album.title }}
+      </a>
+      <span class="text-gray"> • </span>
+      <span class="text-gray">{{ album.release_year }}</span>
+    </div>
+    <div class="d-flex align-items-center mt-3 gap-2">
+      <img src="{{ artist.avatar_path if artist.avatar_path else url_for('static', filename='/assets/placeholder-avatar.png')}}"
+        class="rounded-circle" width="30px">
+      <a href="#" class="fw-semibold link text-wrap text-break" style="line-height: 17px;">
+        {{ artist_user.display_name }}
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4" style="padding-left: 40px;">
+  <div class="d-flex align-items-center mt-3 gap-3">
+    <img src="{{ artist.avatar_path if artist.avatar_path else url_for('static', filename='/assets/placeholder-avatar.png')}}"
+      class="rounded-circle" width="70px">
+    <div class="d-flex flex-column">
+      <div class="fw-semibold">Artist</div>
+      <a href="#" class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
+        {{ artist_user.display_name }}
+      </a>
+    </div>
+  </div>
+
+  <div class="d-flex align-items-center mt-4 gap-3">
+    <img src="{{ album.cover_path if album.cover_path else url_for('static', filename='assets/placeholder-cover.png') }}"
+      class="rounded" width="70px">
+    <div class="d-flex flex-column">
+      <div class="fw-semibold">Album</div>
+      <a href="{{ url_for('album.view', album_id=album.id) }}"
+        class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
+        {{ album.title }}
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+
+</script>
+
+{% endblock %}

@@ -15,6 +15,20 @@ from app.models import Album, Song
 song_bp = Blueprint('song', __name__)
 
 
+@song_bp.route("/album/<int:album_id>/song/<int:song_id>", methods=["GET"])
+@login_required
+def view(album_id, song_id):
+    song = get_song(album_id, song_id)
+    album = song.album
+    artist = album.artist
+
+    return render_template('pages/song.html',
+                    song=song, album=album,
+                    artist=artist,
+                    artist_user=artist.user,
+                    roles=get_user_roles())
+
+
 @song_bp.route("/album/<int:album_id>/song/<int:song_id>/edit", methods=["POST"])
 @role_required("ROLE_ARTIST")
 def save_details(album_id, song_id):
