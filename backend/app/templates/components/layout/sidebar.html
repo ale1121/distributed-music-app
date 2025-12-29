@@ -31,7 +31,7 @@
     {% endif %}
     {% if roles.artist %}
     <li class="nav-item">
-      <a href="{{ url_for('artist.view') }}"
+      <a href="{{ url_for('artist.edit_view') }}"
         class="nav-link {{ 'active' if current_path == '/artist-account' else '' }}">
         <i class="bi bi-star-fill"></i> Artist Account
       </a>

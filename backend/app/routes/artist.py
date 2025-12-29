@@ -6,7 +6,7 @@ from flask import (
 )
 from werkzeug.exceptions import BadRequest, NotFound
 from sqlalchemy import select
-from app.utils.decorators import role_required
+from app.utils.decorators import role_required, login_required
 from app.db import Session
 from app.models import Artist, Album
 from app.utils.image import crop_resize_save_image
@@ -18,7 +18,7 @@ artist_bp = Blueprint('artist', __name__)
 
 @artist_bp.route("/artist-account")
 @role_required("ROLE_ARTIST")
-def view():
+def edit_view():
     """ View 'Artist Account' page """
 
     artist = Session.get(Artist, session["user_id"])
