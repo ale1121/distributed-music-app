@@ -16,6 +16,26 @@ from app.utils.user_roles import get_user_roles
 artist_bp = Blueprint('artist', __name__)
 
 
+@artist_bp.route("/artist/<int:artist_id>")
+@login_required
+def view(artist_id):
+    """ View artist page """
+
+    artist = Session.get(Artist, artist_id)
+    if not artist:
+        raise NotFound("Artist not found")
+
+    stmt = select(Album).where(Album.artist == artist) \
+        .where(Album.published == True) \
+        .order_by(Album.release_year.desc()).order_by(Album.title)
+    albums = Session.scalars(stmt).all()
+
+    return render_template("pages/artist.html",
+                artist=artist, artist_name=artist.user.display_name,
+                albums=albums, num_albums=len(albums),
+                roles=get_user_roles())
+
+
 @artist_bp.route("/artist-account")
 @role_required("ROLE_ARTIST")
 def edit_view():

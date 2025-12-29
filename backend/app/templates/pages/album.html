@@ -8,7 +8,8 @@
       <div class="d-flex align-items-center justify-content-center gap-2">
         <img src="{{ artist.avatar_path if artist.avatar_path else url_for('static', filename='/assets/placeholder-avatar.png')}}"
           class="rounded-circle" width="30px">
-        <a href="#" class="text-wrap text-break fw-semibold link"
+        <a href="{{ url_for('artist.view', artist_id=artist.id) }}"
+          class="text-wrap text-break fw-semibold link"
           style="max-width: 200px; line-height: 18px; font-size: 18px;">
           {{ artist_name }}
         </a>
@@ -47,6 +48,18 @@
       {% endfor %}
     </ol>
     {% endif %}
+
+    <div class="d-flex align-items-center mt-4 ms-3 gap-3">
+      <img src="{{ artist.avatar_path if artist.avatar_path else url_for('static', filename='/assets/placeholder-avatar.png')}}"
+        class="rounded-circle" width="70px">
+      <div class="d-flex flex-column">
+        <div class="fw-semibold">Artist</div>
+        <a href="{{ url_for('artist.view', artist_id=artist.id) }}"
+          class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
+          {{ artist_name }}
+        </a>
+      </div>
+    </div>
   </div>
 </div>
 
