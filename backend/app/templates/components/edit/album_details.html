@@ -14,7 +14,7 @@
   <a id="viewAlbumBtn"
     href="{{ url_for('album.view', album_id=album.id) }}"
     class="btn btn-primary mt-1 {{ '' if album.published else 'd-none' }}">
-    View
+    <i class="bi bi-globe-americas"></i> View
   </a>
   <button id="publishAlbumBtn"
     class="btn btn-primary mt-1 {{ 'd-none' if album.published else '' }}">

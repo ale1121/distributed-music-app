@@ -49,11 +49,10 @@ def edit_view():
     albums = Session.scalars(stmt)
 
     current_app.logger.debug(f"---ALBUMS: {albums}")
-    
-    username = session["user"].get("preferred_username")
-    display_name = session["user"].get("display_name")
+
     return render_template("pages/artist_dashboard.html",
                 avatar_path=artist.avatar_path,
+                artist_id=artist.id,
                 albums=albums,
                 current_path='/artist-account',
                 roles=get_user_roles())
