@@ -45,7 +45,8 @@ def edit_view():
     if not artist:
         raise NotFound("Artist not found")
     
-    stmt = select(Album).where(Album.artist == artist).order_by(Album.release_year.desc())
+    stmt = select(Album).where(Album.artist == artist) \
+        .order_by(Album.release_year.desc()).order_by(Album.title)
     albums = Session.scalars(stmt)
 
     current_app.logger.debug(f"---ALBUMS: {albums}")
