@@ -25,7 +25,7 @@ def view(album_id, song_id):
     return render_template('pages/song.html',
                     song=song, album=album,
                     artist=artist,
-                    artist_user=artist.user,
+                    artist_name=artist.user.display_name,
                     roles=get_user_roles())
 
 

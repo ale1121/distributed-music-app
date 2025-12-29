@@ -31,7 +31,7 @@
           class="rounded-circle" width="30px">
         <a href="{{ url_for('artist.view', artist_id=artist.id) }}"
           class="fw-semibold link text-wrap text-break" style="line-height: 17px;">
-          {{ artist_user.display_name }}
+          {{ artist_name }}
         </a>
       </div>
     </div>
@@ -45,7 +45,7 @@
         <div class="fw-semibold">Artist</div>
         <a href="{{ url_for('artist.view', artist_id=artist.id) }}"
           class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
-          {{ artist_user.display_name }}
+          {{ artist_name }}
         </a>
       </div>
     </div>
