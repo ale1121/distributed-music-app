@@ -111,7 +111,7 @@ def delete_album(album_id):
     Session.delete(album)
     Session.commit()
 
-    return redirect(url_for('artist_acc.view'), code=303)
+    return redirect(url_for('artist.view'), code=303)
 
 
 @album_bp.route("/album/<int:album_id>/cover", methods=["POST"])

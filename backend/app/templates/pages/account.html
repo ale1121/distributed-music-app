@@ -40,7 +40,7 @@
   <h6>Artist account</h6>
   {% if roles.artist %}
   <p>You already have an artist account. To manage your uploads, visit your artist page.</p>
-  <a class="btn btn-sm btn-secondary" href="{{ url_for('artist_acc.view') }}">
+  <a class="btn btn-sm btn-secondary" href="{{ url_for('artist.view') }}">
     Artist account
   </a>
   {% elif artist_req_active %}
