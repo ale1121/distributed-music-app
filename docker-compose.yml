@@ -35,13 +35,15 @@ services:
 
       TIMEZONE: Europe/Bucharest
 
-      UPLOADS_PATH: /uploads
+      UPLOADS_PATH: /data/uploads
       AUDIO_PATH: /data/audio
+
+      STREAMING_URL: http://localhost:5001
     ports:
       - "5000:5000"
     volumes:
       - ./backend:/app
-      - images_data:/uploads
+      - ./images_data:/data/uploads
       - ./audio_data:/data/audio
 
   keycloak:
@@ -56,6 +58,16 @@ services:
       - ./keycloak-config:/opt/keycloak/data/import
     ports:
       - "8080:8080"
+
+  streaming:
+    build: ./streaming
+    environment:
+      AUDIO_PATH: /audio_data
+    container_name: muzo-streaming
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./audio_data:/audio_data
 
 volumes:
   postgres_data:
