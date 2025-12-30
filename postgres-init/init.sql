@@ -46,7 +46,7 @@ CREATE TABLE songs (
         title VARCHAR(255) NOT NULL,
         duration INTEGER,
         position INTEGER NOT NULL DEFAULT 0,
-        audio_path VARCHAR(255) NOT NULL,
+        audio_file VARCHAR(255) NOT NULL,
         album_id INTEGER NOT NULL,
         PRIMARY KEY (id),
         FOREIGN KEY (album_id) REFERENCES albums (id) ON DELETE CASCADE
