@@ -46,33 +46,35 @@
   </div>
 
   <div class="mt-4">
-    <div class="d-flex align-items-center mt-3 gap-3">
+    <a class="d-flex align-items-center mt-3 gap-3"
+      href="{{ url_for('artist.view', artist_id=artist.id) }}"
+      style="text-decoration: none; color: var(--bs-off-white);">
       <img class="rounded-circle" width="70px"
         src="{{ url_for('uploads.get_avatar', filename=artist.avatar_file) if artist.avatar_file
                 else url_for('static', filename='assets/placeholder-avatar.png') }}"
         onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.png') }}`">
       <div class="d-flex flex-column">
         <div class="fw-semibold">Artist</div>
-        <a href="{{ url_for('artist.view', artist_id=artist.id) }}"
-          class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
+        <div class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
           {{ artist_name }}
-        </a>
+        </div>
       </div>
-    </div>
+    </a>
 
-    <div class="d-flex align-items-center mt-4 gap-3">
+    <a class="d-flex align-items-center mt-4 gap-3"
+      href="{{ url_for('album.view', album_id=album.id) }}"
+      style="text-decoration: none; color: var(--bs-off-white);">
       <img class="rounded" width="70px"
         src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
                 else url_for('static', filename='assets/placeholder-cover.png') }}"
         onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png') }}`">
       <div class="d-flex flex-column">
         <div class="fw-semibold">Album</div>
-        <a href="{{ url_for('album.view', album_id=album.id) }}"
-          class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
+        <div class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
           {{ album.title }}
-        </a>
+        </div>
       </div>
-    </div>
+    </a>
   </div>
 </div>
 

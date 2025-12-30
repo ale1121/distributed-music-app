@@ -52,20 +52,21 @@
     </ol>
     {% endif %}
 
-    <div class="d-flex align-items-center mt-4 ms-3 gap-3">
+    <a class="d-flex align-items-center mt-4 ms-3 gap-3"
+      href="{{ url_for('artist.view', artist_id=artist.id) }}"
+      style="text-decoration: none; color: var(--bs-off-white);">
       <img class="rounded-circle" width="70px"
         src="{{ url_for('uploads.get_avatar', filename=artist.avatar_file) if artist.avatar_file
                 else url_for('static', filename='assets/placeholder-avatar.png') }}"
         onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.png') }}`">
       <div class="d-flex flex-column">
         <div class="fw-semibold">Artist</div>
-        <a href="{{ url_for('artist.view', artist_id=artist.id) }}"
-          class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
+        <div class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
           {{ artist_name }}
-        </a>
+      </div>
       </div>
     </div>
-  </div>
+  </a>
 </div>
 
 <script>
