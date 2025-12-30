@@ -19,6 +19,9 @@
         data-song-view-url="{{ url_for('song.view', album_id=album.id, song_id=song.id) }}">
         <i class="bi bi-play-circle-fill" style="font-size: 45px;"></i>
       </button>
+      <button id="pauseBtn" class="btn btn-transparent d-none">
+        <i class="bi bi-pause-circle-fill" style="font-size: 45px;"></i>
+      </button>
     </div>
 
     <div class="col-12 col-md col-lg ms-3 mt-5" style="max-width: 600px;">
@@ -80,6 +83,8 @@
 
 <script>
   const playBtn = document.getElementById("playBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+
   playBtn.addEventListener("click", async () => {
     const songId = playBtn.dataset.songId;
     const songTitle = playBtn.dataset.songTitle;
@@ -89,12 +94,6 @@
     const playUrl = playBtn.dataset.playUrl;
 
     try {
-      console.log("HELLOO????" + "aa");
-      console.log("SONG ID: " + songId);
-      console.log("SONG TITLE: " + songTitle);
-      console.log("ALBUM TITLE: " + albumTitle);
-      console.log("ALBUM COVER: " + albumCover);
-      console.log("PLAY URL: " + playUrl);
       const res = await fetch(playUrl, {
         method: "GET",
         headers: {
@@ -106,14 +105,21 @@
       if (!res.ok) throw new Error(data.message || "Something went wrong");
     
       const streamUrl = data["stream_url"];
-      console.log("STREAM URL: " + streamUrl);
       if (!streamUrl) throw new Error("Missing stream URL");
 
       setPlayer({songId, songTitle, albumTitle, albumCover, songViewUrl, streamUrl});
+      playBtn.classList.add("d-none");
+      pauseBtn.classList.remove("d-none");
     } catch (err) {
       showErrorToast(err.message || "Something went wrong");
     }
-  })
+  });
+
+  pauseBtn.addEventListener("click", () => {
+    pauseSong();
+    pauseBtn.classList.add("d-none");
+    playBtn.classList.remove("d-none");
+  });
 </script>
 
 {% endblock %}
