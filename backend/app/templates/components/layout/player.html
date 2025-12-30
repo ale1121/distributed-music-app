@@ -1,27 +1,32 @@
 <div class="container-fluid h-100">
   <div class="row h-100 align-items-center flex-nowrap">
-    <div class="col-4 d-flex align-items-center gap-2 overflow-hidden">
-      <img id="player-cover" class="rounded"
+    <a id="playerInfo" href="#"
+      class="col-4 d-flex align-items-center gap-2 overflow-hidden"
+      style="text-decoration: none; color: var(--bs-off-white);">
+      <img id="playerCover" class="rounded"
         style="width: 56px; height: 56px; object-fit: cover;"
         src="{{ url_for('static', filename='assets/placeholder-cover.png')}}" >
       <div class="d-flex flex-column" class="fw-semibold text-truncate">
-        <span id="player-title" class="fw-semibold text-truncate">
+        <span id="playerTitle" class="fw-semibold text-truncate">
           No song playing
         </span>
-        <span id="player-album" class="text-gray small text-truncate">
-          Album
+        <span id="playerAlbum" class="text-gray small text-truncate">
+          -
         </span>
       </div>
-    </div>
+    </a>
 
     <div class="col-2 d-flex align-items-center justify-content-between">
-      <button class="btn btn-player-controls" id="btn-prev">
+      <button class="btn btn-player-controls" id="playerPrevBtn">
         <i class="bi bi-skip-start-fill"></i>
       </button>
-      <button class="btn btn-play" id="btn-play">
+      <button class="btn btn-play" id="playerPlayBtn">
         <i class="bi bi-play-fill"></i>
       </button>
-      <button class="btn btn-player-controls" id="btn-next">
+      <button class="btn btn-play d-none" id="playerPauseBtn">
+        <i class="bi bi-pause-fill"></i>
+      </button>
+      <button class="btn btn-player-controls" id="playerNextBtn">
         <i class="bi bi-skip-end-fill"></i>
       </button>
     </div>
@@ -31,5 +36,110 @@
     </div>
   </div>
 
-  <audio id="audio-element"></audio>
+  <audio id="playerAudio"></audio>
 </div>
+
+<script>
+  const STORAGE_KEY = "playerState"
+
+  function savePlayerState(state) {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function getPlayerState() {
+    const state = sessionStorage.getItem(STORAGE_KEY);
+    return state ? JSON.parse(state) : null;
+  }
+
+  const audio = document.getElementById("playerAudio");
+
+  window.setPlayer = function({
+    songId, songTitle, albumTitle, albumCover, songViewUrl, streamUrl
+  }) {
+    document.getElementById("playerTitle").textContent = songTitle;
+    document.getElementById("playerAlbum").textContent = albumTitle;
+    document.getElementById("playerCover").src = albumCover;
+    document.getElementById("playerInfo").href = songViewUrl;
+
+    savePlayerState({
+      songId, songTitle, albumTitle, albumCover,  songViewUrl, streamUrl,
+      isPlaying: true, currentTime: 0
+    });
+
+    audio.src = streamUrl;
+    audio.play();
+    playerPlayBtn.classList.add("d-none");
+    playerPauseBtn.classList.remove("d-none");
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const state = getPlayerState();
+    if (!state) return;
+
+    document.getElementById("playerTitle").textContent = state.songTitle;
+    document.getElementById("playerAlbum").textContent = state.albumTitle;
+    document.getElementById("playerCover").src = state.albumCover;
+    document.getElementById("playerInfo").href = state.songViewUrl;
+
+    audio.src = state.streamUrl;
+    audio.currentTime = state.currentTime;
+    if (state.isPlaying) {
+      audio.play().catch(() => {});
+      playerPlayBtn.classList.add("d-none");
+      playerPauseBtn.classList.remove("d-none");
+    }
+  });
+
+  audio.addEventListener("timeupdate", () => {
+    const state = getPlayerState();
+    if (!state) return;
+
+    state.currentTime = audio.currentTime;
+    savePlayerState(state);
+  });
+
+  audio.addEventListener("play", () => {
+    const state = getPlayerState();
+    if (!state) return;
+    state.isPlaying = true;
+    savePlayerState(state);
+  });
+
+  audio.addEventListener("pause", () => {
+    const state = getPlayerState();
+    if (!state) return;
+    state.isPlaying = false;
+    savePlayerState(state);
+  });
+
+  const playerPlayBtn = document.getElementById("playerPlayBtn");
+  const playerPauseBtn = document.getElementById("playerPauseBtn");
+
+  window.pauseSong = function() {
+    const state = getPlayerState();
+    if (state && state.isPlaying) {
+      audio.pause();
+    }
+    playerPauseBtn.classList.add("d-none");
+    playerPlayBtn.classList.remove("d-none");
+  }
+
+  window.resumeSong = function() {
+    const state = getPlayerState();
+    if (!state) {
+      showErrorToast("No song playing");
+      return;
+    }
+    audio.play();
+    playerPlayBtn.classList.add("d-none");
+    playerPauseBtn.classList.remove("d-none");
+  }
+
+  playerPlayBtn.addEventListener("click", () => {
+    resumeSong();
+  });
+
+  playerPauseBtn.addEventListener("click", () => {
+    pauseSong();
+  });
+</script>

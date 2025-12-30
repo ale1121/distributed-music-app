@@ -29,6 +29,19 @@ def view(album_id, song_id):
                     roles=get_user_roles())
 
 
+@song_bp.route("/album/<int:album_id>/song/<int:song_id>/play", methods=["GET"])
+@login_required
+def play_song(album_id, song_id):
+    song = get_song(album_id, song_id)
+
+    stream_base_url = current_app.config['STREAMING_URL']
+    stream_url = f"{stream_base_url}/stream/{song.audio_file}"
+    current_app.logger.debug("OK")
+    return jsonify({
+        "stream_url": stream_url
+    }), 200
+
+
 @song_bp.route("/album/<int:album_id>/song/<int:song_id>/edit", methods=["POST"])
 @role_required("ROLE_ARTIST")
 def save_details(album_id, song_id):

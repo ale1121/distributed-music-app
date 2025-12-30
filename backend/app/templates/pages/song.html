@@ -9,11 +9,16 @@
         src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
                 else url_for('static', filename='assets/placeholder-cover.png') }}"
         onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png') }}`">
-      <div class="d-flex align-items-center">
-        <button class="btn btn-transparent">
-          <i class="bi bi-play-circle-fill" style="font-size: 45px;"></i>
-        </button>
-      </div>
+      <button id="playBtn" class="btn btn-transparent"
+        data-song-id="{{ song.id }}"
+        data-song-title="{{ song.title }}"
+        data-album-title="{{ album.title }}"
+        data-album-cover="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
+                            else url_for('static', filename='assets/placeholder-cover.png') }}"
+        data-play-url="{{ url_for('song.play_song', album_id=album.id, song_id=song.id) }}"
+        data-song-view-url="{{ url_for('song.view', album_id=album.id, song_id=song.id) }}">
+        <i class="bi bi-play-circle-fill" style="font-size: 45px;"></i>
+      </button>
     </div>
 
     <div class="col-12 col-md col-lg ms-3 mt-5" style="max-width: 600px;">
@@ -72,7 +77,41 @@
 </div>
 
 <script>
+  const playBtn = document.getElementById("playBtn");
+  playBtn.addEventListener("click", async () => {
+    const songId = playBtn.dataset.songId;
+    const songTitle = playBtn.dataset.songTitle;
+    const albumTitle = playBtn.dataset.albumTitle;
+    const albumCover = playBtn.dataset.albumCover;
+    const songViewUrl = playBtn.dataset.songViewUrl;
+    const playUrl = playBtn.dataset.playUrl;
 
+    try {
+      console.log("HELLOO????" + "aa");
+      console.log("SONG ID: " + songId);
+      console.log("SONG TITLE: " + songTitle);
+      console.log("ALBUM TITLE: " + albumTitle);
+      console.log("ALBUM COVER: " + albumCover);
+      console.log("PLAY URL: " + playUrl);
+      const res = await fetch(playUrl, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json"
+        }
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+    
+      const streamUrl = data["stream_url"];
+      console.log("STREAM URL: " + streamUrl);
+      if (!streamUrl) throw new Error("Missing stream URL");
+
+      setPlayer({songId, songTitle, albumTitle, albumCover, songViewUrl, streamUrl});
+    } catch (err) {
+      showErrorToast(err.message || "Something went wrong");
+    }
+  })
 </script>
 
 {% endblock %}

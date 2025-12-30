@@ -26,3 +26,6 @@ class Config:
     COVERS_PATH = os.path.join(UPLOADS_PATH, 'covers')
     
     AUDIO_PATH = os.getenv('AUDIO_PATH', '/data/audio')
+
+    STREAMING_URL = os.getenv('STREAMING_URL', 'http://localhost:5001')
+    
