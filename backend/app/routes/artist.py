@@ -52,7 +52,7 @@ def edit_view():
     current_app.logger.debug(f"---ALBUMS: {albums}")
 
     return render_template("pages/artist_dashboard.html",
-                avatar_path=artist.avatar_path,
+                avatar_file=artist.avatar_file,
                 artist_id=artist.id,
                 albums=albums,
                 current_path='/artist-account',
@@ -74,20 +74,20 @@ def upload_profile_image():
     
     avatars_dir = current_app.config['AVATARS_PATH']
 
-    if artist.avatar_path:
+    if artist.avatar_file:
         try:
-            avatar_path = os.path.join(avatars_dir, artist.avatar_path)
+            avatar_path = os.path.join(avatars_dir, artist.avatar_file)
             os.remove(avatar_path)
         except:
             pass
         finally:
-            artist.avatar_path = None
+            artist.avatar_file = None
 
     try:
         out_file, out_path = crop_resize_save_image(
             request.files["image"], avatars_dir,
             f"profile-{artist_id}", size=512)
-        artist.avatar_path = out_file
+        artist.avatar_file = out_file
         Session.commit()
         return jsonify(profile_url=out_path), 201
     except:
@@ -102,17 +102,17 @@ def delete_profile_image():
     artist = Session.get(Artist, session["user_id"])
     if not artist:
         raise NotFound("Artist not found")
-    if not artist.avatar_path:
+    if not artist.avatar_file:
         raise NotFound("Image path not found")
     
     try:
         avatars_dir = current_app.config['AVATARS_PATH']
-        avatar_path = os.path.join(avatars_dir, artist.avatar_path)
+        avatar_path = os.path.join(avatars_dir, artist.avatar_file)
         os.remove(avatar_path)
     except: 
         pass
     finally:
-        artist.avatar_path = None
+        artist.avatar_file = None
         Session.commit()
 
     return jsonify(ok=True), 200

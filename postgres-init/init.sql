@@ -14,7 +14,7 @@ CREATE TABLE users (
 
 CREATE TABLE artists (
         id INTEGER NOT NULL,
-        avatar_path VARCHAR(255),
+        avatar_file VARCHAR(255),
         PRIMARY KEY (id),
         FOREIGN KEY (id) REFERENCES users (id) ON DELETE CASCADE
 );
@@ -32,7 +32,7 @@ CREATE TABLE artist_requests (
 CREATE TABLE albums (
         id SERIAL NOT NULL,
         title VARCHAR(255) NOT NULL,
-        cover_path VARCHAR(255),
+        cover_file VARCHAR(255),
         release_year INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),
         published BOOLEAN NOT NULL DEFAULT false,
         artist_id INTEGER NOT NULL,

@@ -6,7 +6,7 @@
   <div class="row align-items-center">
     <div class="col-12 col-md-auto col-lg-auto">
       <img id="avatarImg"
-        src="{{ url_for('uploads.get_avatar', filename=artist.avatar_path) if artist.avatar_path
+        src="{{ url_for('uploads.get_avatar', filename=artist.avatar_file) if artist.avatar_file
                 else url_for('static', filename='assets/placeholder-avatar.png') }}"
         onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.png') }}`"
         class="rounded-circle" width="200px">
@@ -25,7 +25,7 @@
       class="card list-card p-2 my-2" style="text-decoration: none; width: 500px;">
       <div class="d-flex align-items-center gap-3">
         <img class="rounded" width="70px"
-          src="{{ url_for('uploads.get_cover', filename=album.cover_path) if album.cover_path
+          src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
                 else url_for('static', filename='assets/placeholder-cover.png') }}"
           onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png') }}`">
         <div>

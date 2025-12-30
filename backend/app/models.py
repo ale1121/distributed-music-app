@@ -31,7 +31,7 @@ class Artist(Base):
     id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
-    avatar_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    avatar_file: Mapped[str | None] = mapped_column(String(255), nullable=True)
     
     user: Mapped["User"] = relationship(back_populates="artist")
     albums: Mapped[list["Album"]] = relationship(
@@ -59,7 +59,7 @@ class Album(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
-    cover_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    cover_file: Mapped[str | None] = mapped_column(String(255), nullable=True)
     release_year: Mapped[int] = mapped_column(
         Integer, nullable=False,
         server_default=extract("year", func.current_date())

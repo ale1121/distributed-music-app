@@ -97,8 +97,8 @@ def delete_album(album_id):
 
     album = get_album(album_id, artist_required=True)
 
-    if album.cover_path:
-        try: os.remove(album.cover_path)
+    if album.cover_file:
+        try: os.remove(album.cover_file)
         except: pass
 
     songs = Session.scalars(select(Song).where(Song.album == album))
@@ -126,20 +126,20 @@ def upload_cover_image(album_id):
 
     covers_dir = current_app.config['COVERS_PATH']
 
-    if album.cover_path:
+    if album.cover_file:
         try:
-            cover_path = os.path.join(covers_dir, album.cover_path)
+            cover_path = os.path.join(covers_dir, album.cover_file)
             os.remove(cover_path)
         except:
             pass
         finally:
-            album.cover_path = None
+            album.cover_file = None
 
     try:
         out_file, out_path = crop_resize_save_image(
             request.files["image"], covers_dir,
             f"cover-{album_id}", size=512)
-        album.cover_path = out_file
+        album.cover_file = out_file
         Session.commit()
         return jsonify(cover_url=out_path), 201
     except:
@@ -152,17 +152,17 @@ def delete_cover_image(album_id):
     """ Delete album cover """
 
     album = get_album(album_id, artist_required=True)
-    if not album.cover_path:
+    if not album.cover_file:
         raise NotFound("Image path not found")
     
     try:
         covers_dir = current_app.config['COVERS_PATH']
-        cover_path = os.path.join(covers_dir, album.cover_path)
+        cover_path = os.path.join(covers_dir, album.cover_file)
         os.remove(cover_path)
     except FileNotFoundError:
         pass
     finally:
-        album.cover_path = None
+        album.cover_file = None
         Session.commit()
 
     return jsonify(ok=True), 200
