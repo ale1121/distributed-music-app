@@ -1,10 +1,10 @@
 <div class="col-12 col-md col-lg">
   <div class="row mt-4">
     <div class="col-12 col-md-auto col-lg-auto" width="250px">
-      <img class="mb-2" id="coverImg"
-        src="{{ album.cover_path if album.cover_path else url_for('static', filename='assets/placeholder-cover.png') }}"
-        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png' )}}`" style="border-radius: 5%;"
-        width="200px">
+      <img class="mb-2" id="coverImg" style="border-radius: 5%;" width="200px"
+        src="{{ url_for('uploads.get_cover', filename=album.cover_path) if album.cover_path
+                else url_for('static', filename='assets/placeholder-cover.png') }}"
+        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png') }}`">
     </div>
 
     <div class="col-12 col-md col-lg mb-2">

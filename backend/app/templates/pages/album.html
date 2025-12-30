@@ -6,17 +6,20 @@
   <div class="col-12 col-md-auto col-lg-auto" style="width: 400px;">
     <div class="d-flex flex-column align-items-center mt-4">
       <div class="d-flex align-items-center justify-content-center gap-2">
-        <img src="{{ artist.avatar_path if artist.avatar_path else url_for('static', filename='/assets/placeholder-avatar.png')}}"
-          class="rounded-circle" width="30px">
+        <img class="rounded-circle" width="30px"
+          src="{{ url_for('uploads.get_avatar', filename=artist.avatar_path) if artist.avatar_path
+                else url_for('static', filename='assets/placeholder-avatar.png') }}"
+          onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.png') }}`">
         <a href="{{ url_for('artist.view', artist_id=artist.id) }}"
           class="text-wrap text-break fw-semibold link"
           style="max-width: 200px; line-height: 18px; font-size: 18px;">
           {{ artist_name }}
         </a>
       </div>
-      <img
-        src="{{ album.cover_path if album.cover_path else url_for('static', filename='assets/placeholder-cover.png') }}"
-        class="my-3" style="border-radius: 5%;" width="230px">
+      <img class="my-3" style="border-radius: 5%;" width="230px"
+        src="{{ url_for('uploads.get_cover', filename=album.cover_path) if album.cover_path
+                else url_for('static', filename='assets/placeholder-cover.png') }}"
+        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png') }}`">
       <h2 class="text-center text-wrap text-break">{{ album.title }}</h2>
       <div class="text-center text-gray">
         Album • {{ album.release_year }} • {{ num_songs }} songs        
@@ -50,8 +53,10 @@
     {% endif %}
 
     <div class="d-flex align-items-center mt-4 ms-3 gap-3">
-      <img src="{{ artist.avatar_path if artist.avatar_path else url_for('static', filename='/assets/placeholder-avatar.png')}}"
-        class="rounded-circle" width="70px">
+      <img class="rounded-circle" width="70px"
+        src="{{ url_for('uploads.get_avatar', filename=artist.avatar_path) if artist.avatar_path
+                else url_for('static', filename='assets/placeholder-avatar.png') }}"
+        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.png') }}`">
       <div class="d-flex flex-column">
         <div class="fw-semibold">Artist</div>
         <a href="{{ url_for('artist.view', artist_id=artist.id) }}"

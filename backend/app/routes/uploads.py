@@ -2,7 +2,7 @@ import os
 from flask import send_from_directory, Blueprint, current_app
 
 
-uploads_bp = Blueprint("uplaods", __name__)
+uploads_bp = Blueprint("uploads", __name__)
 
 UPLOADS_PATH = os.getenv('UPLOADS_PATH', '/uploads')
 AVATARS_PATH = os.path.join(UPLOADS_PATH, "avatars")

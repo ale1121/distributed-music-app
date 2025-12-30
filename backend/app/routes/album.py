@@ -123,24 +123,27 @@ def upload_cover_image(album_id):
         raise BadRequest("Missing image")
     
     album = get_album(album_id, artist_required=True)
-    
-    if album.cover_path:
-        try: os.remove(album.cover_path)
-        except: pass
-        finally: album.cover_path = None
 
-    out_dir = current_app.config['COVERS_PATH']
-    out_path = os.path.join(out_dir, f"cover-{album_id}-{uuid.uuid4().hex}.webp")
+    covers_dir = current_app.config['COVERS_PATH']
+
+    if album.cover_path:
+        try:
+            cover_path = os.path.join(covers_dir, album.cover_path)
+            os.remove(cover_path)
+        except:
+            pass
+        finally:
+            album.cover_path = None
 
     try:
-        crop_resize_save_image(request.files["image"], out_path, size=512)
+        out_file, out_path = crop_resize_save_image(
+            request.files["image"], covers_dir,
+            f"cover-{album_id}", size=512)
+        album.cover_path = out_file
+        Session.commit()
+        return jsonify(cover_url=out_path), 201
     except:
         raise BadRequest("Invalid image file")
-    
-    album.cover_path = out_path
-    Session.commit()
-    
-    return jsonify(cover_url=out_path), 201
 
 
 @album_bp.route("/album/<int:album_id>/cover", methods=["DELETE"])
@@ -153,9 +156,11 @@ def delete_cover_image(album_id):
         raise NotFound("Image path not found")
     
     try:
-        os.remove(album.cover_path)
+        covers_dir = current_app.config['COVERS_PATH']
+        cover_path = os.path.join(covers_dir, album.cover_path)
+        os.remove(cover_path)
     except FileNotFoundError:
-        raise NotFound("Image not found")
+        pass
     finally:
         album.cover_path = None
         Session.commit()

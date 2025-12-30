@@ -68,32 +68,30 @@ def upload_profile_image():
         raise BadRequest("Missing image")
     
     artist_id = session["user_id"]
-
     artist = Session.get(Artist, artist_id)
     if not artist:
         raise NotFound("Artist not found")
     
+    avatars_dir = current_app.config['AVATARS_PATH']
+
     if artist.avatar_path:
         try:
-            os.remove(artist.avatar_path)
+            avatar_path = os.path.join(avatars_dir, artist.avatar_path)
+            os.remove(avatar_path)
         except:
             pass
         finally:
             artist.avatar_path = None
-    
-    out_dir = current_app.config['AVATARS_PATH']
-    ts = time.strftime("%Y%m%d_%H%M%S")
-    out_path = os.path.join(out_dir, f"profile-{artist_id}-{ts}.webp")
 
     try:
-        crop_resize_save_image(request.files["image"], out_path, size=512)
+        out_file, out_path = crop_resize_save_image(
+            request.files["image"], avatars_dir,
+            f"profile-{artist_id}", size=512)
+        artist.avatar_path = out_file
+        Session.commit()
+        return jsonify(profile_url=out_path), 201
     except:
         raise BadRequest("Invalid image file")
-    
-    artist.avatar_path = out_path
-    Session.commit()
-    
-    return jsonify(profile_url=out_path), 201
 
 
 @artist_bp.route("/artist-account/avatar", methods=["DELETE"])
@@ -102,16 +100,17 @@ def delete_profile_image():
     """ Delete artist avatar """
 
     artist = Session.get(Artist, session["user_id"])
-    
     if not artist:
         raise NotFound("Artist not found")
     if not artist.avatar_path:
         raise NotFound("Image path not found")
     
     try:
-        os.remove(artist.avatar_path)
-    except FileNotFoundError:
-        raise NotFound("Image not found")
+        avatars_dir = current_app.config['AVATARS_PATH']
+        avatar_path = os.path.join(avatars_dir, artist.avatar_path)
+        os.remove(avatar_path)
+    except: 
+        pass
     finally:
         artist.avatar_path = None
         Session.commit()

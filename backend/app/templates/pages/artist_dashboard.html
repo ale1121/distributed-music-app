@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="px-3">
-  <div class="d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center justify-content-between" style="width: 500px;">
     <h1>Artist Account</h1>
     <a href="{{ url_for('artist.view', artist_id=artist_id) }}"
       class="btn btn-primary">
@@ -14,10 +14,10 @@
 
   <div class="row my-4">
     <div class="col-12 col-md-auto col-lg-auto" width="250px">
-      <img id="avatarImg"
-        src="{{ avatar_path if avatar_path else url_for('static', filename='assets/placeholder-avatar.png') }}"
-        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.png' )}}`"
-        class="rounded-circle" width="200px">
+      <img id="avatarImg" class="rounded-circle" width="200px"
+        src="{{ url_for('uploads.get_avatar', filename=avatar_path) if avatar_path
+                else url_for('static', filename='assets/placeholder-avatar.png') }}"
+        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.png') }}`">
     </div>
 
     <div class="col-12 col-md col-lg mt-3">
@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <div class="d-flex align-items-center justify-content-between" style="max-width: 500px;">
+  <div class="d-flex align-items-center justify-content-between" style="width: 500px;">
     <h4>Albums</h4>
     <form method="post" action="{{ url_for('album.create_album') }}">
       <button class="btn btn-sm btn-primary">
@@ -48,7 +48,9 @@
     <div class="d-flex align-items-center justify-content-between">
       <div class="d-flex align-items-center gap-3">
         <img class="rounded" width="70px"
-          src="{{ album.cover_path if album.cover_path else url_for('static', filename='assets/placeholder-cover.png') }}">
+          src="{{ url_for('uploads.get_cover', filename=album.cover_path) if album.cover_path
+                else url_for('static', filename='assets/placeholder-cover.png') }}"
+          onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png') }}`">
         <div>
           <div class="fw-semibold text-wrap text-break">{{ album.title }}</div>
           <div class="text-gray small">{{ album.release_year }}</div>

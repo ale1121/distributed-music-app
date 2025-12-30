@@ -1,8 +1,9 @@
 <div class="container-fluid h-100">
   <div class="row h-100 align-items-center flex-nowrap">
     <div class="col-4 d-flex align-items-center gap-2 overflow-hidden">
-      <img id="player-cover" src="{{ url_for('static', filename='assets/placeholder-cover.png') }}" class="rounded"
-        style="width: 56px; height: 56px; object-fit: cover;">
+      <img id="player-cover" class="rounded"
+        style="width: 56px; height: 56px; object-fit: cover;"
+        src="{{ url_for('static', filename='assets/placeholder-cover.png')}}" >
       <div class="d-flex flex-column" class="fw-semibold text-truncate">
         <span id="player-title" class="fw-semibold text-truncate">
           No song playing
