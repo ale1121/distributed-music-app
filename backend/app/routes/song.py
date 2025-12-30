@@ -63,8 +63,8 @@ def delete_song(album_id, song_id):
 
     song = get_song(album_id, song_id, artist_required=True)
 
-    if song.audio_path:
-        try: os.remove(song.audio_path)
+    if song.audio_file:
+        try: os.remove(song.audio_file)
         except: pass
     
     Session.delete(song)
@@ -101,7 +101,7 @@ def add_song(album_id):
     song = Song(
         title=title,
         position=position,
-        audio_path = out_file,
+        audio_file = out_file,
         duration = duration,
         album_id = album_id
     )

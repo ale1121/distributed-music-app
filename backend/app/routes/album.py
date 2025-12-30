@@ -103,8 +103,8 @@ def delete_album(album_id):
 
     songs = Session.scalars(select(Song).where(Song.album == album))
     for song in songs:
-        if song.audio_path:
-            try: os.remove(song.audio_path)
+        if song.audio_file:
+            try: os.remove(song.audio_file)
             except: pass
         Session.delete(song)
 
