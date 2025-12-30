@@ -93,14 +93,15 @@ def add_song(album_id):
 
     out_dir = current_app.config['AUDIO_PATH']
     try:
-        out_path, duration = save_audio_file(audio, album_id, out_dir)
+        out_file, duration = save_audio_file(
+            audio, out_dir, f"audio-{album_id}")
     except Exception as e:
         raise BadRequest(str(e))
 
     song = Song(
         title=title,
         position=position,
-        audio_path = out_path,
+        audio_path = out_file,
         duration = duration,
         album_id = album_id
     )
