@@ -112,6 +112,20 @@
     savePlayerState(state);
   });
 
+  audio.addEventListener("ended", () => {
+    const state = getPlayerState();
+    if (!state) return;
+
+    state.isPlaying = false;
+    state.currentTime = 0;
+    savePlayerState(state);
+
+    playerPauseBtn.classList.add("d-none");
+    playerPlayBtn.classList.remove("d-none");
+
+    try { audio.currentTime = 0; } catch {};
+  })
+
   const playerPlayBtn = document.getElementById("playerPlayBtn");
   const playerPauseBtn = document.getElementById("playerPauseBtn");
 
