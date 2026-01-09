@@ -77,10 +77,6 @@
     --bs-badge-color: var(--bs-gray-light-6);
   }
 
-  .btn-close {
-    --bs-btn-close-focus-shadow: transparent;
-  }
-
   .btn-close-custom {
     --bs-btn-color: rgba(255, 255, 255, 0.5);
     --bs-btn-font-size: 25px;
@@ -167,6 +163,14 @@
 
   .list-card:hover {
     background-color: var(--bs-gray-light-2);
+  }
+
+  .grid-card {
+    background-color: transparent;
+  }
+
+  .grid-card:hover {
+    background-color: var(--bs-gray-light-1);
   }
 
   .toast {

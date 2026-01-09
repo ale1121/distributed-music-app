@@ -2,40 +2,41 @@
 
 {% block content %}
 
-<div class="ps-5 pt-5">
-  <div class="row align-items-center">
-    <div class="col-12 col-md-auto col-lg-auto">
-      <img id="avatarImg"
-        src="{{ url_for('uploads.get_avatar', filename=artist.avatar_file) if artist.avatar_file
-                else url_for('static', filename='assets/placeholder-avatar.webp') }}"
-        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.webp') }}`"
-        class="rounded-circle" width="200px">
-    </div>
-    <div class="col-12 col-md col-lg">
-      <span class="text-gray">Artist • {{ num_albums }} {{ 'album' if num_albums == 1 else 'albums' }}</span>
-      <h2>{{ artist_name }}</h2>
-    </div>
+<div class="row align-items-center ms-4 mt-3">
+  <div class="col-12 col-md-auto col-lg-auto">
+    <img id="avatarImg"
+      src="{{ url_for('uploads.get_avatar', filename=artist.avatar_file) if artist.avatar_file
+              else url_for('static', filename='assets/placeholder-avatar.webp') }}"
+      onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.webp') }}`"
+      class="rounded-circle" width="200px">
   </div>
+  <div class="col-12 col-md col-lg">
+    <span class="text-gray">Artist • {{ num_albums }} {{ 'album' if num_albums == 1 else 'albums' }}</span>
+    <h2>{{ artist_name }}</h2>
+  </div>
+</div>
 
-  <div class="mt-5">
-    <h3>Albums</h3>
+<div class="mt-4">
+  <h3 class="ms-5">Albums</h3>
 
-    {% for album in albums %}
-    <a href="{{ url_for('album.view', album_id=album.id) }}"
-      class="card list-card p-2 my-2" style="text-decoration: none; width: 500px;">
-      <div class="d-flex align-items-center gap-3">
-        <img class="rounded" width="70px"
-          src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
-                else url_for('static', filename='assets/placeholder-cover.webp') }}"
-          onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
-        <div>
-          <div class="fw-semibold text-wrap text-break">{{ album.title }}</div>
-          <div class="text-gray small">{{ album.release_year }}</div>
-        </div>
+  <div class="container ms-4" style="max-width: 1000px;">
+    <div class="row row-cols-auto">
+      {% for album in albums %}
+      <div class="col">
+        <a href="{{ url_for('album.view', album_id=album.id) }}"
+          class="card grid-card p-2 my-2" style="text-decoration: none; width: 200px;">
+          <div class="d-flex flex-column align-items-start">
+            <img class="rounded mb-2" width="180px"
+              src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
+                    else url_for('static', filename='assets/placeholder-cover.webp') }}"
+              onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
+            <div class="fw-semibold text-wrap text-break">{{ album.title }}</div>
+            <div class="text-gray small">{{ album.release_year }}</div>
+          </div>
+        </a>
       </div>
-    </a>
-    {% endfor %}
-  
+      {% endfor %}
+    </div>
   </div>
 </div>
 
