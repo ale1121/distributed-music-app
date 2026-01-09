@@ -43,7 +43,14 @@
           href="{{ url_for('song.view', album_id=album.id, song_id=song.id) }}">{{ song.title }}</a>
         <div class="d-flex align-items-center gap-2">
           <span class="text-gray">{{ song.duration | format_duration }}</span>
-          <button class="btn btn-transparent">
+          <button class="play-btn btn btn-transparent"
+            data-song-id="{{ song.id }}"
+            data-song-title="{{ song.title }}"
+            data-album-title="{{ album.title }}"
+            data-album-cover="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
+                                else url_for('static', filename='assets/placeholder-cover.png') }}"
+            data-play-url="{{ url_for('song.play_song', album_id=album.id, song_id=song.id) }}"
+            data-song-view-url="{{ url_for('song.view', album_id=album.id, song_id=song.id) }}">
             <i class="bi bi-play-fill fs-4"></i>
           </button>
         </div>
@@ -63,14 +70,42 @@
         <div class="fw-semibold">Artist</div>
         <div class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
           {{ artist_name }}
-      </div>
+        </div>
       </div>
     </div>
   </a>
 </div>
 
 <script>
+  document.querySelectorAll(".play-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const songId = btn.dataset.songId;
+      const songTitle = btn.dataset.songTitle;
+      const albumTitle = btn.dataset.albumTitle;
+      const albumCover = btn.dataset.albumCover;
+      const songViewUrl = btn.dataset.songViewUrl;
+      const playUrl = btn.dataset.playUrl;
 
+      try {
+        const res = await fetch(playUrl, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+        
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Something went wrong");
+      
+        const streamUrl = data["stream_url"];
+        if (!streamUrl) throw new Error("Missing stream URL");
+
+        setPlayer({songId, songTitle, albumTitle, albumCover, songViewUrl, streamUrl});
+      } catch (err) {
+        showErrorToast(err.message || "Something went wrong");
+      }
+    });
+  });
 </script>
 
 {% endblock %}
