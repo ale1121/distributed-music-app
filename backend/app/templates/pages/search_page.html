@@ -1,4 +1,36 @@
 {% extends "layout/app_layout.html" %}
 
 {% block content %}
+
+<div class="my-4 ms-4">
+  <div class="input-group" style="max-width: 400px;">
+    <input class="form-control form-control-lg" 
+      placeholder="Search songs, albums, artists">
+    <button class="btn btn-lg btn-secondary">
+      <i class="bi bi-search"></i>
+    </button> 
+  </div>
+</div>
+
+<h2 id="section-title" class="ms-4 mt-5">Recently Played</h2>
+<div class="ps-3 container" style="max-width: 1000px;">
+  <div id="results-grid" class="row row-cols-auto">
+    {% for song in recents %}
+    <div class="col">
+      <a href="{{ url_for('song.view', album_id=song.album_id, song_id=song.id) }}"
+      class="card grid-card p-2 my-2" style="text-decoration: none; width: 200px;">
+        <div class="d-flex flex-column align-items-start">
+          <img class="rounded mb-2" width="180px"
+            src="{{ url_for('uploads.get_cover', filename=song.cover_file) if song.cover_file
+                    else url_for('static', filename='assets/placeholder-cover.webp') }}"
+            onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
+          <div class="fw-semibold text-wrap text-break">{{ song.title }}</div>
+          <div class="text-gray small">{{ song.album_title }} • {{ song.artist_name }}</div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
 {% endblock %}
