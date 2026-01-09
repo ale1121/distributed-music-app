@@ -121,7 +121,7 @@
       if (!res.ok) throw new Error(data.message || "Something went wrong")
 
       showSuccessToast("Profile image removed");
-      avatarImg.src = "{{ url_for('static', filename='assets/placeholder-avatar.png') }}";
+      avatarImg.src = "{{ url_for('static', filename='assets/placeholder-avatar.webp') }}";
       confirmDelete.classList.add("d-none");
     } catch (err) {
       showErrorToast(err.message || "Something went wrong")

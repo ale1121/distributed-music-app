@@ -7,8 +7,8 @@
     <div class="col-12 col-md-auto col-lg-auto">
       <img id="avatarImg"
         src="{{ url_for('uploads.get_avatar', filename=artist.avatar_file) if artist.avatar_file
-                else url_for('static', filename='assets/placeholder-avatar.png') }}"
-        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.png') }}`"
+                else url_for('static', filename='assets/placeholder-avatar.webp') }}"
+        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.webp') }}`"
         class="rounded-circle" width="200px">
     </div>
     <div class="col-12 col-md col-lg">
@@ -26,8 +26,8 @@
       <div class="d-flex align-items-center gap-3">
         <img class="rounded" width="70px"
           src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
-                else url_for('static', filename='assets/placeholder-cover.png') }}"
-          onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png') }}`">
+                else url_for('static', filename='assets/placeholder-cover.webp') }}"
+          onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
         <div>
           <div class="fw-semibold text-wrap text-break">{{ album.title }}</div>
           <div class="text-gray small">{{ album.release_year }}</div>

@@ -7,14 +7,14 @@
     <div class="col-12 col-md-auto col-lg-auto d-flex flex-column align-items-center justify-content-between">
       <img style="border-radius: 5%;" width="230px"
         src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
-                else url_for('static', filename='assets/placeholder-cover.png') }}"
-        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png') }}`">
+                else url_for('static', filename='assets/placeholder-cover.webp') }}"
+        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
       <button id="playBtn" class="btn btn-transparent"
         data-song-id="{{ song.id }}"
         data-song-title="{{ song.title }}"
         data-album-title="{{ album.title }}"
         data-album-cover="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
-                            else url_for('static', filename='assets/placeholder-cover.png') }}"
+                            else url_for('static', filename='assets/placeholder-cover.webp') }}"
         data-play-url="{{ url_for('song.play_song', album_id=album.id, song_id=song.id) }}"
         data-song-view-url="{{ url_for('song.view', album_id=album.id, song_id=song.id) }}">
         <i class="bi bi-play-circle-fill" style="font-size: 45px;"></i>
@@ -35,8 +35,8 @@
       <div class="d-flex align-items-center mt-3 gap-2">
         <img class="rounded-circle" width="30px"
           src="{{ url_for('uploads.get_avatar', filename=artist.avatar_file) if artist.avatar_file
-                else url_for('static', filename='assets/placeholder-avatar.png') }}"
-          onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.png') }}`">
+                else url_for('static', filename='assets/placeholder-avatar.webp') }}"
+          onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.webp') }}`">
         <a href="{{ url_for('artist.view', artist_id=artist.id) }}"
           class="fw-semibold link text-wrap text-break" style="line-height: 17px;">
           {{ artist_name }}
@@ -51,8 +51,8 @@
       style="text-decoration: none; color: var(--bs-off-white);">
       <img class="rounded-circle" width="70px"
         src="{{ url_for('uploads.get_avatar', filename=artist.avatar_file) if artist.avatar_file
-                else url_for('static', filename='assets/placeholder-avatar.png') }}"
-        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.png') }}`">
+                else url_for('static', filename='assets/placeholder-avatar.webp') }}"
+        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.webp') }}`">
       <div class="d-flex flex-column">
         <div class="fw-semibold">Artist</div>
         <div class="fw-semibold link text-wrap text-break" style="font-size: 20px;">
@@ -66,8 +66,8 @@
       style="text-decoration: none; color: var(--bs-off-white);">
       <img class="rounded" width="70px"
         src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
-                else url_for('static', filename='assets/placeholder-cover.png') }}"
-        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png') }}`">
+                else url_for('static', filename='assets/placeholder-cover.webp') }}"
+        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
       <div class="d-flex flex-column">
         <div class="fw-semibold">Album</div>
         <div class="fw-semibold link text-wrap text-break" style="font-size: 20px;">

@@ -3,8 +3,8 @@
     <div class="col-12 col-md-auto col-lg-auto" width="250px">
       <img class="mb-2" id="coverImg" style="border-radius: 5%;" width="200px"
         src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
-                else url_for('static', filename='assets/placeholder-cover.png') }}"
-        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.png') }}`">
+                else url_for('static', filename='assets/placeholder-cover.webp') }}"
+        onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
     </div>
 
     <div class="col-12 col-md col-lg mb-2">
@@ -134,7 +134,7 @@
       if (!res.ok) throw new Error(data.message || "Something went wrong");
 
       showSuccessToast("Cover image removed");
-      coverImg.src = "{{ url_for('static', filename='assets/placeholder-cover.png') }}";
+      coverImg.src = "{{ url_for('static', filename='assets/placeholder-cover.webp') }}";
       confirmDeleteImg.classList.add("d-none");
     } catch (err) {
       showErrorToast(err.message || "Something went wrong");
