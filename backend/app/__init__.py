@@ -7,7 +7,7 @@ from .config.jinja_filters import format_dt, format_duration
 from .db import Session
 from . import models
 from .routes.auth import auth_bp
-from .routes.menu import menu_bp
+from .routes.home import home_bp
 from .routes.account import account_bp
 from .routes.artist import artist_bp
 from .routes.admin import admin_bp
@@ -24,7 +24,7 @@ def create_app():
     app.config.from_object(Config)
 
     app.register_blueprint(auth_bp)
-    app.register_blueprint(menu_bp)
+    app.register_blueprint(home_bp)
     app.register_blueprint(account_bp)
     app.register_blueprint(artist_bp)
     app.register_blueprint(admin_bp)

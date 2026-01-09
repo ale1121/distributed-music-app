@@ -118,7 +118,7 @@ def callback():
     except Exception as e:
         return render_template('errors/login_failed.html', message=str(e)), 400
 
-    return redirect(url_for("menu.home"))
+    return redirect(url_for("home.view"))
 
 
 @auth_bp.route("/logout")
@@ -129,7 +129,7 @@ def logout():
 
     logout_redirect = (
         f"{conf['LOGOUT_URL']}?client_id={conf['KC_CLIENT_ID']}"
-        f"&post_logout_redirect_uri={url_for('menu.home', _external=True)}"
+        f"&post_logout_redirect_uri={url_for('home.view', _external=True)}"
     )
 
     if id_token:

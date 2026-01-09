@@ -2,11 +2,11 @@ from flask import Blueprint, session, render_template
 from app.utils.user_roles import get_user_roles
 
 
-menu_bp = Blueprint('menu', __name__)
+home_bp = Blueprint('home', __name__)
 
 
-@menu_bp.route("/")
-def home():
+@home_bp.route("/")
+def view():
     """ View home page """
 
     if "user" in session:
