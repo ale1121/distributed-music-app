@@ -9,7 +9,7 @@ from app.utils.db_helpers import get_album, get_song
 from app.utils.user_roles import get_user_roles
 from app.utils.audio import save_audio_file
 from app.db import Session
-from app.models import Album, Song
+from app.models import Album, Song, Play
 
 
 song_bp = Blueprint('song', __name__)
@@ -36,7 +36,14 @@ def play_song(album_id, song_id):
 
     stream_base_url = current_app.config['STREAMING_URL']
     stream_url = f"{stream_base_url}/stream/{song.audio_file}"
-    current_app.logger.debug("OK")
+
+    play = Play(
+        song_id=song.id,
+        user_id=session["user_id"]
+    )
+    Session.add(play)
+    Session.commit()
+
     return jsonify({
         "stream_url": stream_url
     }), 200
