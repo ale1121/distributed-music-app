@@ -19,9 +19,6 @@
         data-song-view-url="{{ url_for('song.view', album_id=album.id, song_id=song.id) }}">
         <i class="bi bi-play-circle-fill" style="font-size: 45px;"></i>
       </button>
-      <button id="pauseBtn" class="btn btn-transparent d-none">
-        <i class="bi bi-pause-circle-fill" style="font-size: 45px;"></i>
-      </button>
     </div>
 
     <div class="col-12 col-md col-lg ms-3 mt-5" style="max-width: 600px;">
@@ -108,17 +105,9 @@
       if (!streamUrl) throw new Error("Missing stream URL");
 
       setPlayer({songId, songTitle, albumTitle, albumCover, songViewUrl, streamUrl});
-      playBtn.classList.add("d-none");
-      pauseBtn.classList.remove("d-none");
     } catch (err) {
       showErrorToast(err.message || "Something went wrong");
     }
-  });
-
-  pauseBtn.addEventListener("click", () => {
-    pauseSong();
-    pauseBtn.classList.add("d-none");
-    playBtn.classList.remove("d-none");
   });
 </script>
 
