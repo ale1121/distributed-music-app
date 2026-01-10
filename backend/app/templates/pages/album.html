@@ -22,7 +22,7 @@
         onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
       <h2 class="text-center text-wrap text-break">{{ album.title }}</h2>
       <div class="text-center text-gray">
-        Album • {{ album.release_year }} • {{ num_songs }} songs        
+        Album • {{ album.release_year }} • {{ num_songs }} {{ 'song' if num_songs == 1 else 'songs' }}        
       </div>
       <button class="btn btn-transparent">
         <i class="bi bi-play-circle-fill" style="font-size: 45px;"></i>
@@ -36,8 +36,9 @@
       This album is empty
     </div>
     {% else %}
-    <ol class="list-group list-group-flush list-group-numbered list-group-songs mt-3"
-      style="width: 500px; padding-top: 30px;">
+    <h4 class="ms-3 mb-3" style="padding-top: 30px;">Songs</h4>
+    <ol class="list-group list-group-flush list-group-numbered list-group-songs"
+      style="width: 500px;">
       {% for song in songs %}
       <li id=""
         class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
