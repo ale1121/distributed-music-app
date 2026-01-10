@@ -44,6 +44,10 @@
       {% endfor %}
     </tbody>
   </table>
+
+  <h5 class="mt-4">OpenSeach</h5>
+  <p>Reindex documents from database</p>
+  <button id="reindexBtn" class="btn btn-primary">Reindex</button>
 </div>
 
 <script>
@@ -69,6 +73,23 @@
         }
     });
   });
+
+  document.getElementById("reindexBtn").addEventListener("click", async () => {
+    try {
+      const res = await fetch("{{ url_for('admin.reindex_catalog') }}", {
+        method: "GET",
+        headers: {
+          "Accept": "application/json"
+        }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+      showSuccessToast("Bulk index successful");
+    } catch (err) {
+      showErrorToast(err.message || "Something went wrong");
+    }
+  });
+
 </script>
 
 {% endblock %}

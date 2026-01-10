@@ -12,29 +12,65 @@ OPENSEARCH_URL = os.getenv("OPENSEARCH_URL", "http://opensearch:9200")
 INDEX_NAME = "catalog"
 
 
+def index_document(name, type, id, url, artist=None):
+    doc = json.dumps({
+        "name": name,
+        "type": type,
+        "id": id,
+        "artist": artist,
+        "url": url
+    })
+    doc_id = f"{type}{id}"
+    r = requests.put(f"{OPENSEARCH_URL}/{INDEX_NAME}/_doc/{doc_id}", json=doc)
+    if r.status_code not in (200, 201):
+        raise RuntimeWarning(f"Failed to index document {doc_id}: {r.status_code} {r.text}")
+
+
+def delete_document(id, type):
+    doc_id = f"{type}{id}"
+    r = requests.put(f"{OPENSEARCH_URL}/{INDEX_NAME}/{doc_id}")
+    if r.status_code not in (200, 201):
+        raise RuntimeWarning(f"Failed to delete document {type}{id}: {r.status_code} {r.text}")
+
+
 def init_catalog_index():
     wait_for_opensearch_ready(timeout=120)
+    if check_index_exists():
+        return
+    create_index()
+    bulk_index_catalog()
 
-    # check if index already exists
+
+def reindex():
+    if not check_index_exists():
+        create_index()
+    bulk_index_catalog()
+
+
+def check_index_exists():
+    """ Check if index already exists """
     r = requests.head(f"{OPENSEARCH_URL}/{INDEX_NAME}")
-    if r.status_code != 404:
+    if r.status_code == 200:
+        return True
+    if r.status_code == 404:
         return False
+    raise RuntimeError(f"Unexpected response from OpenSearch: {r.status_code} {r.text}")
     
+
+def create_index():
     # load index definition
     index_file = Path(__file__).with_name('catalog_index.json')
     with index_file.open('r') as f:
         index_def = json.load(f)
 
     # create index
-    requests.put(f"{OPENSEARCH_URL}/{INDEX_NAME}", json=index_def)
-
-    # bulk index all existing artists, albums and songs
-    bulk_index_catalog()
-
-    return True
+    r = requests.put(f"{OPENSEARCH_URL}/{INDEX_NAME}", json=index_def)
+    if r.status_code != 200:
+        raise RuntimeError(f"Error creating index: {r.status_code} {r.text}")
 
 
 def bulk_index_catalog():
+    """ Bulk index all existing artists, albums and songs """
     artists_stmt = select(Artist.id, User.display_name) \
                     .join(User, User.id == Artist.id)
     artists = Session.execute(artists_stmt).all()
@@ -96,7 +132,7 @@ def bulk_index_catalog():
     payload = "\n".join(lines) + "\n"
 
     r = requests.post(f"{OPENSEARCH_URL}/_bulk", data=payload,
-                      headers={"Content-Type": "application/json"}, timeout=30)
+                      headers={"Content-Type": "application/json"})
     if r.status_code != 200:
         raise RuntimeError(f"Bulk index failed: {r.status_code} {r.text}")
 

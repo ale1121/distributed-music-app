@@ -41,10 +41,8 @@ def create_app():
 
     logging.basicConfig(level=logging.DEBUG) 
 
-    if init_catalog_index():
-        logging.info("OpenSearch index initialised")
-    else:
-        logging.info("OpenSearch index already exists")
+    init_catalog_index()
+    logging.info("OpenSearch index initialised")
 
     app.jinja_env.filters["format_dt"] = format_dt
     app.jinja_env.filters["format_duration"] = format_duration   

@@ -4,6 +4,8 @@ from app.models import ArtistRequest, User
 from flask import Blueprint, session, render_template, current_app, jsonify
 from app.utils.decorators import login_required, role_required
 from app.utils.user_roles import get_user_roles
+from app.utils.opensearch.client import reindex
+from werkzeug.exceptions import InternalServerError
 
 
 admin_bp = Blueprint('admin', __name__)
@@ -26,3 +28,15 @@ def view():
                            artist_requests=requests,
                            current_path='/admin',
                            roles=get_user_roles())
+
+
+@admin_bp.route("/admin/reindex_catalog", methods=["GET"])
+@role_required("ROLE_ADMIN")
+def reindex_catalog():
+    """ Reindex entire catalog from db in OpenSearch """
+    try:
+        reindex()
+    except RuntimeError as e:
+        current_app.logger.error(str(e))
+        raise InternalServerError("Reindexing failed. See error log for details.")
+    return jsonify(ok=True)
