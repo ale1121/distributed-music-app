@@ -19,6 +19,8 @@ services:
     depends_on:
       - postgres
       - keycloak
+      - opensearch
+    restart: unless-stopped
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
@@ -32,6 +34,8 @@ services:
       KC_CLIENT_ID: muzo-client
       KC_REDIRECT_URI: http://localhost:5000/callback
       SECRET_KEY: topsecretkey
+
+      OPENSEARCH_URL: http://opensearch:9200
 
       TIMEZONE: Europe/Bucharest
 
@@ -69,6 +73,21 @@ services:
     volumes:
       - ./audio_data:/audio_data
 
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    container_name: muzo-search
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - DISABLE_SECURITY_PLUGIN=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Muzo123!@#$%
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    ports:
+      - "9200:9200"
+
+
 volumes:
   postgres_data:
     driver: local
@@ -77,4 +96,6 @@ volumes:
   images_data:
     driver: local
   audio_data:
+    driver: local
+  opensearch_data:
     driver: local

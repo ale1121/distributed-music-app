@@ -16,7 +16,9 @@ from .routes.artist_request import artist_req_bp
 from .routes.uploads import uploads_bp
 from .routes.album import album_bp
 from .routes.song import song_bp
+from .routes.search import search_bp
 from .utils.errors import register_error_handlers
+from .utils.opensearch.client import init_catalog_index
 
 
 def create_app():
@@ -33,13 +35,19 @@ def create_app():
     app.register_blueprint(uploads_bp)
     app.register_blueprint(album_bp)
     app.register_blueprint(song_bp)
+    app.register_blueprint(search_bp)
 
     register_error_handlers(app)
 
-    app.jinja_env.filters["format_dt"] = format_dt
-    app.jinja_env.filters["format_duration"] = format_duration
+    logging.basicConfig(level=logging.DEBUG) 
 
-    logging.basicConfig(level=logging.DEBUG)    
+    if init_catalog_index():
+        logging.info("OpenSearch index initialised")
+    else:
+        logging.info("OpenSearch index already exists")
+
+    app.jinja_env.filters["format_dt"] = format_dt
+    app.jinja_env.filters["format_duration"] = format_duration   
 
     @app.teardown_request
     def remove_session(e):
