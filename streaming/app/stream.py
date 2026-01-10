@@ -1,5 +1,5 @@
 import os
-import mimetypes
+import socket
 from flask import Flask, request, Response, Blueprint, current_app, jsonify
 from werkzeug.exceptions import NotFound, RequestedRangeNotSatisfiable
 
@@ -11,6 +11,7 @@ CHUNK_SIZE = 1024 * 128
 
 @stream_bp.route("/stream/<path:filename>", methods=["GET"])
 def stream_file(filename):
+    current_app.logger.info(f"Serving from {socket.gethostname()}")
     audio_dir = current_app.config['AUDIO_PATH']
     file_path = os.path.join(audio_dir, filename)
     if not os.path.isfile(file_path):

@@ -5,11 +5,10 @@ services:
       POSTGRES_USER: muzo
       POSTGRES_PASSWORD: muzo
       POSTGRES_DB: muzodb
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./postgres-init:/docker-entrypoint-initdb.d
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    networks: [backend, stats]
 
   web-api:
     image: muzo-web
@@ -24,17 +23,36 @@ services:
       DB_PASSWORD: muzo
 
       KC_URL: http://keycloak:8080
-      KC_PUBLIC_URL: http://localhost:8080
+      KC_PUBLIC_URL: http://localhost:5002
       KC_REALM: muzo-realm
       KC_CLIENT_ID: muzo-client
       KC_REDIRECT_URI: http://localhost:5000/callback
       SECRET_KEY: topsecretkey
 
+      STREAMING_URL: http://localhost:5001
+
       TIMEZONE: Europe/Bucharest
+      UPLOADS_PATH: /data/uploads
+      AUDIO_PATH: /data/audio
     ports:
       - "5000:5000"
     volumes:
-      - ./backend:/app
+      - images_data:/data/uploads
+      - audio_data:/data/audio
+    networks: [front, backend, search]
+
+  streaming:
+    image: muzo-streaming
+    environment:
+      AUDIO_PATH: /audio_data
+    ports:
+      - "5001:5000"
+    deploy:
+      mode: replicated
+      replicas: 3
+    volumes:
+      - audio_data:/audio_data:ro
+    networks: [stream]
 
   keycloak:
     image: quay.io/keycloak/keycloak:25.0.0
@@ -44,12 +62,29 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     volumes:
       - keycloak_data:/opt/keycloak/data
-      - ./keycloak-config:/opt/keycloak/data/import
+      - ./keycloak-config:/opt/keycloak/data/import:ro
     ports:
-      - "8080:8080"
+      - "5002:8080"
+    networks: [front]
 
 volumes:
   postgres_data:
     driver: local
   keycloak_data:
     driver: local
+  images_data:
+    driver: local
+  audio_data:
+    driver: local
+
+networks:
+  backend:
+    driver: overlay
+  front:
+    driver: overlay
+  stream:
+    driver: overlay
+  search:
+    driver: overlay
+  stats:
+    driver: overlay
