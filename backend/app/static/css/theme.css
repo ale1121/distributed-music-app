@@ -6,7 +6,7 @@
   --bs-off-white: #f5f5f5;
   --bs-gray-dark: #111113;
   --bs-gray: #19191c;
-  --bs-gray-light-1: #2a292f;
+  --bs-gray-light-1: #232227;
   --bs-gray-light-2: #2f2d34;
   --bs-gray-light-3: #43404a;
   --bs-gray-light-4: #4e4b56;
@@ -139,7 +139,7 @@
 
   .btn-table {
     --bs-btn-bg: var(--bs-gray-light-2);
-    --bs-btn-hover-bg: var(--bs-gray-light-1);
+    --bs-btn-hover-bg: var(--bs-gray-light-3);
     --bs-btn-border-width: 0px;
   }
 
@@ -158,11 +158,11 @@
   }
 
   .list-card {
-    background-color: var(--bs-gray-light-1);
+    background-color: var(--bs-gray-light-2);
   }
 
   .list-card:hover {
-    background-color: var(--bs-gray-light-2);
+    background-color: var(--bs-gray-light-3);
   }
 
   .grid-card {
@@ -170,7 +170,7 @@
   }
 
   .grid-card:hover {
-    background-color: var(--bs-gray-light-1);
+    background-color: var(--bs-gray-light-2);
   }
 
   .toast {
@@ -199,6 +199,10 @@
   .form-control:focus {
     border-color: var(--bs-gray-light-3);
     box-shadow: 0 0 0 0 transparent;
+  }
+
+  .form-control::placeholder {
+    color: var(--bs-gray-light-5);
   }
 
   .text-gray {
