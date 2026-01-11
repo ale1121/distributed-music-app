@@ -1,6 +1,6 @@
 import os
 from flask import (
-    Blueprint, request, current_app, session, jsonify, render_template
+    Blueprint, request, current_app, session, jsonify, render_template, url_for
 )
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from sqlalchemy import select
@@ -10,6 +10,7 @@ from app.utils.user_roles import get_user_roles
 from app.utils.audio import save_audio_file
 from app.db import Session
 from app.models import Album, Song, Play
+from app.utils.opensearch import opensearch
 
 
 song_bp = Blueprint('song', __name__)
@@ -34,9 +35,11 @@ def view(album_id, song_id):
 def play_song(album_id, song_id):
     song = get_song(album_id, song_id)
 
+    # get streaming url for song
     stream_base_url = current_app.config['STREAMING_URL']
     stream_url = f"{stream_base_url}/stream/{song.audio_file}"
 
+    # save play to db
     play = Play(
         song_id=song.id,
         user_id=session["user_id"]
@@ -56,6 +59,7 @@ def save_details(album_id, song_id):
 
     song = get_song(album_id, song_id, artist_required=True)
 
+    # validate song details
     data = request.get_json()
     if "title" not in data or "position" not in data:
         raise BadRequest("Missing song details")
@@ -68,10 +72,17 @@ def save_details(album_id, song_id):
     if len(title) > 100:
         raise BadRequest("Title too long")
 
+    # update song in db
     song.title = title
     song.position = position
-
     Session.commit()
+    Session.refresh(song)
+
+    if song.album.published:
+        # reindex song if album is public
+        opensearch.index_document(song.title, 'song', song.id,
+                                url_for('song.view', album_id=album_id, song_id=song.id),
+                                artist=song.album.artist.user.display_name)
     
     return jsonify(ok=True), 200
 
@@ -83,12 +94,16 @@ def delete_song(album_id, song_id):
 
     song = get_song(album_id, song_id, artist_required=True)
 
-    if song.audio_file:
-        try: os.remove(song.audio_file)
-        except: pass
+    # remove audio file
+    try: os.remove(song.audio_file)
+    except: pass
     
+    # delete song from db
     Session.delete(song)
     Session.commit()
+
+    # delete song from index
+    opensearch.delete_document(song.id, 'song')
 
     return jsonify(ok=True), 200
 
@@ -104,6 +119,7 @@ def add_song(album_id):
     position = request.form.get("position") or ""
     audio = request.files.get("audio")
 
+    # validate song details
     if not title or not position or not audio or not audio.filename:
         raise BadRequest("Missing song details")
     
@@ -114,18 +130,26 @@ def add_song(album_id):
     out_dir = current_app.config['AUDIO_PATH']
     try:
         out_file, duration = save_audio_file(
-            audio, out_dir, f"audio-{album_id}")
+            audio, out_dir, f"audio-{album.id}")
     except Exception as e:
         raise BadRequest(str(e))
 
+    # add song to db
     song = Song(
         title=title,
         position=position,
         audio_file = out_file,
         duration = duration,
-        album_id = album_id
+        album_id = album.id
     )
     Session.add(song)
     Session.commit()
+    Session.refresh(song)
+
+    if album.published:
+        # index song if album is public
+        opensearch.index_document(song.title, 'song', song.id,
+                                url_for('song.view', album_id=album.id, song_id=song.id),
+                                artist=album.artist.user.display_name)
 
     return jsonify(ok=True), 201

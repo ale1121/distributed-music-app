@@ -4,7 +4,7 @@ from app.models import ArtistRequest, User
 from flask import Blueprint, session, render_template, current_app, jsonify
 from app.utils.decorators import login_required, role_required
 from app.utils.user_roles import get_user_roles
-from backend.app.utils.opensearch import opensearch
+from app.utils.opensearch import opensearch
 from werkzeug.exceptions import InternalServerError
 
 

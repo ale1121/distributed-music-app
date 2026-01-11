@@ -49,8 +49,6 @@ def edit_view():
         .order_by(Album.release_year.desc()).order_by(Album.title)
     albums = Session.scalars(stmt)
 
-    current_app.logger.debug(f"---ALBUMS: {albums}")
-
     return render_template("pages/artist_dashboard.html",
                 avatar_file=artist.avatar_file,
                 artist_id=artist.id,
@@ -75,6 +73,7 @@ def upload_profile_image():
     avatars_dir = current_app.config['AVATARS_PATH']
 
     if artist.avatar_file:
+        # remove existing file
         try:
             avatar_path = os.path.join(avatars_dir, artist.avatar_file)
             os.remove(avatar_path)
@@ -83,6 +82,7 @@ def upload_profile_image():
         finally:
             artist.avatar_file = None
 
+    # save new file
     try:
         out_file, out_path = crop_resize_save_image(
             request.files["image"], avatars_dir,

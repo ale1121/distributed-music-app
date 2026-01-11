@@ -5,6 +5,7 @@ from flask import Blueprint, current_app, redirect, request, session, url_for, r
 from sqlalchemy import select
 from app.db import Session
 from app.models import User, Artist
+from app.utils.opensearch import opensearch
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -20,6 +21,9 @@ def sync_user_db(decoded_token):
     username = decoded_token.get('preferred_username')
     display_name = decoded_token.get('display_name')
 
+    # index/reindex artist, if the user is an artist and details changed
+    index_artist = False
+    
     user = Session.scalar(select(User).where(User.keycloak_id == sub))
     if not user:
         user = User(
@@ -30,20 +34,29 @@ def sync_user_db(decoded_token):
         )
         Session.add(user)
     else:
-        user.email = email
-        user.display_name = display_name
+        if user.email != email:
+            user.email = email
+        if user.display_name != display_name:
+            user.display_name = display_name
+            index_artist = True  # display name changed, must reindex if artist
 
     Session.commit()
     Session.refresh(user)
-        
+
     if 'ROLE_ARTIST' in decoded_token.get('realm_access', {}).get('roles', []):
         artist = Session.get(Artist, user.id)
         if not artist:
+            index_artist = True  # new artist, must index
             artist = Artist(id=user.id)
             Session.add(artist)
+    else:
+        index_artist = False  # user is not an artist
 
     Session.commit()
     Session.refresh(user)
+
+    if index_artist:
+        opensearch.index_artist(user)
     
     return user
 

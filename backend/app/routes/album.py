@@ -12,6 +12,7 @@ from app.models import Album, Song, Artist, User
 from app.utils.image import crop_resize_save_image
 from app.utils.db_helpers import get_album
 from app.utils.user_roles import get_user_roles
+from app.utils.opensearch import opensearch
 
 
 album_bp = Blueprint('album', __name__)
@@ -58,6 +59,7 @@ def save_details(album_id):
 
     album = get_album(album_id, artist_required=True)
 
+    # validate album details
     data = request.get_json()
     if "release_year" not in data or "title" not in data:
         raise BadRequest("Missing album details")
@@ -70,11 +72,18 @@ def save_details(album_id):
     if len(title) > 100:
         raise BadRequest("Title too long")
 
+    # update album in db
     album.title = title
     album.release_year = release_year
-
     Session.commit()
-    
+    Session.refresh(album)
+
+    if album.published:
+        # reindex album if public
+        opensearch.index_document(album.title, 'album', album.id,
+                url_for('album.view', album_id=album.id,
+                artist=album.artist.user.display_name))
+
     return jsonify(ok=True), 200
 
 
@@ -83,9 +92,14 @@ def save_details(album_id):
 def publish_album(album_id):
     """ Make album public """
 
+    # update album in db
     album = get_album(album_id, artist_required=True)
     album.published = True
     Session.commit()
+    Session.refresh(album)
+
+    # index album and songs
+    opensearch.index_album(album)
 
     return jsonify(ok=True), 200
 
@@ -98,9 +112,14 @@ def delete_album(album_id):
     album = get_album(album_id, artist_required=True)
 
     if album.cover_file:
+        # remove cover file
         try: os.remove(album.cover_file)
         except: pass
 
+    # delete album and songs from index
+    opensearch.delete_album(album)
+
+    # delete all songs from db
     songs = Session.scalars(select(Song).where(Song.album == album))
     for song in songs:
         if song.audio_file:
@@ -108,6 +127,7 @@ def delete_album(album_id):
             except: pass
         Session.delete(song)
 
+    # delete album from db
     Session.delete(album)
     Session.commit()
 
@@ -127,6 +147,7 @@ def upload_cover_image(album_id):
     covers_dir = current_app.config['COVERS_PATH']
 
     if album.cover_file:
+        # remove existing file
         try:
             cover_path = os.path.join(covers_dir, album.cover_file)
             os.remove(cover_path)
@@ -135,6 +156,7 @@ def upload_cover_image(album_id):
         finally:
             album.cover_file = None
 
+    # save new file
     try:
         out_file, out_path = crop_resize_save_image(
             request.files["image"], covers_dir,

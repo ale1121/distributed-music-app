@@ -18,7 +18,7 @@ from .routes.album import album_bp
 from .routes.song import song_bp
 from .routes.search import search_bp
 from .utils.errors import register_error_handlers
-from .utils.opensearch.client import init_catalog_index
+from .utils.opensearch import opensearch
 
 
 def create_app():
@@ -41,7 +41,7 @@ def create_app():
 
     logging.basicConfig(level=logging.DEBUG) 
 
-    init_catalog_index()
+    opensearch.init_catalog_index()
     logging.info("OpenSearch index initialised")
 
     app.jinja_env.filters["format_dt"] = format_dt

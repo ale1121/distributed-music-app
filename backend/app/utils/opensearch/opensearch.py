@@ -3,6 +3,7 @@ import requests
 import os
 import time
 from pathlib import Path
+from types import SimpleNamespace
 from sqlalchemy import select, literal
 from werkzeug.exceptions import NotFound
 from ...models import Song, Album, Artist, User
@@ -14,6 +15,7 @@ INDEX_NAME = "catalog"
 
 
 def index_document(name, type, id, url, artist=None):
+    """ Index a document """
     doc = {
         "name": name,
         "type": type,
@@ -28,13 +30,77 @@ def index_document(name, type, id, url, artist=None):
 
 
 def delete_document(id, type):
+    """ Delete a document """
     doc_id = f"{type}{id}"
     r = requests.delete(f"{OPENSEARCH_URL}/{INDEX_NAME}/_doc/{doc_id}")
     if r.status_code not in (200, 201):
         raise RuntimeWarning(f"Failed to delete document {type}{id}: {r.status_code} {r.text}")
 
 
+def index_album(album: Album):
+    """ Bulk index album and all songs """
+    artist_name = album.artist.user.display_name
+    album_doc = SimpleNamespace(
+        id=album.id,
+        title=album.title,
+        artist_name=artist_name
+    )
+    songs_stmt = select(Song.id, Song.title,
+                    literal(album.id).label('album_id'),
+                    literal(artist_name).label('artist_name')) \
+                .where(Song.album_id == album.id)
+    songs = Session.execute(songs_stmt).all()
+
+    bulk_index([], [album_doc], songs)
+
+
+def delete_album(album: Album):
+    """ Bulk delete album and all songs """
+    songs_stmt = select(Song.id).where(Song.album_id == album.id)
+    songs = Session.execute(songs_stmt).all()
+
+    lines = []
+    lines.append(json.dumps({
+        "delete": {
+            "_index": INDEX_NAME,
+            "_id": f"album{album.id}"
+        }
+    }))
+    for song in songs:
+        lines.append(json.dumps({
+            "delete": {
+                "_index": INDEX_NAME,
+                "_id": f"song{song.id}"
+            }}))
+    
+    payload = "\n".join(lines) + "\n"
+    r = requests.post(f"{OPENSEARCH_URL}/_bulk", data=payload,
+                      headers={"Content-Type": "application/json"})
+    if r.status_code != 200:
+        raise RuntimeError(f"Bulk delete failed: {r.status_code} {r.text}")
+
+
+def index_artist(artist_user: User):
+    """ Bulk index artist and all their albums and songs """
+    albums_stmt = select(Album.id, Album.title,
+                        literal(artist_user.display_name).label('artist_name')) \
+                    .where(Album.artist_id == artist_user.id)
+    albums = Session.execute(albums_stmt).all()
+
+    songs_stmt = select(Song.id, Song.title, Album.id.label("album_id"),
+                        literal(artist_user.display_name).label('artist_name')) \
+                    .join(Album, Album.id == Song.album_id) \
+                    .where(Album.artist_id == artist_user.id)
+    songs = Session.execute(songs_stmt).all()
+
+    bulk_index([artist_user], albums, songs)
+
+
 def init_catalog_index():
+    """
+    Wait for connection, check if catalog index exists
+    If index does not exist, create and index entire catalog from db
+    """
     wait_for_opensearch_ready(timeout=120)
     if check_index_exists():
         return
@@ -43,6 +109,10 @@ def init_catalog_index():
 
 
 def reindex_all():
+    """
+    Reindex entire catalog from db
+    Create index if it doesn't exist
+    """
     if not check_index_exists():
         create_index()
     bulk_index_catalog()
@@ -59,6 +129,8 @@ def check_index_exists():
     
 
 def create_index():
+    """ Create catalog index """
+
     # load index definition
     index_file = Path(__file__).with_name('catalog_index.json')
     with index_file.open('r') as f:
@@ -68,22 +140,6 @@ def create_index():
     r = requests.put(f"{OPENSEARCH_URL}/{INDEX_NAME}", json=index_def)
     if r.status_code != 200:
         raise RuntimeError(f"Error creating index: {r.status_code} {r.text}")
-    
-
-def reindex_artist(artist_user):
-    """ Bulk reindex artist and all their albums and songs """
-    albums_stmt = select(Album.id, Album.title,
-                        literal(artist_user.display_name).label('artist_name')) \
-                    .where(Album.artist_id == artist_user.id)
-    albums = Session.execute(albums_stmt).all()
-
-    songs_stmt = select(Song.id, Song.title, Album.id.label("album_id"),
-                        literal(artist_user.display_name).label('artist_name')) \
-                    .join(Album, Album.id == Song.album_id) \
-                    .where(Album.artist_id == artist_user.id)
-    songs = Session.execute(songs_stmt).all()
-
-    bulk_reindex([artist_user], albums, songs)
 
 
 def bulk_index_catalog():
@@ -102,10 +158,12 @@ def bulk_index_catalog():
                     .join(User, User.id == Album.artist_id)
     songs = Session.execute(songs_stmt)
 
-    bulk_reindex(artists, albums, songs)
+    bulk_index(artists, albums, songs)
 
 
-def bulk_reindex(artists, albums, songs):
+def bulk_index(artists, albums, songs):
+    """ Bulk index all given artists, albums and songs """
+
     lines = []
 
     for artist in artists:
