@@ -3,7 +3,8 @@ import requests
 import os
 import time
 from pathlib import Path
-from sqlalchemy import select
+from sqlalchemy import select, literal
+from werkzeug.exceptions import NotFound
 from ...models import Song, Album, Artist, User
 from ...db import Session
 
@@ -13,13 +14,13 @@ INDEX_NAME = "catalog"
 
 
 def index_document(name, type, id, url, artist=None):
-    doc = json.dumps({
+    doc = {
         "name": name,
         "type": type,
         "id": id,
         "artist": artist,
         "url": url
-    })
+    }
     doc_id = f"{type}{id}"
     r = requests.put(f"{OPENSEARCH_URL}/{INDEX_NAME}/_doc/{doc_id}", json=doc)
     if r.status_code not in (200, 201):
@@ -28,7 +29,7 @@ def index_document(name, type, id, url, artist=None):
 
 def delete_document(id, type):
     doc_id = f"{type}{id}"
-    r = requests.put(f"{OPENSEARCH_URL}/{INDEX_NAME}/{doc_id}")
+    r = requests.delete(f"{OPENSEARCH_URL}/{INDEX_NAME}/_doc/{doc_id}")
     if r.status_code not in (200, 201):
         raise RuntimeWarning(f"Failed to delete document {type}{id}: {r.status_code} {r.text}")
 
@@ -41,7 +42,7 @@ def init_catalog_index():
     bulk_index_catalog()
 
 
-def reindex():
+def reindex_all():
     if not check_index_exists():
         create_index()
     bulk_index_catalog()
@@ -67,6 +68,22 @@ def create_index():
     r = requests.put(f"{OPENSEARCH_URL}/{INDEX_NAME}", json=index_def)
     if r.status_code != 200:
         raise RuntimeError(f"Error creating index: {r.status_code} {r.text}")
+    
+
+def reindex_artist(artist_user):
+    """ Bulk reindex artist and all their albums and songs """
+    albums_stmt = select(Album.id, Album.title,
+                        literal(artist_user.display_name).label('artist_name')) \
+                    .where(Album.artist_id == artist_user.id)
+    albums = Session.execute(albums_stmt).all()
+
+    songs_stmt = select(Song.id, Song.title, Album.id.label("album_id"),
+                        literal(artist_user.display_name).label('artist_name')) \
+                    .join(Album, Album.id == Song.album_id) \
+                    .where(Album.artist_id == artist_user.id)
+    songs = Session.execute(songs_stmt).all()
+
+    bulk_reindex([artist_user], albums, songs)
 
 
 def bulk_index_catalog():
@@ -85,6 +102,10 @@ def bulk_index_catalog():
                     .join(User, User.id == Album.artist_id)
     songs = Session.execute(songs_stmt)
 
+    bulk_reindex(artists, albums, songs)
+
+
+def bulk_reindex(artists, albums, songs):
     lines = []
 
     for artist in artists:

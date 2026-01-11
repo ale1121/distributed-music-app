@@ -4,7 +4,7 @@ from app.models import ArtistRequest, User
 from flask import Blueprint, session, render_template, current_app, jsonify
 from app.utils.decorators import login_required, role_required
 from app.utils.user_roles import get_user_roles
-from app.utils.opensearch.client import reindex
+from backend.app.utils.opensearch import opensearch
 from werkzeug.exceptions import InternalServerError
 
 
@@ -21,8 +21,6 @@ def view():
         .order_by(ArtistRequest.created_at.desc())
     requests = Session.execute(stmt).all()
 
-    current_app.logger.debug(f"---REQUESTS: {requests}")
-
     return render_template("pages/admin_dashboard.html",
                            admin_console_link=current_app.config['ADMIN_URL'],
                            artist_requests=requests,
@@ -35,7 +33,7 @@ def view():
 def reindex_catalog():
     """ Reindex entire catalog from db in OpenSearch """
     try:
-        reindex()
+        opensearch.reindex_all()
     except RuntimeError as e:
         current_app.logger.error(str(e))
         raise InternalServerError("Reindexing failed. See error log for details.")
