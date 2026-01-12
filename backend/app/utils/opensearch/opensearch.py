@@ -13,6 +13,87 @@ from ...db import Session
 OPENSEARCH_URL = os.getenv("OPENSEARCH_URL", "http://opensearch:9200")
 INDEX_NAME = "catalog"
 
+FUZZINESS = 3
+MIN_MATCH = 75
+MAX_RESULTS = 6
+
+TYPES = ['artist', 'album', 'song']
+
+
+def search(name, type=None):
+    """ Search catalog by name, optional filter by type """
+    if type is None:
+        payload = get_name_query(name)
+    else:
+        payload = get_name_type_query(name, type)
+
+    r = requests.get(f"{OPENSEARCH_URL}/{INDEX_NAME}/_search", json=payload)
+    if r.status_code != 200:
+        raise RuntimeWarning(f"Search error: {r.status_code} {r.text}")
+    return parse_results(r.json())
+
+
+def get_name_query(name):
+    return {
+        "size": MAX_RESULTS,
+        "query": {
+            "match": {
+                "name": {
+                    "query": name,
+                    "minimum_should_match": f"{MIN_MATCH}%",
+                    "fuzziness": FUZZINESS
+                }
+            }
+        },
+        "sort": [
+            "_score"
+        ]
+    }
+
+
+def get_name_type_query(name, type):
+    return {
+        "size": MAX_RESULTS,
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "match": {
+                            "name": {
+                                "query": name,
+                                "minimum_should_match": f"{MIN_MATCH}%",
+                                "fuzziness": FUZZINESS
+                            }
+                        }
+                    },
+                    {
+                        "term": {
+                            "type": type
+                        }
+                    }
+                ]
+            }
+        },
+        "sort": [
+            "_score"
+        ]
+    }
+
+
+def parse_results(data):
+    results = []
+    hits = data.get("hits", {}).get("hits", [])
+    for hit in hits:
+        res = hit.get("_source", {})
+        results.append({
+            "name": res.get("name"),
+            "type": res.get("type").capitalize(),
+            "id": res.get("id"),
+            "artist": res.get("artist"),
+            "url": res.get("url")
+        })
+    return results
+
 
 def index_document(name, type, id, url, artist=None):
     """ Index a document """
