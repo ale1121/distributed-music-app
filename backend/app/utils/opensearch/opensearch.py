@@ -15,17 +15,16 @@ INDEX_NAME = "catalog"
 
 FUZZINESS = 3
 MIN_MATCH = 75
-MAX_RESULTS = 6
 
 TYPES = ['artist', 'album', 'song']
 
 
-def search(name, type=None):
+def search(name, type=None, limit=6):
     """ Search catalog by name, optional filter by type """
     if type is None:
-        payload = get_name_query(name)
+        payload = get_name_query(name, limit)
     else:
-        payload = get_name_type_query(name, type)
+        payload = get_name_type_query(name, type, limit)
 
     r = requests.get(f"{OPENSEARCH_URL}/{INDEX_NAME}/_search", json=payload)
     if r.status_code != 200:
@@ -33,9 +32,9 @@ def search(name, type=None):
     return parse_results(r.json())
 
 
-def get_name_query(name):
+def get_name_query(name, limit):
     return {
-        "size": MAX_RESULTS,
+        "size": limit,
         "query": {
             "match": {
                 "name": {
@@ -51,9 +50,9 @@ def get_name_query(name):
     }
 
 
-def get_name_type_query(name, type):
+def get_name_type_query(name, type, limit):
     return {
-        "size": MAX_RESULTS,
+        "size": limit,
         "query": {
             "bool": {
                 "must": [

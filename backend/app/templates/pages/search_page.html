@@ -3,13 +3,16 @@
 {% block content %}
 
 <div class="my-4 ms-4">
-  <div class="input-group" style="width: 480px;">
-    <input id="searchInput" class="form-control form-control-lg" maxlength="100"
-      placeholder="Search songs, albums, artists" autocomplete="off">
-    <button class="btn btn-lg btn-secondary">
-      <i class="bi bi-search"></i>
-    </button> 
-  </div>
+  <form id="searchForm">
+    <div class="input-group position-relative" style="width: 480px;">
+      <input id="searchInput" class="form-control form-control-lg" maxlength="100"
+        placeholder="Search songs, albums, artists" autocomplete="off">
+      <button id="searchBtn" class="btn btn-lg btn-secondary" type="submit">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </form>
+
   <div class="my-2">
     <input type="radio" class="btn-check" name="filters" id="songsCheck" value="song" autocomplete="off">
     <label class="btn btn-radio" for="songsCheck">Songs</label>
@@ -20,33 +23,46 @@
     <input type="radio" class="btn-check" name="filters" id="artistsCheck" value="artist" autocomplete="off">
     <label class="btn btn-radio" for="artistsCheck">Artists</label>
   </div>
-  <div class="card">
+
+  <div class="card position-absolute" style="z-index: 1000;">
     <ul id="searchSuggestions" class="list-group list-group-flush list-group-search" style="width: 480px;">
-      
     </ul>
   </div>
 </div>
 
-<h2 id="sectionTitle" class="ms-4 mt-5">Recently Played</h2>
-<div class="ps-3 container" style="max-width: 1000px;">
-  <div id="resultsGrid" class="row row-cols-auto">
-    {% for song in recents %}
-    <div class="col">
-      <a href="{{ url_for('song.view', album_id=song.album_id, song_id=song.id) }}"
-      class="card grid-card p-2 my-2" style="text-decoration: none; width: 200px;">
-        <div class="d-flex flex-column align-items-start">
-          <img class="rounded mb-2" width="180px"
-            src="{{ url_for('uploads.get_cover', filename=song.cover_file) if song.cover_file
-                    else url_for('static', filename='assets/placeholder-cover.webp') }}"
-            onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
-          <div class="fw-semibold text-wrap text-break">{{ song.title }}</div>
-          <div class="text-gray small">{{ song.album_title }} • {{ song.artist_name }}</div>
-        </div>
-      </a>
+<div class="ps-3">
+  <div class="container" style="max-width: 1000px;">
+    <div id="noResults" class="ps-2 mt-5 d-none">
+      <span class="fw-semibold" style="font-size: 18px;">No results found</span>
     </div>
-    {% endfor %}
+    <div id="resultsGrid" class="row row-cols-auto d-none">
+    </div>
   </div>
 </div>
+
+<div class="ps-3">
+  <h2 class="mt-5" style="padding-left: 20px;">Recently Played</h2>
+  <div class="container" style="max-width: 1000px;">
+    <div class="row row-cols-auto">
+      {% for song in recents %}
+      <div class="col">
+        <a href="{{ url_for('song.view', album_id=song.album_id, song_id=song.id) }}"
+        class="card grid-card p-2 my-2" style="text-decoration: none; width: 200px;">
+          <div class="d-flex flex-column align-items-start">
+            <img class="rounded mb-2" width="180px"
+              src="{{ url_for('uploads.get_cover', filename=song.cover_file) if song.cover_file
+                      else url_for('static', filename='assets/placeholder-cover.webp') }}"
+              onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
+            <div class="fw-semibold text-wrap text-break">{{ song.title }}</div>
+            <div class="text-gray small">{{ song.album_title }} • {{ song.artist_name }}</div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>  
+</div>
+
 
 <script>
   let selectedFilter = null
@@ -129,15 +145,102 @@
   }, 200))
 
   document.querySelectorAll('input[name="filters"]').forEach(radio => {
-    radio.addEventListener("click", () => {
+    radio.addEventListener("click", (e) => {
       if (selectedFilter == radio.value) {
         radio.checked = false;
         selectedFilter = null;
       } else {
         selectedFilter = radio.value;
       }
-      updateSuggestions();
+      if (searchInput.contains(e.target)) {
+        updateSuggestions();
+      } else {
+        updateResults();
+      }
     });
+  });
+
+
+  const resultsGrid = document.getElementById("resultsGrid");
+  const noResults = document.getElementById("noResults");
+
+  function renderSearchResults(results) {
+    noResults.classList.add("d-none");
+    resultsGrid.innerHTML = "";
+    if (!results.length) {
+      resultsGrid.classList.add("d-none");
+      noResults.classList.remove("d-none");
+      return;
+    }
+
+    results.forEach(item => {
+      const el = document.createElement("div");
+      el.className = "col";
+      el.innerHTML = `
+        <a href="${item.url}"
+        class="card grid-card p-2 my-2" style="text-decoration: none; width: 200px;">
+          <div class="d-flex flex-column align-items-start">
+            <img class="${item.type == 'Artist' ? 'rounded-circle' : 'rounded'} mb-2" width="180px"
+              src="${item.img}"
+              onerror="this.src=${item.type == "Artist" ? '/static/assets/placeholder-avatar.webp'
+                                                        : '/static/assets/placeholder-cover.webp'}>
+            <div class="fw-semibold text-wrap text-break">${item.name}</div>
+            <div class="text-gray small">
+              ${item.type}${item.type == 'Song' ? ' • ' + item.album : item.type == 'Album' ? ' • ' + item.year : ''}
+            </div>
+            ${item.type == "Artist" ? '' : '<div class="text-gray small">' + item.artist + '</div>'}
+          </div>
+        </a>`
+      el.href = item.url;
+      resultsGrid.append(el);
+    });
+    resultsGrid.classList.remove("d-none")
+  }
+
+  document.getElementById("searchForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const searchValue = searchInput.value.trim();
+    if (searchValue.length < 3) {
+      showErrorToast("Enter at least 3 characters");
+      return;
+    }
+
+    hideSuggestions();
+    updateResults();
+  });
+
+  async function updateResults() {
+    const searchValue = searchInput.value.trim();
+    if (searchValue.length < 3) {
+      return;
+    }
+
+    try {
+      let url = `/search/results?q=${encodeURIComponent(searchValue)}`
+      if (selectedFilter) {
+        url += `&type=${selectedFilter}`;
+      }
+
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json"
+        }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+
+      renderSearchResults(data);
+    } catch (err) {
+      console.log("Search error: " + err);
+    }
+  }
+
+  document.addEventListener("click", (e) => {
+    if (!searchInput.contains(e.target)) {
+      hideSuggestions();
+    }
   });
 
 </script>
