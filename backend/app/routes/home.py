@@ -29,8 +29,7 @@ def view():
                   User.display_name.label("artist_name")) \
             .join(all_plays, all_plays.c.song_id == Song.id) \
             .join(Album, Album.id == Song.album_id) \
-            .join(Artist, Artist.id == Album.artist_id) \
-            .join(User, User.id == Artist.id) \
+            .join(User, User.id == Album.artist_id) \
             .order_by(all_plays.c.last_played.desc()) \
             .limit(8)
     recents = Session.execute(stmt).all()
