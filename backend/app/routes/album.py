@@ -81,8 +81,8 @@ def save_details(album_id):
     if album.published:
         # reindex album if public
         opensearch.index_document(album.title, 'album', album.id,
-                url_for('album.view', album_id=album.id,
-                artist=album.artist.user.display_name))
+                url_for('album.view', album_id=album.id),
+                artist=album.artist.user.display_name)
 
     return jsonify(ok=True), 200
 
