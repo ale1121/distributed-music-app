@@ -156,4 +156,27 @@
   playerPauseBtn.addEventListener("click", () => {
     pauseSong();
   });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.code !== "Space") return;
+    
+    const activeEl = document.activeElement;
+    if (activeEl && activeEl.tagName === "INPUT") return;
+
+    e.preventDefault();
+
+    if (e.key === " ") {
+      const state = getPlayerState();
+      if (!state) return;
+      if (state.isPlaying) {
+        audio.pause();
+        playerPauseBtn.classList.add("d-none");
+        playerPlayBtn.classList.remove("d-none");
+      } else {
+        audio.play();
+        playerPlayBtn.classList.add("d-none");
+        playerPauseBtn.classList.remove("d-none");
+      }
+    }
+  });
 </script>
