@@ -143,6 +143,14 @@
     --bs-btn-border-width: 0px;
   }
 
+  .btn-radio {
+    --bs-btn-color: var(--bs-off-white);
+    --bs-btn-bg: var(--bs-gray-light-2);
+    --bs-btn-active-bg: var(--bs-gray-light-3);
+    --bs-btn-disabled-bg: var(--bs-gray-light-2);
+    --bs-btn-border-width: 0px;
+  }
+
   .nav {
     --bs-nav-link-color: var(--bs-off-white);
     --bs-nav-link-hover-color: var(--bs-purple-light-70);
@@ -217,5 +225,15 @@
     --bs-list-group-action-hover-color: var(--bs-off-white);
     --bs-list-group-action-hover-bg: var(--bs-gray-light-1);
     --bs-list-group-action-active-bg: var(--bs-gray-light-1);
+  }
+
+  .list-group-search {
+    --bs-list-group-border-color: var(--bs-gray-light-3);
+    --bs-list-group-color: var(--bs-off-white);
+    --bs-list-group-bg: var(--bs-gray-light-1);
+    --bs-list-group-action-color: var(--bs-off-white);
+    --bs-list-group-action-hover-color: var(--bs-off-white);
+    --bs-list-group-action-hover-bg: var(--bs-gray-light-2);
+    --bs-list-group-action-active-bg: var(--bs-gray-light-2);
   }
 }
