@@ -5,6 +5,9 @@ services:
       POSTGRES_USER: muzo
       POSTGRES_PASSWORD: muzo
       POSTGRES_DB: muzodb
+    deploy:
+      restart_policy:
+        condition: on-failure
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres-init:/docker-entrypoint-initdb.d:ro
@@ -36,6 +39,11 @@ services:
       AUDIO_PATH: /data/audio
     ports:
       - "5000:5000"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 20
     volumes:
       - images_data:/data/uploads
       - audio_data:/data/audio
@@ -50,6 +58,8 @@ services:
     deploy:
       mode: replicated
       replicas: 3
+      restart_policy:
+        condition: on-failure
     volumes:
       - audio_data:/audio_data:ro
     networks: [stream]
@@ -60,12 +70,29 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+    deploy:
+      restart_policy:
+        condition: on-failure
     volumes:
       - keycloak_data:/opt/keycloak/data
       - ./keycloak-config:/opt/keycloak/data/import:ro
     ports:
       - "5002:8080"
     networks: [front]
+
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    environment:
+      - discovery.type=single-node
+      - DISABLE_SECURITY_PLUGIN=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Muzo123!@#%
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    networks: [search]
 
 volumes:
   postgres_data:
@@ -75,6 +102,8 @@ volumes:
   images_data:
     driver: local
   audio_data:
+    driver: local
+  opensearch_data:
     driver: local
 
 networks:
