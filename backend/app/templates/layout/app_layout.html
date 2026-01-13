@@ -6,7 +6,9 @@
 
 <div class="d-flex">
   <!-- Sidebar -->
-  <div class="app-sidebar position-fixed top-0 bottom-0 start-0 d-flex flex-column justify-content-between p-3 bg-darker">
+  <div class="app-sidebar position-fixed top-0 bottom-0 start-0
+    d-flex flex-column justify-content-between p-3 bg-darker"
+    style="z-index: 1000;">
     {% include "components/layout/sidebar.html" %}
   </div>
 
@@ -18,7 +20,8 @@
   </div>
 
   <!-- Player -->
-  <div class="app-player position-fixed bottom-0 bg-darker">
+  <div class="app-player position-fixed bottom-0 bg-darker"
+    style="z-index: 1000;">
     {% include "components/layout/player.html" %}
   </div>
 </div>
