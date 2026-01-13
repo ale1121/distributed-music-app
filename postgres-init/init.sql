@@ -55,7 +55,7 @@ CREATE TABLE songs (
 
 CREATE TABLE plays (
         id SERIAL NOT NULL,
-        timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+        played_at TIMESTAMP WITH TIME ZONE NOT NULL,
         song_id INTEGER NOT NULL,
         user_id INTEGER,
         PRIMARY KEY (id),

@@ -96,7 +96,7 @@ class Play(Base):
     __tablename__ = "plays"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    timestamp: Mapped[dt.datetime] = mapped_column(
+    played_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), 
         default=func.now(),
         nullable=False, index=True

@@ -18,7 +18,7 @@ def view():
     user_id = session["user_id"]
 
     all_plays = select(Play.song_id,
-                    func.max(Play.timestamp).label("last_played")) \
+                    func.max(Play.played_at).label("last_played")) \
                 .where(Play.user_id == user_id) \
                 .group_by(Play.song_id) \
                 .subquery()
