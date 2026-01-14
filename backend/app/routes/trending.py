@@ -11,5 +11,5 @@ def view():
     """ View trending page """
 
     if "user" in session:
-        return render_template("layout/app_layout.html", current_path='/trending', roles=get_user_roles())
+        return render_template("pages/trending_page.html", current_path='/trending', roles=get_user_roles())
     return render_template("pages/login.html")

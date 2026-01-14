@@ -1,0 +1,21 @@
+{% extends "layout/app_layout.html" %}
+
+{% block content %}
+
+<div class="py-2 ps-4">
+  <h1>Trending</h1>
+
+  <h3 class="mt-5">Top Songs This Week</h3>
+  <div class="card p-3 bg-darker">
+    <iframe src="http://localhost:5003/d-solo/muzo-stats/muzo-stats?orgId=1&timezone=browser&theme=dark&panelId=panel-2&__feature.dashboardSceneSolo=true"
+      width="700" height="400" frameborder="0"></iframe>
+  </div>
+
+  <h3 class="mt-4">Top Artists This Week</h3>
+  <div class="card p-3 bg-darker mb-3">
+    <iframe src="http://localhost:5003/d-solo/muzo-stats/muzo-stats?orgId=1&timezone=browser&theme=dark&panelId=panel-1&__feature.dashboardSceneSolo=true"
+      width="700" height="200" frameborder="0"></iframe>
+  </div>
+</div>
+
+{% endblock %}
