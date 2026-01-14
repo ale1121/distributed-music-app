@@ -5,7 +5,7 @@
     "mappings": {
         "properties": {
             "name": {
-                "type": "text"
+                "type": "search_as_you_type"
             },
             "type": {
                 "type": "keyword"

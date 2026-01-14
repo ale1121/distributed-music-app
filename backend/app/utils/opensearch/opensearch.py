@@ -8,75 +8,31 @@ from sqlalchemy import select, literal
 from werkzeug.exceptions import NotFound
 from ...models import Song, Album, Artist, User
 from ...db import Session
+from .conf import OPENSEARCH_URL, INDEX_NAME
+from .search_queries import get_query, match_name, multi_match_name, name_type_query
+from .bulk_index import bulk_index, bulk_index_catalog
+from .index import create_index, check_index_exists
 
 
-OPENSEARCH_URL = os.getenv("OPENSEARCH_URL", "http://opensearch:9200")
-INDEX_NAME = "catalog"
-
-FUZZINESS = 3
-MIN_MATCH = 75
-
-TYPES = ['artist', 'album', 'song']
-
-
-def search(name, type=None, limit=6):
-    """ Search catalog by name, optional filter by type """
-    if type is None:
-        payload = get_name_query(name, limit)
+def search(name, type=None, multi_match=False, limit=6):
+    """
+    Search catalog by name, optional filter by type
+    If multi_match, search name as multi-match, else search as full-text
+    """
+    if multi_match:
+        name_query = multi_match_name(name)
     else:
-        payload = get_name_type_query(name, type, limit)
+        name_query = match_name(name)
+
+    if type is None:
+        payload = get_query(name_query, limit)
+    else:
+        payload = get_query(name_type_query(name_query, type), limit)
 
     r = requests.get(f"{OPENSEARCH_URL}/{INDEX_NAME}/_search", json=payload)
     if r.status_code != 200:
         raise RuntimeWarning(f"Search error: {r.status_code} {r.text}")
     return parse_results(r.json())
-
-
-def get_name_query(name, limit):
-    return {
-        "size": limit,
-        "query": {
-            "match": {
-                "name": {
-                    "query": name,
-                    "minimum_should_match": f"{MIN_MATCH}%",
-                    "fuzziness": FUZZINESS
-                }
-            }
-        },
-        "sort": [
-            "_score"
-        ]
-    }
-
-
-def get_name_type_query(name, type, limit):
-    return {
-        "size": limit,
-        "query": {
-            "bool": {
-                "must": [
-                    {
-                        "match": {
-                            "name": {
-                                "query": name,
-                                "minimum_should_match": f"{MIN_MATCH}%",
-                                "fuzziness": FUZZINESS
-                            }
-                        }
-                    },
-                    {
-                        "term": {
-                            "type": type
-                        }
-                    }
-                ]
-            }
-        },
-        "sort": [
-            "_score"
-        ]
-    }
 
 
 def parse_results(data):
@@ -181,7 +137,7 @@ def init_catalog_index():
     Wait for connection, check if catalog index exists
     If index does not exist, create and index entire catalog from db
     """
-    wait_for_opensearch_ready(timeout=120)
+    _wait_for_opensearch_ready(timeout=120)
     if check_index_exists():
         return
     create_index()
@@ -198,105 +154,7 @@ def reindex_all():
     bulk_index_catalog()
 
 
-def check_index_exists():
-    """ Check if index already exists """
-    r = requests.head(f"{OPENSEARCH_URL}/{INDEX_NAME}")
-    if r.status_code == 200:
-        return True
-    if r.status_code == 404:
-        return False
-    raise RuntimeError(f"Unexpected response from OpenSearch: {r.status_code} {r.text}")
-    
-
-def create_index():
-    """ Create catalog index """
-
-    # load index definition
-    index_file = Path(__file__).with_name('catalog_index.json')
-    with index_file.open('r') as f:
-        index_def = json.load(f)
-
-    # create index
-    r = requests.put(f"{OPENSEARCH_URL}/{INDEX_NAME}", json=index_def)
-    if r.status_code != 200:
-        raise RuntimeError(f"Error creating index: {r.status_code} {r.text}")
-
-
-def bulk_index_catalog():
-    """ Bulk index all existing artists, albums and songs """
-    artists_stmt = select(Artist.id, User.display_name) \
-                    .join(User, User.id == Artist.id)
-    artists = Session.execute(artists_stmt).all()
-
-    albums_stmt = select(Album.id, Album.title, User.display_name.label("artist_name")) \
-                    .join(User, User.id == Album.artist_id)
-    albums = Session.execute(albums_stmt).all()
-
-    songs_stmt = select(Song.id, Song.title, Album.id.label("album_id"),
-                        User.display_name.label("artist_name")) \
-                    .join(Album, Album.id == Song.album_id) \
-                    .join(User, User.id == Album.artist_id)
-    songs = Session.execute(songs_stmt)
-
-    bulk_index(artists, albums, songs)
-
-
-def bulk_index(artists, albums, songs):
-    """ Bulk index all given artists, albums and songs """
-
-    lines = []
-
-    for artist in artists:
-        lines.append(json.dumps({
-            "index": {
-                "_index": INDEX_NAME,
-                "_id": f"artist{artist.id}"
-            }}))
-        lines.append(json.dumps({
-            "name": artist.display_name,
-            "type": "artist",
-            "id": artist.id,
-            "artist": None,
-            "url": f"/artist/{artist.id}"
-        }))
-
-    for album in albums:
-        lines.append(json.dumps({
-            "index": {
-                "_index": INDEX_NAME,
-                "_id": f"album{album.id}"
-            }}))
-        lines.append(json.dumps({
-            "name": album.title,
-            "type": "album",
-            "id": album.id,
-            "artist": album.artist_name,
-            "url": f"/album/{album.id}"
-        }))
-
-    for song in songs:
-        lines.append(json.dumps({
-            "index": {
-                "_index": INDEX_NAME,
-                "_id": f"song{song.id}"
-            }}))
-        lines.append(json.dumps({
-            "name": song.title,
-            "type": "song",
-            "id": song.id,
-            "artist": song.artist_name,
-            "url": f"/album/{song.album_id}/song/{song.id}"
-        }))
-
-    payload = "\n".join(lines) + "\n"
-
-    r = requests.post(f"{OPENSEARCH_URL}/_bulk", data=payload,
-                      headers={"Content-Type": "application/json"})
-    if r.status_code != 200:
-        raise RuntimeError(f"Bulk index failed: {r.status_code} {r.text}")
-
-
-def wait_for_opensearch_ready(timeout=120):
+def _wait_for_opensearch_ready(timeout=120):
     timeout += time.time()
     while time.time() < timeout:
         try:

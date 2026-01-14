@@ -111,7 +111,7 @@
     }
 
     try {
-      let url = `/search/preview?q=${encodeURIComponent(searchValue)}`
+      let url = `/search/suggest?q=${encodeURIComponent(searchValue)}`
       if (selectedFilter) {
         url += `&type=${selectedFilter}`;
       }
