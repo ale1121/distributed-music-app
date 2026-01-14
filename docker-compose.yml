@@ -20,6 +20,7 @@ services:
       - postgres
       - keycloak
       - opensearch
+      - grafana
     restart: unless-stopped
     environment:
       DB_HOST: postgres
@@ -74,18 +75,39 @@ services:
       - ./audio_data:/audio_data
 
   opensearch:
-    image: opensearchproject/opensearch:latest
+    image: opensearchproject/opensearch:3
     container_name: muzo-search
     restart: unless-stopped
     environment:
-      - discovery.type=single-node
-      - DISABLE_SECURITY_PLUGIN=true
-      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Muzo123!@#%
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: true
+      OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: Muzo123!@#%
     volumes:
       - opensearch_data:/usr/share/opensearch/data
     ports:
       - "9200:9200"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: muzo-stats
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGNUP: "false"
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Viewer"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    ports:
+      - "5003:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    restart: unless-stopped
+    depends_on:
+      - postgres
 
 
 volumes:
@@ -98,4 +120,6 @@ volumes:
   audio_data:
     driver: local
   opensearch_data:
+    driver: local
+  grafana_data:
     driver: local

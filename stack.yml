@@ -45,8 +45,8 @@ services:
         delay: 10s
         max_attempts: 20
     volumes:
-      - images_data:/data/uploads
-      - audio_data:/data/audio
+      - ./images_data:/data/uploads
+      - ./audio_data:/data/audio
     networks: [front, backend, search]
 
   streaming:
@@ -61,7 +61,7 @@ services:
       restart_policy:
         condition: on-failure
     volumes:
-      - audio_data:/audio_data:ro
+      - ./audio_data:/audio_data:ro
     networks: [stream]
 
   keycloak:
@@ -94,16 +94,41 @@ services:
       - opensearch_data:/usr/share/opensearch/data
     networks: [search]
 
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGNUP: "false"
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Viewer"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    ports:
+      - "5003:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    deploy:
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - postgres
+    networks: [stats]
+
 volumes:
   postgres_data:
     driver: local
   keycloak_data:
     driver: local
-  images_data:
-    driver: local
-  audio_data:
-    driver: local
+  # images_data:
+  #   driver: local
+  # audio_data:
+  #   driver: local
   opensearch_data:
+    driver: local
+  grafana_data:
     driver: local
 
 networks:

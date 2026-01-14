@@ -1,0 +1,149 @@
+{
+  "title": "Muzo Stats",
+  "uid": "muzo-stats",
+  "timezone": "browser",
+  "schemaVersion": 42,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "type": "barchart",
+      "title": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 0,
+            "fillOpacity": 100,
+            "gradientMode": "hue",
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "axisCenteredZero": false,
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "axisGridShow": false
+          },
+          "color": {
+            "mode": "shades",
+            "fixedColor": "#9547d0"
+          }
+        }
+      },
+      "transparent": true,
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "select u.display_name as artist, count(*) as plays from plays p join songs s on s.id = p.song_id join albums a on a.id = s.album_id join users u on u.id = a.artist_id where p.played_at >= now() - interval '7 days' group by u.display_name order by plays desc limit 5;",
+          "dataset": "muzodb",
+          "rawQuery": true
+        }
+      ],
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgres-muzo"
+      },
+      "options": {
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 200,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.5,
+        "barRadius": 0.3,
+        "fullHighlight": false,
+        "tooltip": {
+          "mode": "single",
+          "sort": "none",
+          "hideZeros": false
+        },
+        "legend": {
+          "showLegend": false
+        },
+        "xField": "artist"
+      }
+    },
+    {
+      "id": 1,
+      "type": "barchart",
+      "title": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 0,
+            "fillOpacity": 100,
+            "gradientMode": "hue",
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "axisCenteredZero": false,
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "axisGridShow": false
+          },
+          "color": {
+            "mode": "shades",
+            "fixedColor": "#9547d0"
+          }
+        }
+      },
+      "transparent": true,
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "select s.title as Song, count(*) as Plays from plays p join songs s on s.id = p.song_id where p.played_at >= now() - interval '7 days' group by s.title order by plays desc limit 10;",
+          "dataset": "muzodb",
+          "rawQuery": true
+        }
+      ],
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgres-muzo"
+      },
+      "options": {
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 200,
+        "showValue": "always",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.5,
+        "barRadius": 0.3,
+        "fullHighlight": false,
+        "tooltip": {
+          "mode": "single",
+          "sort": "none",
+          "hideZeros": false
+        },
+        "legend": {
+          "showLegend": false
+        },
+        "xField": "song"
+      }
+    }
+  ]
+}
