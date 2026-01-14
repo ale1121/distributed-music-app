@@ -63,6 +63,29 @@
   </div>  
 </div>
 
+<div class="ps-3">
+  <h2 class="mt-5" style="padding-left: 20px;">New Releases</h2>
+  <div class="container" style="max-width: 1000px;">
+    <div class="row row-cols-auto">
+      {% for album in new_releases %}
+      <div class="col">
+        <a href="{{ url_for('album.view', album_id=album.id) }}"
+        class="card grid-card p-2 my-2" style="text-decoration: none; width: 200px;">
+          <div class="d-flex flex-column align-items-start">
+            <img class="rounded mb-2" width="180px"
+              src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
+                      else url_for('static', filename='assets/placeholder-cover.webp') }}"
+              onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
+            <div class="fw-semibold text-wrap text-break">{{ album.title }}</div>
+            <div class="text-gray small text-wrap text-break">{{ album.artist_name }} • {{ album.release_year }}</div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>  
+</div>
+
 
 <script>
   let selectedFilter = null
