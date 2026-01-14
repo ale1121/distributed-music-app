@@ -65,6 +65,7 @@ class Album(Base):
         server_default=extract("year", func.current_date())
     )
     published: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    published_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True))
     artist_id: Mapped[int] = mapped_column(
         ForeignKey("artists.id", ondelete="CASCADE"),
         nullable=False, index=True

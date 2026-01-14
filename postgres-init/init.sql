@@ -35,6 +35,7 @@ CREATE TABLE albums (
         cover_file VARCHAR(255),
         release_year INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),
         published BOOLEAN NOT NULL DEFAULT false,
+        published_at TIMESTAMP WITH TIME ZONE,
         artist_id INTEGER NOT NULL,
         PRIMARY KEY (id),
         FOREIGN KEY (artist_id) REFERENCES artists (id) ON DELETE CASCADE

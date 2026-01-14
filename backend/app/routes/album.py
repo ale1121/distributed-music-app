@@ -5,7 +5,7 @@ from flask import (
     Blueprint, render_template, request, current_app, session, jsonify, redirect, url_for
 )
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.utils.decorators import role_required, login_required
 from app.db import Session
 from app.models import Album, Song, Artist, User
@@ -95,6 +95,7 @@ def publish_album(album_id):
     # update album in db
     album = get_album(album_id, artist_required=True)
     album.published = True
+    album.published_at = func.now()
     Session.commit()
     Session.refresh(album)
 
