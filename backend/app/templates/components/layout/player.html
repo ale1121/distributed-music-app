@@ -17,7 +17,7 @@
     </a>
 
     <div class="col-2 d-flex align-items-center justify-content-between">
-      <button class="btn btn-player-controls" id="playerPrevBtn">
+      <button class="btn btn-player-controls" id="playerBackBtn">
         <i class="bi bi-skip-start-fill"></i>
       </button>
       <button class="btn btn-play" id="playerPlayBtn">
@@ -26,7 +26,7 @@
       <button class="btn btn-play d-none" id="playerPauseBtn">
         <i class="bi bi-pause-fill"></i>
       </button>
-      <button class="btn btn-player-controls" id="playerNextBtn">
+      <button class="btn btn-player-controls" id="playerFwdBtn">
         <i class="bi bi-skip-end-fill"></i>
       </button>
     </div>
@@ -126,9 +126,6 @@
     try { audio.currentTime = 0; } catch {};
   })
 
-  const playerPlayBtn = document.getElementById("playerPlayBtn");
-  const playerPauseBtn = document.getElementById("playerPauseBtn");
-
   window.pauseSong = function() {
     const state = getPlayerState();
     if (state && state.isPlaying) {
@@ -149,12 +146,35 @@
     playerPauseBtn.classList.remove("d-none");
   }
 
+  window.skipSeconds = function(seconds) {
+    const state = getPlayerState();
+    if (!state) return;
+    const duration = Number.isFinite(audio.duration) ? audio.duration : audio.currentTime;
+    const newTime = audio.currentTime + seconds;
+    audio.currentTime = Math.min(Math.max(newTime, 0), duration);
+    state.currentTime = audio.currentTime;
+    savePlayerState(state);
+  }
+
+  const playerPlayBtn = document.getElementById("playerPlayBtn");
+  const playerPauseBtn = document.getElementById("playerPauseBtn");
+  const playerBackBtn = document.getElementById("playerBackBtn");
+  const playerFwdBtn = document.getElementById("playerFwdBtn");
+
   playerPlayBtn.addEventListener("click", () => {
     resumeSong();
   });
 
   playerPauseBtn.addEventListener("click", () => {
     pauseSong();
+  });
+
+  playerBackBtn.addEventListener("click", () => {
+    skipSeconds(-10);
+  });
+
+  playerFwdBtn.addEventListener("click", () => {
+    skipSeconds(10);
   });
 
   document.addEventListener("keydown", (e) => {
