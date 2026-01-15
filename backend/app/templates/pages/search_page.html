@@ -169,6 +169,8 @@
 
   document.querySelectorAll('input[name="filters"]').forEach(radio => {
     radio.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       if (selectedFilter == radio.value) {
         radio.checked = false;
         selectedFilter = null;
@@ -197,6 +199,9 @@
     }
 
     results.forEach(item => {
+      const placeholder = item.type === "Artist"
+            ? "/static/assets/placeholder-avatar.webp"
+            : "/static/assets/placeholder-cover.webp";
       const el = document.createElement("div");
       el.className = "col";
       el.innerHTML = `
@@ -205,8 +210,7 @@
           <div class="d-flex flex-column align-items-start">
             <img class="${item.type == 'Artist' ? 'rounded-circle' : 'rounded'} mb-2" width="180px"
               src="${item.img}"
-              onerror="this.src=${item.type == "Artist" ? '/static/assets/placeholder-avatar.webp'
-                                                        : '/static/assets/placeholder-cover.webp'}>
+              onerror="this.src='${placeholder}'">
             <div class="fw-semibold text-wrap text-break">${item.name}</div>
             <div class="text-gray small">${item.type}</div>
             ${item.type == "Artist"
