@@ -146,7 +146,8 @@
   .btn-radio {
     --bs-btn-color: var(--bs-off-white);
     --bs-btn-bg: var(--bs-gray-light-2);
-    --bs-btn-active-bg: var(--bs-gray-light-3);
+    --bs-btn-hover-bg: var(--bs-gray-light-3);
+    --bs-btn-active-bg: var(--bs-gray-light-4);
     --bs-btn-disabled-bg: var(--bs-gray-light-2);
     --bs-btn-border-width: 0px;
   }

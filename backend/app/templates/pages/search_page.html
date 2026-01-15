@@ -169,8 +169,6 @@
 
   document.querySelectorAll('input[name="filters"]').forEach(radio => {
     radio.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
       if (selectedFilter == radio.value) {
         radio.checked = false;
         selectedFilter = null;
