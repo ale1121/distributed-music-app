@@ -3,9 +3,9 @@ import jwt
 from jwt import PyJWKClient
 from flask import Blueprint, current_app, redirect, request, session, url_for, render_template
 from sqlalchemy import select
-from app.db import Session
-from app.models import User, Artist
-from app.utils.opensearch import opensearch
+from app.database.db import Session
+from app.database.models import User, Artist
+from app.opensearch import opensearch
 
 
 auth_bp = Blueprint('auth', __name__)

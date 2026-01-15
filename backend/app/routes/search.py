@@ -1,11 +1,11 @@
 from flask import Blueprint, request, current_app, session, jsonify, url_for
 from app.utils.decorators import login_required, role_required
-from app.utils.opensearch import opensearch
-from app.utils.opensearch.conf import OPENSEARCH_DOC_TYPES
+from app.opensearch import opensearch
+from app.opensearch.conf import OPENSEARCH_DOC_TYPES
 from werkzeug.exceptions import BadRequest, InternalServerError
 from sqlalchemy import select
-from app.db import Session
-from app.models import Artist, Album, Song
+from app.database.db import Session
+from app.database.models import Artist, Album, Song
 
 
 search_bp = Blueprint('search', __name__)

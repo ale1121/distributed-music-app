@@ -1,8 +1,8 @@
 from flask import Blueprint, session, render_template, current_app
 from app.utils.user_roles import get_user_roles
 from sqlalchemy import select, func
-from app.db import Session
-from app.models import Song, Artist, Album, Play, User
+from app.database.db import Session
+from app.database.models import Song, Artist, Album, Play, User
 
 
 home_bp = Blueprint('home', __name__)

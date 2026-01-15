@@ -1,7 +1,7 @@
 from werkzeug.exceptions import NotFound, Forbidden
 from flask import session
-from app.db import Session
-from app.models import Album, Song
+from app.database.db import Session
+from app.database.models import Album, Song
 
 
 def get_album(album_id, artist_required=False):

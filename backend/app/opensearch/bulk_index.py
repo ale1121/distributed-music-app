@@ -1,8 +1,8 @@
 import json
 import requests
 from sqlalchemy import select
-from app.models import User, Artist, Album, Song
-from app.db import Session
+from app.database.models import User, Artist, Album, Song
+from app.database.db import Session
 from .conf import INDEX_NAME, OPENSEARCH_URL
 
 

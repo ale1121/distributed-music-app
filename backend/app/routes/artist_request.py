@@ -2,8 +2,8 @@ from flask import Blueprint, jsonify, session
 from werkzeug.exceptions import NotFound, Conflict
 from app.utils.decorators import login_required, role_required
 from sqlalchemy import select
-from app.db import Session
-from app.models import User, Artist, ArtistRequest
+from app.database.db import Session
+from app.database.models import User, Artist, ArtistRequest
 
 
 artist_req_bp = Blueprint('artist_req', __name__)

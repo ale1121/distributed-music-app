@@ -7,8 +7,8 @@ from flask import (
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden
 from sqlalchemy import select
 from app.utils.decorators import role_required, login_required
-from app.db import Session
-from app.models import Artist, Album
+from app.database.db import Session
+from app.database.models import Artist, Album
 from app.utils.image import crop_resize_save_image
 from app.utils.user_roles import get_user_roles
 

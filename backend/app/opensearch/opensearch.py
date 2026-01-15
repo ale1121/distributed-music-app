@@ -6,8 +6,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from sqlalchemy import select, literal
 from werkzeug.exceptions import NotFound
-from ...models import Song, Album, Artist, User
-from ...db import Session
+from ..database.models import Song, Album, Artist, User
+from ..database.db import Session
 from .conf import OPENSEARCH_URL, INDEX_NAME
 from .search_queries import get_query, match_name, multi_match_name, name_type_query
 from .bulk_index import bulk_index, bulk_index_catalog

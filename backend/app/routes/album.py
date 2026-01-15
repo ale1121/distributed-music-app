@@ -7,12 +7,12 @@ from flask import (
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 from sqlalchemy import select, func
 from app.utils.decorators import role_required, login_required
-from app.db import Session
-from app.models import Album, Song, Artist, User
+from app.database.db import Session
+from app.database.models import Album, Song, Artist, User
 from app.utils.image import crop_resize_save_image
-from app.utils.db_helpers import get_album
+from app.database.db_helpers import get_album
 from app.utils.user_roles import get_user_roles
-from app.utils.opensearch import opensearch
+from app.opensearch import opensearch
 
 
 album_bp = Blueprint('album', __name__)

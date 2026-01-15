@@ -5,12 +5,12 @@ from flask import (
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from sqlalchemy import select
 from app.utils.decorators import role_required, login_required
-from app.utils.db_helpers import get_album, get_song
+from app.database.db_helpers import get_album, get_song
 from app.utils.user_roles import get_user_roles
 from app.utils.audio import save_audio_file
-from app.db import Session
-from app.models import Album, Song, Play
-from app.utils.opensearch import opensearch
+from app.database.db import Session
+from app.database.models import Album, Song, Play
+from app.opensearch import opensearch
 from app.utils.stream import sign_streaming_url
 
 

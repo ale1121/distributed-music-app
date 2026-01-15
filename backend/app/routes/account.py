@@ -2,8 +2,8 @@ import requests
 from flask import Blueprint, session, render_template, current_app
 from app.utils.decorators import login_required, role_required
 from app.utils.user_roles import get_user_roles
-from app.db import Session
-from app.models import ArtistRequest
+from app.database.db import Session
+from app.database.models import ArtistRequest
 
 
 account_bp = Blueprint('account', __name__)

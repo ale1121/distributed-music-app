@@ -4,8 +4,8 @@ from zoneinfo import ZoneInfo
 import logging
 from .config.config import Config
 from .config.jinja_filters import format_dt, format_duration
-from .db import Session
-from . import models
+from .database.db import Session
+from .database import models
 from .routes.auth import auth_bp
 from .routes.home import home_bp
 from .routes.account import account_bp
@@ -18,7 +18,7 @@ from .routes.album import album_bp
 from .routes.song import song_bp
 from .routes.search import search_bp
 from .utils.errors import register_error_handlers
-from .utils.opensearch import opensearch
+from .opensearch import opensearch
 
 
 def create_app():
