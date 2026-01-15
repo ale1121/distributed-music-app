@@ -1,10 +1,13 @@
 import os
 import socket
 from flask import Flask, request, Response, Blueprint, current_app, jsonify
-from werkzeug.exceptions import NotFound, RequestedRangeNotSatisfiable
+from werkzeug.exceptions import NotFound, BadRequest, RequestedRangeNotSatisfiable
+from .auth import verify_signature
 
 
 stream_bp = Blueprint('stream', __name__)
+
+AUDIO_PATH = os.getenv('AUDIO_PATH', '/audio_data')
 
 CHUNK_SIZE = 1024 * 128
 
@@ -12,10 +15,18 @@ CHUNK_SIZE = 1024 * 128
 @stream_bp.route("/stream/<path:filename>", methods=["GET"])
 def stream_file(filename):
     current_app.logger.info(f"Serving from {socket.gethostname()}")
-    audio_dir = current_app.config['AUDIO_PATH']
-    file_path = os.path.join(audio_dir, filename)
+
+    # verify url expiration and signature
+    expire = request.args.get("exp")
+    signature = request.args.get("sig")
+    if not expire or not signature:
+        raise BadRequest("missing exp or sig")
+    verify_signature(filename, expire, signature)
+
+    file_path = os.path.join(AUDIO_PATH, filename)
     if not os.path.isfile(file_path):
         raise NotFound("File not found")
+
     file_size = os.path.getsize(file_path)
 
     range_header = request.headers.get("Range")
@@ -28,7 +39,8 @@ def stream_file(filename):
             mimetype="audio/mpeg",
             headers={
                 "Content-Length": str(file_size),
-                "Accept-Ranges": "bytes"
+                "Accept-Ranges": "bytes",
+                "X-Replica": socket.gethostname()
             }
         )
     
@@ -58,7 +70,8 @@ def stream_file(filename):
         headers={
             "Content-Range": f"bytes {start}-{end}/{file_size}",
             "Accept-Ranges": "bytes",
-            "Content-Length": str(length)
+            "Content-Length": str(length),
+            "X-Replica": socket.gethostname()
         }
     )
 

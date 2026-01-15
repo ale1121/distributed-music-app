@@ -1,14 +1,15 @@
 from flask import Flask, jsonify
-from app.config import Config
 import logging
 from app.stream import stream_bp
+from app.errors import register_error_handlers
 
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
 
     app.register_blueprint(stream_bp)
+
+    register_error_handlers(app)
 
     logging.basicConfig(level=logging.DEBUG)
 

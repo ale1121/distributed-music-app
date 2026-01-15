@@ -34,7 +34,7 @@ services:
       KC_REALM: muzo-realm
       KC_CLIENT_ID: muzo-client
       KC_REDIRECT_URI: http://localhost:5000/callback
-      SECRET_KEY: topsecretkey
+      SECRET_KEY: secretkey
 
       OPENSEARCH_URL: http://opensearch:9200
 
@@ -44,6 +44,7 @@ services:
       AUDIO_PATH: /data/audio
 
       STREAMING_URL: http://localhost:5001
+      STREAM_SECRET: streamsecret
     ports:
       - "5000:5000"
     volumes:
@@ -68,6 +69,7 @@ services:
     build: ./streaming
     environment:
       AUDIO_PATH: /audio_data
+      STREAM_SECRET: streamsecret
     container_name: muzo-streaming
     ports:
       - "5001:5000"

@@ -11,6 +11,7 @@ from app.utils.audio import save_audio_file
 from app.db import Session
 from app.models import Album, Song, Play
 from app.utils.opensearch import opensearch
+from app.utils.stream import sign_streaming_url
 
 
 song_bp = Blueprint('song', __name__)
@@ -35,9 +36,8 @@ def view(album_id, song_id):
 def play_song(album_id, song_id):
     song = get_song(album_id, song_id)
 
-    # get streaming url for song
-    stream_base_url = current_app.config['STREAMING_URL']
-    stream_url = f"{stream_base_url}/stream/{song.audio_file}"
+    # get signed streaming url for song
+    stream_url = sign_streaming_url(song.audio_file)
 
     # save play to db
     play = Play(
