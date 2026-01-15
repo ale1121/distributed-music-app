@@ -2,13 +2,13 @@ import os
 
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY')
+    SECRET_KEY = os.getenv('SECRET_KEY', 'secretkey')
 
-    KC_URL = os.getenv('KC_URL')
-    KC_PUBLIC_URL = os.getenv('KC_PUBLIC_URL')
-    KC_REALM = os.getenv('KC_REALM')
-    KC_CLIENT_ID = os.getenv('KC_CLIENT_ID')
-    KC_REDIRECT_URI = os.getenv('KC_REDIRECT_URI')
+    KC_URL = os.getenv('KC_URL', 'http://keycloak:8080')
+    KC_PUBLIC_URL = os.getenv('KC_PUBLIC_URL', 'http://localhost:5002')
+    KC_REALM = os.getenv('KC_REALM', 'muzo-realm')
+    KC_CLIENT_ID = os.getenv('KC_CLIENT_ID', 'muzo-client')
+    KC_REDIRECT_URI = os.getenv('KC_REDIRECT_URI', 'http://localhost:5000/callback')
 
     ISSUER_URL = f"{KC_PUBLIC_URL}/realms/{KC_REALM}"
 
@@ -28,4 +28,6 @@ class Config:
     AUDIO_PATH = os.getenv('AUDIO_PATH', '/data/audio')
 
     STREAMING_URL = os.getenv('STREAMING_URL', 'http://localhost:5001')
-    
+
+    GRAFANA_URL = os.getenv('GRAFANA_URL', 'http://localhost:5003')
+    GRAFANA_DASHBOARD = os.getenv('GRAFANA_DASHBOARD', 'muzo-stats')

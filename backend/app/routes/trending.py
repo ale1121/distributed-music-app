@@ -1,4 +1,4 @@
-from flask import Blueprint, session, render_template
+from flask import Blueprint, session, render_template, current_app
 from app.utils.decorators import login_required, role_required
 from app.utils.user_roles import get_user_roles
 
@@ -7,9 +7,15 @@ trending_bp = Blueprint('trending', __name__)
 
 
 @trending_bp.route("/trending")
+@login_required
 def view():
     """ View trending page """
 
-    if "user" in session:
-        return render_template("pages/trending_page.html", current_path='/trending', roles=get_user_roles())
-    return render_template("pages/login.html")
+    gf_url = current_app.config['GRAFANA_URL']
+    gf_dashboard = current_app.config['GRAFANA_DASHBOARD']
+
+    return render_template("pages/trending_page.html",
+                           gf_url=gf_url,
+                           gf_dashboard=gf_dashboard,
+                           current_path='/trending',
+                           roles=get_user_roles())

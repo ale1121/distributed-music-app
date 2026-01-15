@@ -6,11 +6,10 @@ import base64
 from werkzeug.exceptions import Forbidden
 
 
-STREAM_SECRET = os.getenv('STREAM_SECRET', '')
+STREAM_SECRET = os.getenv('STREAM_SECRET', 'streamsecret')
 
 
 def verify_signature(filename, expire, signature):
-    
     if time.time() > int(expire):
         raise Forbidden("expired")
     

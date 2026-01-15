@@ -15,28 +15,33 @@ services:
 
   web-api:
     image: muzo-web
-    depends_on:
-      - postgres
-      - keycloak
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: muzodb
       DB_USER: muzo
       DB_PASSWORD: muzo
+      DB_NAME: muzodb
 
       KC_URL: http://keycloak:8080
       KC_PUBLIC_URL: http://localhost:5002
       KC_REALM: muzo-realm
       KC_CLIENT_ID: muzo-client
       KC_REDIRECT_URI: http://localhost:5000/callback
-      SECRET_KEY: topsecretkey
+      SECRET_KEY: secretkey
 
-      STREAMING_URL: http://localhost:5001
+      OPENSEARCH_URL: http://opensearch:9200
 
       TIMEZONE: Europe/Bucharest
+
       UPLOADS_PATH: /data/uploads
       AUDIO_PATH: /data/audio
+
+      STREAMING_URL: http://localhost:5001
+      STREAM_SECRET: streamsecret
+      STREAMING_URL_TTL: 900
+
+      GRAFANA_URL: http://localhost:5003
+      GRAFANA_DASHBOARD: muzo-stats
     ports:
       - "5000:5000"
     deploy:
@@ -53,6 +58,7 @@ services:
     image: muzo-streaming
     environment:
       AUDIO_PATH: /audio_data
+      STREAM_SECRET: streamsecret
     ports:
       - "5001:5000"
     deploy:
@@ -81,7 +87,7 @@ services:
     networks: [front]
 
   opensearch:
-    image: opensearchproject/opensearch:latest
+    image: opensearchproject/opensearch:3
     environment:
       - discovery.type=single-node
       - DISABLE_SECURITY_PLUGIN=true

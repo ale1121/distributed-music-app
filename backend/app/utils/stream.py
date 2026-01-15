@@ -6,8 +6,8 @@ import base64
 
 
 STREAMING_URL = os.getenv('STREAMING_URL', 'http://localhost:5001')
-STREAM_SECRET = os.getenv('STREAM_SECRET', '')
-TTL = 30
+STREAM_SECRET = os.getenv('STREAM_SECRET', 'streamsecret')
+TTL = int(os.getenv('STREAMING_URL_TTL', '900'))
 
 
 def sign_streaming_url(filename):
