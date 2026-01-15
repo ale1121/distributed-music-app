@@ -1,8 +1,8 @@
 from flask import Blueprint, request, current_app, session, jsonify, url_for
-from app.utils.decorators import login_required
+from app.utils.decorators import login_required, role_required
 from app.utils.opensearch import opensearch
 from app.utils.opensearch.conf import OPENSEARCH_DOC_TYPES
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, InternalServerError
 from sqlalchemy import select
 from app.db import Session
 from app.models import Artist, Album, Song
@@ -11,7 +11,7 @@ from app.models import Artist, Album, Song
 search_bp = Blueprint('search', __name__)
 
 
-@search_bp.route("/search/suggest", methods=["GET"])
+@search_bp.route("/api/search/suggest", methods=["GET"])
 @login_required
 def search_suggestions():
     """
@@ -32,7 +32,7 @@ def search_suggestions():
     return jsonify(results), 200
 
 
-@search_bp.route("/search/results", methods=["GET"])
+@search_bp.route("/api/search/results", methods=["GET"])
 @login_required
 def search_full():
     """
@@ -85,3 +85,15 @@ def search_full():
             })
 
     return jsonify(full_results), 200
+
+
+@search_bp.route("/api/admin/reindex_catalog", methods=["GET"])
+@role_required("ROLE_ADMIN")
+def reindex_catalog():
+    """ Reindex entire catalog from db in OpenSearch """
+    try:
+        opensearch.reindex_all()
+    except RuntimeError as e:
+        current_app.logger.error(str(e))
+        raise InternalServerError("Reindexing failed. See error log for details.")
+    return jsonify(ok=True)

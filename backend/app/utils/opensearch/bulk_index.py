@@ -70,7 +70,7 @@ def bulk_index(artists, albums, songs):
             "type": "song",
             "id": song.id,
             "artist": song.artist_name,
-            "url": f"/album/{song.album_id}/song/{song.id}"
+            "url": f"/song/{song.id}"
         }))
 
     payload = "\n".join(lines) + "\n"

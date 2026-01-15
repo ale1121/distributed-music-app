@@ -89,7 +89,7 @@
 
     try {
       const res = await fetch("{{ url_for('album.save_details', album_id=album.id) }}", {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"

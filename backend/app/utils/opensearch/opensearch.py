@@ -36,6 +36,7 @@ def search(name, type=None, multi_match=False, limit=6):
 
 
 def parse_results(data):
+    """ Parse search results """
     results = []
     hits = data.get("hits", {}).get("hits", [])
     for hit in hits:

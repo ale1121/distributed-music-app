@@ -22,7 +22,7 @@ def get_album(album_id, artist_required=False):
     return album
 
 
-def get_song(album_id, song_id, artist_required=False):
+def get_song(song_id, artist_required=False):
     """
     Get song from db
     If artist_required, check if the user owns the album the song is on
@@ -32,12 +32,10 @@ def get_song(album_id, song_id, artist_required=False):
     song = Session.get(Song, song_id)
     if not song:
         raise NotFound("Song not found")
-    if song.album_id != album_id:
-        raise NotFound("The song doesn't exist in this album")
-    
+
     if artist_required:
         if song.album.artist_id != session["user_id"]:
-            raise Forbidden("You don;t have permission to edit this song")
+            raise Forbidden("You don't have permission to edit this song")
     else:
         if not song.album.published:
             raise Forbidden("This song is in a private album")

@@ -11,10 +11,10 @@ from werkzeug.exceptions import InternalServerError
 admin_bp = Blueprint('admin', __name__)
 
 
-@admin_bp.route("/admin")
+@admin_bp.route("/admin", methods=["GET"])
 @role_required("ROLE_ADMIN")
 def view():
-    """ View 'Admin' page """
+    """ View Admin page """
 
     stmt = select(User, ArtistRequest) \
         .join(ArtistRequest, User.id == ArtistRequest.user_id) \
@@ -26,15 +26,3 @@ def view():
                            artist_requests=requests,
                            current_path='/admin',
                            roles=get_user_roles())
-
-
-@admin_bp.route("/admin/reindex_catalog", methods=["GET"])
-@role_required("ROLE_ADMIN")
-def reindex_catalog():
-    """ Reindex entire catalog from db in OpenSearch """
-    try:
-        opensearch.reindex_all()
-    except RuntimeError as e:
-        current_app.logger.error(str(e))
-        raise InternalServerError("Reindexing failed. See error log for details.")
-    return jsonify(ok=True)

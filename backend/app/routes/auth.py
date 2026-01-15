@@ -61,7 +61,7 @@ def sync_user_db(decoded_token):
     return user
 
 
-@auth_bp.route("/login")
+@auth_bp.route("/api/login")
 def login():
     conf = current_app.config
 
@@ -134,7 +134,7 @@ def callback():
     return redirect(url_for("home.view"))
 
 
-@auth_bp.route("/logout")
+@auth_bp.route("/api/logout")
 def logout():
     conf = current_app.config
     id_token = session.get("id_token")

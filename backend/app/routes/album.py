@@ -21,6 +21,8 @@ album_bp = Blueprint('album', __name__)
 @album_bp.route("/album/<int:album_id>", methods=["GET"])
 @login_required
 def view(album_id):
+    """ View album page """
+
     album = get_album(album_id)
     artist = album.artist
     artist_user = artist.user
@@ -52,7 +54,25 @@ def edit_view(album_id):
                             roles=get_user_roles())
 
 
-@album_bp.route("/album/<int:album_id>/edit", methods=["POST"])
+@album_bp.route("/api/albums", methods=["POST"])
+@role_required("ROLE_ARTIST")
+def create_album():
+    """ Create a new album with default details """
+
+    album = Album(
+        title="Untitled Album",
+        artist_id = session["user_id"],
+        published=False
+    )
+    Session.add(album)
+    Session.commit()
+    Session.refresh(album)
+
+    return redirect(url_for('album.edit_view', album_id=album.id), code=303)
+
+
+
+@album_bp.route("/api/albums/<int:album_id>", methods=["PUT"])
 @role_required("ROLE_ARTIST")
 def save_details(album_id):
     """ Update album tile and release year """
@@ -87,7 +107,7 @@ def save_details(album_id):
     return jsonify(ok=True), 200
 
 
-@album_bp.route("/album/<int:album_id>/publish", methods=["POST"])
+@album_bp.route("/api/albums/<int:album_id>/publish", methods=["POST"])
 @role_required("ROLE_ARTIST")
 def publish_album(album_id):
     """ Make album public """
@@ -105,10 +125,10 @@ def publish_album(album_id):
     return jsonify(ok=True), 200
 
 
-@album_bp.route("/album/<int:album_id>/delete", methods=["POST"])
+@album_bp.route("/api/albums/<int:album_id>/delete", methods=["POST"])
 @role_required("ROLE_ARTIST")
 def delete_album(album_id):
-    """ Delete album """
+    """ Delete album, redirect to artist page """
 
     album = get_album(album_id, artist_required=True)
 
@@ -135,7 +155,7 @@ def delete_album(album_id):
     return redirect(url_for('artist.edit_view'), code=303)
 
 
-@album_bp.route("/album/<int:album_id>/cover", methods=["POST"])
+@album_bp.route("/api/albums/<int:album_id>/cover", methods=["PUT"])
 @role_required("ROLE_ARTIST")
 def upload_cover_image(album_id):
     """ Upload album cover """
@@ -169,7 +189,7 @@ def upload_cover_image(album_id):
         raise BadRequest("Invalid image file")
 
 
-@album_bp.route("/album/<int:album_id>/cover", methods=["DELETE"])
+@album_bp.route("/api/albums/<int:album_id>/cover", methods=["DELETE"])
 @role_required("ROLE_ARTIST")
 def delete_cover_image(album_id):
     """ Delete album cover """
@@ -189,20 +209,3 @@ def delete_cover_image(album_id):
         Session.commit()
 
     return jsonify(ok=True), 200
-
-
-@album_bp.route("/album/create", methods=["POST"])
-@role_required("ROLE_ARTIST")
-def create_album():
-    """ Create a new album with default details """
-
-    album = Album(
-        title="Untitled Album",
-        artist_id = session["user_id"],
-        published=False
-    )
-    Session.add(album)
-    Session.commit()
-    Session.refresh(album)
-
-    return redirect(url_for('album.edit_view', album_id=album.id), code=303)

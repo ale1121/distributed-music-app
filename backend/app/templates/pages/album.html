@@ -40,7 +40,7 @@
       <li id=""
         class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
         <a class="ms-2 me-auto fw-semibold text-wrap text-break link"
-          href="{{ url_for('song.view', album_id=album.id, song_id=song.id) }}">{{ song.title }}</a>
+          href="{{ url_for('song.view', song_id=song.id) }}">{{ song.title }}</a>
         <div class="d-flex align-items-center gap-2">
           <span class="text-gray">{{ song.duration | format_duration }}</span>
           <button class="play-btn btn btn-transparent"
@@ -49,8 +49,8 @@
             data-album-title="{{ album.title }}"
             data-album-cover="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
                                 else url_for('static', filename='assets/placeholder-cover.webp') }}"
-            data-play-url="{{ url_for('song.play_song', album_id=album.id, song_id=song.id) }}"
-            data-song-view-url="{{ url_for('song.view', album_id=album.id, song_id=song.id) }}">
+            data-play-url="{{ url_for('song.play_song', song_id=song.id) }}"
+            data-song-view-url="{{ url_for('song.view', song_id=song.id) }}">
             <i class="bi bi-play-fill fs-4"></i>
           </button>
         </div>

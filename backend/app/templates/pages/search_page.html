@@ -46,7 +46,7 @@
     <div class="row row-cols-auto">
       {% for song in recents %}
       <div class="col">
-        <a href="{{ url_for('song.view', album_id=song.album_id, song_id=song.id) }}"
+        <a href="{{ url_for('song.view', song_id=song.id) }}"
         class="card grid-card p-2 my-2" style="text-decoration: none; width: 200px;">
           <div class="d-flex flex-column align-items-start">
             <img class="rounded mb-2" width="180px"
@@ -134,7 +134,7 @@
     }
 
     try {
-      let url = `/search/suggest?q=${encodeURIComponent(searchValue)}`
+      let url = `/api/search/suggest?q=${encodeURIComponent(searchValue)}`
       if (selectedFilter) {
         url += `&type=${selectedFilter}`;
       }
@@ -247,7 +247,7 @@
     }
 
     try {
-      let url = `/search/results?q=${encodeURIComponent(searchValue)}`
+      let url = `/api/search/results?q=${encodeURIComponent(searchValue)}`
       if (selectedFilter) {
         url += `&type=${selectedFilter}`;
       }

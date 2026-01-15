@@ -17,10 +17,10 @@ from app.utils.stream import sign_streaming_url
 song_bp = Blueprint('song', __name__)
 
 
-@song_bp.route("/album/<int:album_id>/song/<int:song_id>", methods=["GET"])
+@song_bp.route("/song/<int:song_id>", methods=["GET"])
 @login_required
-def view(album_id, song_id):
-    song = get_song(album_id, song_id)
+def view(song_id):
+    song = get_song(song_id)
     album = song.album
     artist = album.artist
 
@@ -31,84 +31,7 @@ def view(album_id, song_id):
                     roles=get_user_roles())
 
 
-@song_bp.route("/album/<int:album_id>/song/<int:song_id>/play", methods=["GET"])
-@login_required
-def play_song(album_id, song_id):
-    song = get_song(album_id, song_id)
-
-    # get signed streaming url for song
-    stream_url = sign_streaming_url(song.audio_file)
-
-    # save play to db
-    play = Play(
-        song_id=song.id,
-        user_id=session["user_id"]
-    )
-    Session.add(play)
-    Session.commit()
-
-    return jsonify({
-        "stream_url": stream_url
-    }), 200
-
-
-@song_bp.route("/album/<int:album_id>/song/<int:song_id>/edit", methods=["POST"])
-@role_required("ROLE_ARTIST")
-def save_details(album_id, song_id):
-    """ Update song tile """
-
-    song = get_song(album_id, song_id, artist_required=True)
-
-    # validate song details
-    data = request.get_json()
-    if "title" not in data or "position" not in data:
-        raise BadRequest("Missing song details")
-
-    position = int(data["position"])
-    if position < 0:
-        raise BadRequest("Invalid position")
-    
-    title = data["title"].strip()
-    if len(title) > 100:
-        raise BadRequest("Title too long")
-
-    # update song in db
-    song.title = title
-    song.position = position
-    Session.commit()
-    Session.refresh(song)
-
-    if song.album.published:
-        # reindex song if album is public
-        opensearch.index_document(song.title, 'song', song.id,
-                                url_for('song.view', album_id=album_id, song_id=song.id),
-                                artist=song.album.artist.user.display_name)
-    
-    return jsonify(ok=True), 200
-
-
-@song_bp.route("/album/<int:album_id>/song/<int:song_id>", methods=["DELETE"])
-@role_required("ROLE_ARTIST")
-def delete_song(album_id, song_id):
-    """ Delete song """
-
-    song = get_song(album_id, song_id, artist_required=True)
-
-    # remove audio file
-    try: os.remove(song.audio_file)
-    except: pass
-    
-    # delete song from db
-    Session.delete(song)
-    Session.commit()
-
-    # delete song from index
-    opensearch.delete_document(song.id, 'song')
-
-    return jsonify(ok=True), 200
-
-
-@song_bp.route("/album/<int:album_id>/song", methods=["POST"])
+@song_bp.route("/api/albums/<int:album_id>/songs", methods=["POST"])
 @role_required("ROLE_ARTIST")
 def add_song(album_id):
     """ Add new song to the album """
@@ -149,7 +72,84 @@ def add_song(album_id):
     if album.published:
         # index song if album is public
         opensearch.index_document(song.title, 'song', song.id,
-                                url_for('song.view', album_id=album.id, song_id=song.id),
+                                url_for('song.view', song_id=song.id),
                                 artist=album.artist.user.display_name)
 
     return jsonify(ok=True), 201
+
+
+@song_bp.route("/api/songs/<int:song_id>", methods=["PUT"])
+@role_required("ROLE_ARTIST")
+def save_details(song_id):
+    """ Update song tilte and position """
+
+    song = get_song(song_id, artist_required=True)
+
+    # validate song details
+    data = request.get_json()
+    if "title" not in data or "position" not in data:
+        raise BadRequest("Missing song details")
+
+    position = int(data["position"])
+    if position < 0:
+        raise BadRequest("Invalid position")
+    
+    title = data["title"].strip()
+    if len(title) > 100:
+        raise BadRequest("Title too long")
+
+    # update song in db
+    song.title = title
+    song.position = position
+    Session.commit()
+    Session.refresh(song)
+
+    if song.album.published:
+        # reindex song if album is public
+        opensearch.index_document(song.title, 'song', song.id,
+                                url_for('song.view', song_id=song.id),
+                                artist=song.album.artist.user.display_name)
+    
+    return jsonify(ok=True), 200
+
+
+@song_bp.route("/api/songs/<int:song_id>", methods=["DELETE"])
+@role_required("ROLE_ARTIST")
+def delete_song(song_id):
+    """ Delete song """
+
+    song = get_song(song_id, artist_required=True)
+
+    # remove audio file
+    try: os.remove(song.audio_file)
+    except: pass
+    
+    # delete song from db
+    Session.delete(song)
+    Session.commit()
+
+    # delete song from index
+    opensearch.delete_document(song.id, 'song')
+
+    return jsonify(ok=True), 200
+
+
+@song_bp.route("/api/songs/<int:song_id>/play", methods=["GET"])
+@login_required
+def play_song(song_id):
+    song = get_song(song_id)
+
+    # get signed streaming url for song
+    stream_url = sign_streaming_url(song.audio_file)
+
+    # save play to db
+    play = Play(
+        song_id=song.id,
+        user_id=session["user_id"]
+    )
+    Session.add(play)
+    Session.commit()
+
+    return jsonify({
+        "stream_url": stream_url
+    }), 200

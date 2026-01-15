@@ -76,7 +76,7 @@
 
   document.getElementById("reindexBtn").addEventListener("click", async () => {
     try {
-      const res = await fetch("{{ url_for('admin.reindex_catalog') }}", {
+      const res = await fetch("{{ url_for('search.reindex_catalog') }}", {
         method: "GET",
         headers: {
           "Accept": "application/json"

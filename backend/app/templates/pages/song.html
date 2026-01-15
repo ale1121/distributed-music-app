@@ -15,8 +15,8 @@
         data-album-title="{{ album.title }}"
         data-album-cover="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
                             else url_for('static', filename='assets/placeholder-cover.webp') }}"
-        data-play-url="{{ url_for('song.play_song', album_id=album.id, song_id=song.id) }}"
-        data-song-view-url="{{ url_for('song.view', album_id=album.id, song_id=song.id) }}">
+        data-play-url="{{ url_for('song.play_song', song_id=song.id) }}"
+        data-song-view-url="{{ url_for('song.view', song_id=song.id) }}">
         <i class="bi bi-play-circle-fill" style="font-size: 45px;"></i>
       </button>
     </div>

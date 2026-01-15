@@ -2,9 +2,9 @@ import os
 import time
 from flask import (
     Blueprint, session, render_template, request, current_app,
-    jsonify, send_from_directory
+    jsonify, url_for
 )
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, Forbidden
 from sqlalchemy import select
 from app.utils.decorators import role_required, login_required
 from app.db import Session
@@ -51,21 +51,22 @@ def edit_view():
 
     return render_template("pages/artist_dashboard.html",
                 avatar_file=artist.avatar_file,
-                artist_id=artist.id,
-                albums=albums,
+                artist_id=artist.id, albums=albums,
                 current_path='/artist-account',
                 roles=get_user_roles())
 
 
-@artist_bp.route("/artist-account/avatar", methods=['POST'])
+@artist_bp.route("/api/artists/<int:artist_id>/avatar", methods=['POST'])
 @role_required("ROLE_ARTIST")
-def upload_profile_image():
+def upload_avatar(artist_id):
     """ Upload artist avatar """
 
     if "image" not in request.files:
         raise BadRequest("Missing image")
-    
-    artist_id = session["user_id"]
+
+    if artist_id != session["user_id"]:
+        raise Forbidden("You can only change your own avatar")
+
     artist = Session.get(Artist, artist_id)
     if not artist:
         raise NotFound("Artist not found")
@@ -94,12 +95,15 @@ def upload_profile_image():
         raise BadRequest("Invalid image file")
 
 
-@artist_bp.route("/artist-account/avatar", methods=["DELETE"])
+@artist_bp.route("/api/artists/<int:artist_id>/avatar", methods=["DELETE"])
 @role_required("ROLE_ARTIST")
-def delete_profile_image():
+def delete_avatar(artist_id):
     """ Delete artist avatar """
 
-    artist = Session.get(Artist, session["user_id"])
+    if artist_id != session["user_id"]:
+        raise Forbidden("You can only delete your own avatar")
+
+    artist = Session.get(Artist, artist_id)
     if not artist:
         raise NotFound("Artist not found")
     if not artist.avatar_file:

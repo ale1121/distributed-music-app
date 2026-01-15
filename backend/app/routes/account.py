@@ -9,7 +9,7 @@ from app.models import ArtistRequest
 account_bp = Blueprint('account', __name__)
 
 
-@account_bp.route("/account")
+@account_bp.route("/account", methods=["GET"])
 @login_required
 def view():
     """ View 'My Account' page """

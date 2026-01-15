@@ -9,7 +9,7 @@ from app.models import User, Artist, ArtistRequest
 artist_req_bp = Blueprint('artist_req', __name__)
 
 
-@artist_req_bp.route('/artist-requests', methods=['POST'])
+@artist_req_bp.route('/api/artist-requests', methods=['POST'])
 @login_required
 def create():
     """ Create new artist request for current user """
@@ -30,7 +30,7 @@ def create():
     return jsonify(status="ok")
 
 
-@artist_req_bp.route('/artist-requests/<int:request_id>', methods=['DELETE'])
+@artist_req_bp.route('/api/artist-requests/<int:request_id>', methods=['DELETE'])
 @role_required('ROLE_ADMIN')
 def delete(request_id):
     """ Delete artist request """

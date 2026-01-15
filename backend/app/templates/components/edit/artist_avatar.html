@@ -74,7 +74,7 @@
     saveImageSpinner.classList.remove("d-none");
 
     try {
-      const res = await fetch("{{ url_for('artist.upload_profile_image') }}", {
+      const res = await fetch("{{ url_for('artist.upload_avatar', artist_id=artist_id) }}", {
         method: "POST",
         headers: {
           "Accept": "application/json"
@@ -110,7 +110,7 @@
 
   confirmDeleteImgBtn.addEventListener("click", async () => {
     try {
-      const res = await fetch("{{ url_for('artist.delete_profile_image')}}", {
+      const res = await fetch("{{ url_for('artist.delete_avatar', artist_id=artist_id) }}", {
         method: "DELETE",
         headers: {
           "Accept": "application/json"

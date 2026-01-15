@@ -88,7 +88,7 @@
 
     try {
       const res = await fetch("{{ url_for('album.upload_cover_image', album_id=album.id) }}", {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Accept": "application/json"
         },
