@@ -1,9 +1,10 @@
 from flask import Blueprint, jsonify, session
 from werkzeug.exceptions import NotFound, Conflict
-from app.utils.decorators import login_required, role_required
+from app.auth.decorators import login_required, role_required
 from sqlalchemy import select
 from app.database.db import Session
 from app.database.models import User, Artist, ArtistRequest
+from app.auth.auth_ctx import get_user_id
 
 
 artist_req_bp = Blueprint('artist_req', __name__)
@@ -14,7 +15,7 @@ artist_req_bp = Blueprint('artist_req', __name__)
 def create():
     """ Create new artist request for current user """
 
-    user_id = session["user_id"]
+    user_id = get_user_id
     user = Session.get(User, user_id)
     if not user:
         raise NotFound("User not found")

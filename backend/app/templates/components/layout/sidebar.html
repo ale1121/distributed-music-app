@@ -22,14 +22,14 @@
 <div class="pb-2">
   <hr>
   <ul class="nav nav-pills flex-column">
-    {% if roles.admin %}
+    {% if roles.ROLE_ADMIN %}
     <li class="nav-item">
       <a href="{{ url_for('admin.view') }}" class="nav-link {{ 'active' if current_path == '/admin' else '' }}">
         <i class="bi bi-sliders"></i> Admin
       </a>
     </li>
     {% endif %}
-    {% if roles.artist %}
+    {% if roles.ROLE_ARTIST %}
     <li class="nav-item">
       <a href="{{ url_for('artist.edit_view') }}"
         class="nav-link {{ 'active' if current_path == '/artist-account' else '' }}">

@@ -1,5 +1,5 @@
 from werkzeug.exceptions import NotFound, Forbidden
-from flask import session
+from app.auth.auth_ctx import get_user_id
 from app.database.db import Session
 from app.database.models import Album, Song
 
@@ -14,7 +14,7 @@ def get_album(album_id, artist_required=False):
     if not album:
         raise NotFound("Album not found")
     if artist_required: 
-        if album.artist_id != session["user_id"]:
+        if album.artist_id != get_user_id():
             raise Forbidden("You don't have permission to edit this album")
     else:
         if not album.published:
@@ -34,11 +34,10 @@ def get_song(song_id, artist_required=False):
         raise NotFound("Song not found")
 
     if artist_required:
-        if song.album.artist_id != session["user_id"]:
+        if song.album.artist_id != get_user_id():
             raise Forbidden("You don't have permission to edit this song")
     else:
         if not song.album.published:
             raise Forbidden("This song is in a private album")
 
     return song
-

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, current_app, session, jsonify, url_for
-from app.utils.decorators import login_required, role_required
+from app.auth.decorators import login_required, role_required
 from app.opensearch import opensearch
 from app.opensearch.conf import OPENSEARCH_DOC_TYPES
 from werkzeug.exceptions import BadRequest, InternalServerError

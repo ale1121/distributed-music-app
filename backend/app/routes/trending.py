@@ -1,6 +1,6 @@
 from flask import Blueprint, session, render_template, current_app
-from app.utils.decorators import login_required, role_required
-from app.utils.user_roles import get_user_roles
+from app.auth.decorators import login_required, role_required
+from app.auth.auth_ctx import get_user_roles
 
 
 trending_bp = Blueprint('trending', __name__)

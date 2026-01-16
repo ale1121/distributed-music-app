@@ -1,11 +1,9 @@
 from sqlalchemy import select
 from app.database.db import Session
 from app.database.models import ArtistRequest, User
-from flask import Blueprint, session, render_template, current_app, jsonify
-from app.utils.decorators import login_required, role_required
-from app.utils.user_roles import get_user_roles
-from app.opensearch import opensearch
-from werkzeug.exceptions import InternalServerError
+from flask import Blueprint, render_template, current_app
+from app.auth.decorators import role_required
+from app.auth.auth_ctx import get_user_roles
 
 
 admin_bp = Blueprint('admin', __name__)

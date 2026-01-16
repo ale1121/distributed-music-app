@@ -2,63 +2,10 @@ import requests
 import jwt
 from jwt import PyJWKClient
 from flask import Blueprint, current_app, redirect, request, session, url_for, render_template
-from sqlalchemy import select
-from app.database.db import Session
-from app.database.models import User, Artist
-from app.opensearch import opensearch
+from app.database.sync_user import sync_user_db
 
 
 auth_bp = Blueprint('auth', __name__)
-
-
-def sync_user_db(decoded_token):
-    """
-    Update or create user in db with token details
-    """
-
-    sub = decoded_token.get('sub')
-    email = decoded_token.get('email')
-    username = decoded_token.get('preferred_username')
-    display_name = decoded_token.get('display_name')
-
-    # index/reindex artist, if the user is an artist and details changed
-    index_artist = False
-    
-    user = Session.scalar(select(User).where(User.keycloak_id == sub))
-    if not user:
-        user = User(
-            keycloak_id=sub,
-            email=email,
-            username=username,
-            display_name=display_name,
-        )
-        Session.add(user)
-    else:
-        if user.email != email:
-            user.email = email
-        if user.display_name != display_name:
-            user.display_name = display_name
-            index_artist = True  # display name changed, must reindex if artist
-
-    Session.commit()
-    Session.refresh(user)
-
-    if 'ROLE_ARTIST' in decoded_token.get('realm_access', {}).get('roles', []):
-        artist = Session.get(Artist, user.id)
-        if not artist:
-            index_artist = True  # new artist, must index
-            artist = Artist(id=user.id)
-            Session.add(artist)
-    else:
-        index_artist = False  # user is not an artist
-
-    Session.commit()
-    Session.refresh(user)
-
-    if index_artist:
-        opensearch.index_artist(user)
-    
-    return user
 
 
 @auth_bp.route("/api/login")
@@ -122,11 +69,14 @@ def callback():
         # Sync user in db
         user = sync_user_db(decoded_token)
 
-        # Store tokens in the current session
-        session['user'] = decoded_token
-        session['access_token'] = access_token
-        session['id_token'] = id_token
+        # Store token info in the current session
+        user_roles  = decoded_token.get("realm_access", {}).get("roles", [])
+        session["exp"] = decoded_token.get("exp")
         session['user_id'] = user.id
+        session["roles"] = {
+            "ROLE_ARTIST": "ROLE_ARTIST" in user_roles,
+            "ROLE_ADMIN": "ROLE_ADMIN" in user_roles
+        }
 
     except Exception as e:
         return render_template('errors/login_failed.html', message=str(e)), 400
@@ -136,16 +86,12 @@ def callback():
 
 @auth_bp.route("/api/logout")
 def logout():
-    conf = current_app.config
-    id_token = session.get("id_token")
     session.clear()
 
+    conf = current_app.config
     logout_redirect = (
         f"{conf['LOGOUT_URL']}?client_id={conf['KC_CLIENT_ID']}"
         f"&post_logout_redirect_uri={url_for('home.view', _external=True)}"
     )
-
-    if id_token:
-        logout_redirect += f"&id_token_hint={id_token}"
 
     return redirect(logout_redirect)

@@ -1,5 +1,6 @@
 from flask import Blueprint, session, render_template, current_app
-from app.utils.user_roles import get_user_roles
+from app.auth.auth_ctx import get_user_roles, get_user_id
+from app.auth.decorators import login_required
 from sqlalchemy import select, func
 from app.database.db import Session
 from app.database.models import Song, Artist, Album, Play, User
@@ -9,16 +10,13 @@ home_bp = Blueprint('home', __name__)
 
 
 @home_bp.route("/")
+@login_required
 def view():
     """ View home page """
-
-    if not "user" in session:
-        return render_template("pages/login.html")
     
-    user_id = session["user_id"]
+    user_id = get_user_id()
 
     recents = get_recently_played(user_id, limit=4)
-
     new_releases = get_new_releases(limit=4)
 
     return render_template("pages/search_page.html",

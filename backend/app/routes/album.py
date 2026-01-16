@@ -6,12 +6,12 @@ from flask import (
 )
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 from sqlalchemy import select, func
-from app.utils.decorators import role_required, login_required
+from app.auth.decorators import role_required, login_required
 from app.database.db import Session
 from app.database.models import Album, Song, Artist, User
 from app.utils.image import crop_resize_save_image
 from app.database.db_helpers import get_album
-from app.utils.user_roles import get_user_roles
+from app.auth.auth_ctx import get_user_roles, get_user_id
 from app.opensearch import opensearch
 
 
@@ -61,7 +61,7 @@ def create_album():
 
     album = Album(
         title="Untitled Album",
-        artist_id = session["user_id"],
+        artist_id = get_user_id(),
         published=False
     )
     Session.add(album)

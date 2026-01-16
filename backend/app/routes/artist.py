@@ -6,11 +6,11 @@ from flask import (
 )
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden
 from sqlalchemy import select
-from app.utils.decorators import role_required, login_required
+from app.auth.decorators import role_required, login_required
 from app.database.db import Session
 from app.database.models import Artist, Album
 from app.utils.image import crop_resize_save_image
-from app.utils.user_roles import get_user_roles
+from app.auth.auth_ctx import get_user_roles, get_user_id
 
 
 artist_bp = Blueprint('artist', __name__)
@@ -41,7 +41,7 @@ def view(artist_id):
 def edit_view():
     """ View 'Artist Account' page """
 
-    artist = Session.get(Artist, session["user_id"])
+    artist = Session.get(Artist, get_user_id())
     if not artist:
         raise NotFound("Artist not found")
     
@@ -64,7 +64,7 @@ def upload_avatar(artist_id):
     if "image" not in request.files:
         raise BadRequest("Missing image")
 
-    if artist_id != session["user_id"]:
+    if artist_id != get_user_id():
         raise Forbidden("You can only change your own avatar")
 
     artist = Session.get(Artist, artist_id)
@@ -100,7 +100,7 @@ def upload_avatar(artist_id):
 def delete_avatar(artist_id):
     """ Delete artist avatar """
 
-    if artist_id != session["user_id"]:
+    if artist_id != get_user_id():
         raise Forbidden("You can only delete your own avatar")
 
     artist = Session.get(Artist, artist_id)
