@@ -16,15 +16,16 @@ def view():
     
     user_id = get_user_id()
 
-    recents = get_recently_played(user_id, limit=4)
-    new_releases = get_new_releases(limit=4)
+    # get recently played songs and recently released albums
+    recents = _get_recently_played(user_id, limit=4)
+    new_releases = _get_new_releases(limit=4)
 
     return render_template("pages/search_page.html",
                            recents=recents, new_releases=new_releases,
                            current_path='/', roles=get_user_roles())
 
 
-def get_recently_played(user_id, limit=4):
+def _get_recently_played(user_id, limit=4):
     all_plays = select(Play.song_id,
                     func.max(Play.played_at).label("last_played")) \
                 .where(Play.user_id == user_id) \
@@ -43,7 +44,7 @@ def get_recently_played(user_id, limit=4):
     return Session.execute(stmt).all()
 
 
-def get_new_releases(limit=4):
+def _get_new_releases(limit=4):
     stmt = select(Album.id, Album.title, Album.cover_file, Album.release_year,
                     User.display_name.label("artist_name")) \
             .join(User, User.id == Album.artist_id) \

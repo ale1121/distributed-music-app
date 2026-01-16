@@ -5,7 +5,8 @@ from werkzeug.exceptions import HTTPException, Unauthorized
 def register_error_handlers(app):
     @app.errorhandler(Unauthorized)
     def handle_unauthorized(e):
-        if is_api_request():
+        """ Return json response or redirect to login page """
+        if _is_api_request():
             return jsonify({
                 "error": e.name,
                 "message": e.description
@@ -15,7 +16,8 @@ def register_error_handlers(app):
 
     @app.errorhandler(HTTPException)
     def handle_http_exception(e):
-        if is_api_request():
+        """ Return json response or render error page """
+        if _is_api_request():
             return jsonify({
                 "error": e.name,
                 "message": e.description
@@ -26,7 +28,8 @@ def register_error_handlers(app):
     
     @app.errorhandler(Exception)
     def handle_any_exception(e):
-        if is_api_request():
+        """ Return json response or render error page with status 500 """
+        if _is_api_request():
             return jsonify({
                 "error": "Internal server error",
                 "message": str(e)
@@ -35,6 +38,6 @@ def register_error_handlers(app):
             "errors/error.html", code=500, name="Internal server error", message=str(e)
         ), 500
     
-def is_api_request():
+def _is_api_request():
     return request.path.startswith('/api') \
         or request.accept_mimetypes.best == "application/json"

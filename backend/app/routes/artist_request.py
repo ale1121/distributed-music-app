@@ -14,7 +14,7 @@ artist_req_bp = Blueprint('artist_req', __name__)
 def create():
     """ Create new artist request for current user """
 
-    user_id = get_user_id
+    user_id = get_user_id()
     user = Session.get(User, user_id)
     if not user:
         raise NotFound("User not found")

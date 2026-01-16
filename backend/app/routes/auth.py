@@ -2,7 +2,7 @@ import requests
 import jwt
 from jwt import PyJWKClient
 from flask import Blueprint, current_app, redirect, request, session, url_for, render_template
-from app.database.sync_user import sync_user_db
+from app.auth.sync_user import sync_user
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -11,7 +11,6 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route("/api/login")
 def login():
     conf = current_app.config
-
     auth_redirect = (
         f"{conf['AUTH_URL']}?client_id={conf['KC_CLIENT_ID']}"
         f"&response_type=code&scope=openid profile email"
@@ -45,10 +44,9 @@ def callback():
             'errors/login_failed.html',
             message=f'{response.reason}'), 400
 
-    # Parse the token and extract: access token and identity token
+    # Parse the token and extract access token
     tokens = response.json()
     access_token = tokens.get("access_token")
-    id_token = tokens.get("id_token")
 
     if not access_token:
         return render_template("errors/login_failed.html", message="No access token in response")
@@ -67,7 +65,7 @@ def callback():
         )
 
         # Sync user in db
-        user = sync_user_db(decoded_token)
+        user = sync_user(decoded_token)
 
         # Store token info in the current session
         user_roles  = decoded_token.get("realm_access", {}).get("roles", [])

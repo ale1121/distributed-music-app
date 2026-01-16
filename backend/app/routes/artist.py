@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, render_template, request, current_app, jsonify
-from werkzeug.exceptions import BadRequest, NotFound, Forbidden
+from werkzeug.exceptions import BadRequest, NotFound, Forbidden, HTTPException
 from sqlalchemy import select
 from app.auth.decorators import role_required, login_required
 from app.database.db import Session
@@ -84,11 +84,12 @@ def upload_avatar(artist_id):
         out_file, out_path = crop_resize_save_image(
             request.files["image"], avatars_dir,
             f"profile-{artist_id}", size=512)
-        artist.avatar_file = out_file
-        Session.commit()
-        return jsonify(profile_url=out_path), 201
     except:
         raise BadRequest("Invalid image file")
+
+    artist.avatar_file = out_file
+    Session.commit()
+    return jsonify(profile_url=out_path), 201
 
 
 @artist_bp.route("/api/artists/<int:artist_id>/avatar", methods=["DELETE"])

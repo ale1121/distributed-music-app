@@ -12,7 +12,10 @@ def login_required(f):
 
 
 def role_required(required_role):
-    """Allow access if user has the required role"""
+    """
+    Allow access if user has the required role
+    Also ensures user is logged in
+    """
     def wrapper(f):
         @wraps(f)
         def decorated(*args, **kwargs):

@@ -3,7 +3,7 @@ import time
 import hmac
 import hashlib
 import base64
-from werkzeug.exceptions import Forbidden
+from werkzeug.exceptions import Forbidden, Unauthorized
 
 
 STREAM_SECRET = os.getenv('STREAM_SECRET', 'streamsecret')
@@ -11,7 +11,7 @@ STREAM_SECRET = os.getenv('STREAM_SECRET', 'streamsecret')
 
 def verify_signature(filename, expire, signature):
     if time.time() > int(expire):
-        raise Forbidden("expired")
+        raise Unauthorized("expired")
     
     msg = f"{filename}+{expire}"
 

@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from flask import Blueprint, render_template, request, current_app, jsonify, redirect, url_for
-from werkzeug.exceptions import NotFound, BadRequest
+from werkzeug.exceptions import NotFound, BadRequest, HTTPException
 from sqlalchemy import select, func
 from app.auth.decorators import role_required, login_required
 from app.database.db import Session
@@ -65,6 +65,7 @@ def create_album():
     Session.commit()
     Session.refresh(album)
 
+    # redirect to new album page
     return redirect(url_for('album.edit_view', album_id=album.id), code=303)
 
 
@@ -107,7 +108,7 @@ def save_details(album_id):
 @album_bp.route("/api/albums/<int:album_id>/publish", methods=["POST"])
 @role_required("ROLE_ARTIST")
 def publish_album(album_id):
-    """ Make album public """
+    """ Make album public to all users """
 
     # update album in db
     album = get_album(album_id, artist_required=True)
@@ -180,10 +181,11 @@ def upload_cover_image(album_id):
             request.files["image"], covers_dir,
             f"cover-{album_id}", size=512)
         album.cover_file = out_file
-        Session.commit()
-        return jsonify(cover_url=out_path), 201
     except:
         raise BadRequest("Invalid image file")
+
+    Session.commit()
+    return jsonify(cover_url=out_path), 201
 
 
 @album_bp.route("/api/albums/<int:album_id>/cover", methods=["DELETE"])

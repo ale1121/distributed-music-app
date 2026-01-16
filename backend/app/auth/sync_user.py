@@ -4,9 +4,10 @@ from app.database.models import User, Artist
 from app.opensearch import opensearch
 
 
-def sync_user_db(decoded_token):
+def sync_user(decoded_token):
     """
     Update or create user in db with token details
+    Index/reindex if artist and details changed
     """
 
     sub = decoded_token.get('sub')
@@ -19,6 +20,7 @@ def sync_user_db(decoded_token):
     
     user = Session.scalar(select(User).where(User.keycloak_id == sub))
     if not user:
+        # create new user
         user = User(
             keycloak_id=sub,
             email=email,
@@ -27,11 +29,12 @@ def sync_user_db(decoded_token):
         )
         Session.add(user)
     else:
+        # update details
         if user.email != email:
             user.email = email
         if user.display_name != display_name:
             user.display_name = display_name
-            index_artist = True  # display name changed, must reindex if artist
+            index_artist = True  # display name changed, reindex if artist
 
     Session.commit()
     Session.refresh(user)

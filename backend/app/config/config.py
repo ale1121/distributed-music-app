@@ -31,3 +31,5 @@ class Config:
 
     GRAFANA_URL = os.getenv('GRAFANA_URL', 'http://localhost:5003')
     GRAFANA_DASHBOARD = os.getenv('GRAFANA_DASHBOARD', 'muzo-stats')
+
+    MAX_CONTENT_LENGTH = 15 * 1024 * 1024

@@ -29,10 +29,10 @@ def search(name, type=None, multi_match=False, limit=6):
     r = requests.get(f"{OPENSEARCH_URL}/{INDEX_NAME}/_search", json=payload)
     if r.status_code != 200:
         raise RuntimeWarning(f"Search error: {r.status_code} {r.text}")
-    return parse_results(r.json())
+    return _parse_results(r.json())
 
 
-def parse_results(data):
+def _parse_results(data):
     """ Parse search results """
     results = []
     hits = data.get("hits", {}).get("hits", [])

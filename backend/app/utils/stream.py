@@ -11,6 +11,7 @@ TTL = int(os.getenv('STREAMING_URL_TTL', '900'))
 
 
 def sign_streaming_url(filename):
+    """ Returns a signed streaming url for the given file """
     expire = int(time.time()) + TTL
     msg = f"{filename}+{expire}"
 
