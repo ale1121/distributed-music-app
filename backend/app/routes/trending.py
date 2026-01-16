@@ -1,5 +1,5 @@
-from flask import Blueprint, session, render_template, current_app
-from app.auth.decorators import login_required, role_required
+from flask import Blueprint, render_template, current_app
+from app.auth.decorators import login_required
 from app.auth.auth_ctx import get_user_roles
 
 

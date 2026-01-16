@@ -1,15 +1,12 @@
 import os
-from flask import (
-    Blueprint, request, current_app, session, jsonify, render_template, url_for
-)
-from werkzeug.exceptions import BadRequest, Forbidden, NotFound
-from sqlalchemy import select
+from flask import Blueprint, request, current_app, jsonify, render_template, url_for
+from werkzeug.exceptions import BadRequest
 from app.auth.decorators import role_required, login_required
 from app.database.db_helpers import get_album, get_song
 from app.auth.auth_ctx import get_user_roles, get_user_id
 from app.utils.audio import save_audio_file
 from app.database.db import Session
-from app.database.models import Album, Song, Play
+from app.database.models import Song, Play
 from app.opensearch import opensearch
 from app.utils.stream import sign_streaming_url
 

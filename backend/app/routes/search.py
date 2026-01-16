@@ -1,9 +1,8 @@
-from flask import Blueprint, request, current_app, session, jsonify, url_for
+from flask import Blueprint, request, current_app, jsonify, url_for
 from app.auth.decorators import login_required, role_required
 from app.opensearch import opensearch
 from app.opensearch.conf import OPENSEARCH_DOC_TYPES
-from werkzeug.exceptions import BadRequest, InternalServerError
-from sqlalchemy import select
+from werkzeug.exceptions import InternalServerError
 from app.database.db import Session
 from app.database.models import Artist, Album, Song
 

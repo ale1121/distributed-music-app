@@ -1,5 +1,5 @@
 import datetime as dt
-from sqlalchemy import String, Integer, DateTime, ForeignKey, func, extract, Index, Boolean
+from sqlalchemy import String, Integer, DateTime, ForeignKey, func, extract, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .db import Base
 

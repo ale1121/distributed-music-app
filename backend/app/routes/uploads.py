@@ -1,5 +1,5 @@
 import os
-from flask import send_from_directory, Blueprint, current_app
+from flask import send_from_directory, Blueprint
 
 
 uploads_bp = Blueprint("uploads", __name__)

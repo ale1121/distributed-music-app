@@ -1,9 +1,9 @@
-from flask import Blueprint, session, render_template, current_app
+from flask import Blueprint, render_template
 from app.auth.auth_ctx import get_user_roles, get_user_id
 from app.auth.decorators import login_required
 from sqlalchemy import select, func
 from app.database.db import Session
-from app.database.models import Song, Artist, Album, Play, User
+from app.database.models import Song, Album, Play, User
 
 
 home_bp = Blueprint('home', __name__)

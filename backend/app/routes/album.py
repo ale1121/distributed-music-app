@@ -1,14 +1,11 @@
 import os
-import uuid
 from datetime import datetime
-from flask import (
-    Blueprint, render_template, request, current_app, session, jsonify, redirect, url_for
-)
-from werkzeug.exceptions import NotFound, BadRequest, Forbidden
+from flask import Blueprint, render_template, request, current_app, jsonify, redirect, url_for
+from werkzeug.exceptions import NotFound, BadRequest
 from sqlalchemy import select, func
 from app.auth.decorators import role_required, login_required
 from app.database.db import Session
-from app.database.models import Album, Song, Artist, User
+from app.database.models import Album, Song
 from app.utils.image import crop_resize_save_image
 from app.database.db_helpers import get_album
 from app.auth.auth_ctx import get_user_roles, get_user_id

@@ -1,7 +1,7 @@
 from sqlalchemy import select
+from flask import Blueprint, render_template, current_app
 from app.database.db import Session
 from app.database.models import ArtistRequest, User
-from flask import Blueprint, render_template, current_app
 from app.auth.decorators import role_required
 from app.auth.auth_ctx import get_user_roles
 

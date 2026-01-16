@@ -1,9 +1,5 @@
 import os
-import time
-from flask import (
-    Blueprint, session, render_template, request, current_app,
-    jsonify, url_for
-)
+from flask import Blueprint, render_template, request, current_app, jsonify
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden
 from sqlalchemy import select
 from app.auth.decorators import role_required, login_required

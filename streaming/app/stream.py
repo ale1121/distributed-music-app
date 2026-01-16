@@ -1,6 +1,6 @@
 import os
 import socket
-from flask import Flask, request, Response, Blueprint, current_app, jsonify
+from flask import request, Response, Blueprint, current_app
 from werkzeug.exceptions import NotFound, BadRequest, RequestedRangeNotSatisfiable
 from .auth import verify_signature
 

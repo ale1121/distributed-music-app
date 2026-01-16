@@ -1,12 +1,9 @@
 import json
 import requests
-import os
 import time
-from pathlib import Path
 from types import SimpleNamespace
 from sqlalchemy import select, literal
-from werkzeug.exceptions import NotFound
-from ..database.models import Song, Album, Artist, User
+from ..database.models import Song, Album, User
 from ..database.db import Session
 from .conf import OPENSEARCH_URL, INDEX_NAME
 from .search_queries import get_query, match_name, multi_match_name, name_type_query
