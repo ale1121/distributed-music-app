@@ -49,7 +49,6 @@
             data-album-title="{{ album.title }}"
             data-album-cover="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
                                 else url_for('static', filename='assets/placeholder-cover.webp') }}"
-            data-play-url="{{ url_for('song.play_song', song_id=song.id) }}"
             data-song-view-url="{{ url_for('song.view', song_id=song.id) }}">
             <i class="bi bi-play-fill fs-4"></i>
           </button>
@@ -84,26 +83,14 @@
       const albumTitle = btn.dataset.albumTitle;
       const albumCover = btn.dataset.albumCover;
       const songViewUrl = btn.dataset.songViewUrl;
-      const playUrl = btn.dataset.playUrl;
 
       try {
-        const res = await fetch(playUrl, {
-          method: "GET",
-          headers: {
-            "Accept": "application/json"
-          }
-        });
-        
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Something went wrong");
-      
-        const streamUrl = data["stream_url"];
-        if (!streamUrl) throw new Error("Missing stream URL");
-
-        setPlayer({songId, songTitle, albumTitle, albumCover, songViewUrl, streamUrl});
+        streamUrl = await getStreamUrl(songId);
       } catch (err) {
         showErrorToast(err.message || "Something went wrong");
       }
+
+      setPlayer({songId, songTitle, albumTitle, albumCover, songViewUrl, streamUrl});
     });
   });
 </script>

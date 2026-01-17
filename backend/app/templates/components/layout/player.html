@@ -10,9 +10,7 @@
         <span id="playerTitle" class="fw-semibold text-truncate">
           No song playing
         </span>
-        <span id="playerAlbum" class="text-gray small text-truncate">
-          -
-        </span>
+        <span id="playerAlbum" class="text-gray small text-truncate"></span>
       </div>
     </a>
 
@@ -124,6 +122,47 @@
     playerPlayBtn.classList.remove("d-none");
 
     try { audio.currentTime = 0; } catch {};
+  })
+
+  window.getStreamUrl = async function (songId) {
+    const res = await fetch(`/api/songs/${songId}/play`, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json"
+      }
+    });
+    
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Something went wrong");
+  
+    const streamUrl = data["stream_url"];
+    if (!streamUrl) throw new Error("Missing stream URL");
+
+    return streamUrl;
+  }
+
+  audio.addEventListener("error", async () => {
+    const state = getPlayerState();
+    if (!state?.songId) return;
+
+    try {
+      const ts = audio.currentTime || state.currentTime || 0;
+      const streamUrl = await getStreamUrl(state.songId);
+
+      audio.src = streamUrl;
+      audio.currentTime = ts;
+
+      if (state.isPlaying) {
+        resumeSong();
+      } else {
+        pauseSong();
+      }
+
+      state.streamUrl = streamUrl;
+      savePlayerState(state);
+    } catch (e) {
+      console.error("Failed to refresh stream url", e);
+    }
   })
 
   window.pauseSong = function() {
