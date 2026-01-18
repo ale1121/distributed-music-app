@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from flask import Blueprint, render_template, request, current_app, jsonify, redirect, url_for
-from werkzeug.exceptions import NotFound, BadRequest, HTTPException
+from werkzeug.exceptions import NotFound, BadRequest, Conflict
 from sqlalchemy import select, func
 from app.auth.decorators import role_required, login_required
 from app.database.db import Session
@@ -110,8 +110,11 @@ def save_details(album_id):
 def publish_album(album_id):
     """ Make album public to all users """
 
-    # update album in db
     album = get_album(album_id, artist_required=True)
+    if album.published:
+        raise Conflict("Album is already public")
+
+    # update album in db
     album.published = True
     album.published_at = func.now()
     Session.commit()
