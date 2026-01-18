@@ -86,7 +86,7 @@ def search_full():
     return jsonify(full_results), 200
 
 
-@search_bp.route("/api/admin/reindex_catalog", methods=["GET"])
+@search_bp.route("/api/admin/reindex-catalog", methods=["POST"])
 @role_required("ROLE_ADMIN")
 def reindex_catalog():
     """ Reindex entire catalog from db in OpenSearch """
@@ -95,4 +95,4 @@ def reindex_catalog():
     except RuntimeError as e:
         current_app.logger.error(str(e))
         raise InternalServerError("Reindexing failed. See error log for details.")
-    return jsonify(ok=True)
+    return jsonify(ok=True), 200

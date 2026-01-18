@@ -1,7 +1,6 @@
-from pathlib import Path
 import requests
 import json
-from .conf import OPENSEARCH_URL, INDEX_NAME
+from .conf import OPENSEARCH_URL, INDEX_NAME, INDEX_DEFINITION_FILE
 
 
 def check_index_exists():
@@ -15,14 +14,22 @@ def check_index_exists():
     
 
 def create_index():
-    """ Create catalog index """
+    """ Create index """
 
     # load index definition
-    index_file = Path(__file__).with_name('catalog_index.json')
-    with index_file.open('r') as f:
+    with INDEX_DEFINITION_FILE.open('r') as f:
         index_def = json.load(f)
 
     # create index
     r = requests.put(f"{OPENSEARCH_URL}/{INDEX_NAME}", json=index_def)
     if r.status_code != 200:
         raise RuntimeError(f"Error creating index: {r.status_code} {r.text}")
+
+
+def delete_index():
+    """ Delete index """
+
+    r = requests.delete(f"{OPENSEARCH_URL}/{INDEX_NAME}")
+    if r.status_code not in [200, 404]:
+        raise RuntimeError(f"Unexpected response when deleting index: {r.status_code} {r.text}")
+    
