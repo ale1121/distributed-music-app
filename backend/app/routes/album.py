@@ -32,7 +32,7 @@ def view(album_id):
                             album=album, artist=artist, songs=songs,
                             num_songs=len(songs),
                             artist_name=artist_user.display_name,
-                            roles=get_user_roles())
+                            roles=get_user_roles()), 200
 
 
 @album_bp.route("/album/<int:album_id>/edit", methods=["GET"])
@@ -48,7 +48,7 @@ def edit_view(album_id):
     
     return render_template('pages/album_edit.html',
                             album=album, songs=songs,
-                            roles=get_user_roles())
+                            roles=get_user_roles()), 200
 
 
 @album_bp.route("/api/albums", methods=["POST"])

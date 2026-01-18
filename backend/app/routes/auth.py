@@ -8,8 +8,9 @@ from app.auth.sync_user import sync_user
 auth_bp = Blueprint('auth', __name__)
 
 
-@auth_bp.route("/api/login")
+@auth_bp.route("/api/login", methods=["GET"])
 def login():
+    session.clear()
     conf = current_app.config
     auth_redirect = (
         f"{conf['AUTH_URL']}?client_id={conf['KC_CLIENT_ID']}"
@@ -19,14 +20,14 @@ def login():
     return redirect(auth_redirect)
 
 
-@auth_bp.route("/callback")
+@auth_bp.route("/callback", methods=["GET"])
 def callback():
     conf = current_app.config
 
     # Extract auth code from the URL query parameters sent by Keycloak    
     code = request.args.get("code")
     if not code:
-        return render_template('errors/login_failed.html', message='Missing code'), 404
+        return render_template('errors/login_failed.html', message=''), 400
 
 
     # Prepare the data for the token exchange request
@@ -42,14 +43,15 @@ def callback():
     if response.status_code != 200:
         return render_template(
             'errors/login_failed.html',
-            message=f'{response.reason}'), 400
+            message=f'{response.reason}'), 502
 
     # Parse the token and extract access token
     tokens = response.json()
     access_token = tokens.get("access_token")
 
     if not access_token:
-        return render_template("errors/login_failed.html", message="No access token in response")
+        return render_template("errors/login_failed.html",
+                    message="No access token in response"), 401
 
     # Decode JWT
     jwks_client = PyJWKClient(conf['JWKS_URL'])
@@ -63,26 +65,26 @@ def callback():
             options={"verify_aud": False},
             issuer=conf['ISSUER_URL']
         )
-
-        # Sync user in db
-        user = sync_user(decoded_token)
-
-        # Store token info in the current session
-        user_roles  = decoded_token.get("realm_access", {}).get("roles", [])
-        session["exp"] = decoded_token.get("exp")
-        session['user_id'] = user.id
-        session["roles"] = {
-            "ROLE_ARTIST": "ROLE_ARTIST" in user_roles,
-            "ROLE_ADMIN": "ROLE_ADMIN" in user_roles
-        }
-
     except Exception as e:
-        return render_template('errors/login_failed.html', message=str(e)), 400
+        return render_template('errors/login_failed.html',
+                                message='Token validation failed'), 401
+
+    # Sync user in db
+    user = sync_user(decoded_token)
+
+    # Store token info in the current session
+    user_roles  = decoded_token.get("realm_access", {}).get("roles", [])
+    session["exp"] = decoded_token.get("exp")
+    session['user_id'] = user.id
+    session["roles"] = {
+        "ROLE_ARTIST": "ROLE_ARTIST" in user_roles,
+        "ROLE_ADMIN": "ROLE_ADMIN" in user_roles
+    }
 
     return redirect(url_for("home.view"))
 
 
-@auth_bp.route("/api/logout")
+@auth_bp.route("/api/logout", methods=["GET"])
 def logout():
     session.clear()
 

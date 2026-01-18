@@ -9,7 +9,7 @@ from app.database.models import Song, Album, Play, User
 home_bp = Blueprint('home', __name__)
 
 
-@home_bp.route("/")
+@home_bp.route("/", methods=["GET"])
 @login_required
 def view():
     """ View home page """
@@ -22,7 +22,7 @@ def view():
 
     return render_template("pages/search_page.html",
                            recents=recents, new_releases=new_releases,
-                           current_path='/', roles=get_user_roles())
+                           current_path='/', roles=get_user_roles()), 200
 
 
 def _get_recently_played(user_id, limit=4):

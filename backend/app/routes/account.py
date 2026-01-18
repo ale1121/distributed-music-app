@@ -25,4 +25,4 @@ def view():
                            manage_acc_url=current_app.config['ACCOUNT_URL'],
                            artist_req_active=artist_req_active,
                            current_path='/account',
-                           roles=get_user_roles())
+                           roles=get_user_roles()), 200

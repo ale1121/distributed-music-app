@@ -23,4 +23,4 @@ def view():
                            admin_console_link=current_app.config['ADMIN_URL'],
                            artist_requests=requests,
                            current_path='/admin',
-                           roles=get_user_roles())
+                           roles=get_user_roles()), 200

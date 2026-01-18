@@ -27,7 +27,7 @@ def create():
     Session.add(new_request)
     Session.commit()
 
-    return jsonify(status="ok")
+    return jsonify(ok=True), 201
 
 
 @artist_req_bp.route('/api/artist-requests/<int:request_id>', methods=['DELETE'])
@@ -41,4 +41,4 @@ def delete(request_id):
     Session.delete(req)
     Session.commit()
 
-    return jsonify(status="ok")
+    return jsonify(ok=True), 200

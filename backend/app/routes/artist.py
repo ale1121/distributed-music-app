@@ -29,7 +29,7 @@ def view(artist_id):
     return render_template("pages/artist.html",
                 artist=artist, artist_name=artist.user.display_name,
                 albums=albums, num_albums=len(albums),
-                roles=get_user_roles())
+                roles=get_user_roles()), 200
 
 
 @artist_bp.route("/artist-account")
@@ -49,7 +49,7 @@ def edit_view():
                 avatar_file=artist.avatar_file,
                 artist_id=artist.id, albums=albums,
                 current_path='/artist-account',
-                roles=get_user_roles())
+                roles=get_user_roles()), 200
 
 
 @artist_bp.route("/api/artists/<int:artist_id>/avatar", methods=['POST'])

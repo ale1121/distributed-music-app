@@ -18,4 +18,4 @@ def view():
                            gf_url=gf_url,
                            gf_dashboard=gf_dashboard,
                            current_path='/trending',
-                           roles=get_user_roles())
+                           roles=get_user_roles()), 200

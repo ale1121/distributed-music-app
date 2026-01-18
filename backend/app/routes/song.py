@@ -25,7 +25,7 @@ def view(song_id):
                     song=song, album=album,
                     artist=artist,
                     artist_name=artist.user.display_name,
-                    roles=get_user_roles())
+                    roles=get_user_roles()), 200
 
 
 @song_bp.route("/api/albums/<int:album_id>/songs", methods=["POST"])
@@ -72,7 +72,7 @@ def add_song(album_id):
                                 url_for('song.view', song_id=song.id),
                                 artist=album.artist.user.display_name)
 
-    return jsonify(ok=True), 201
+    return jsonify({"song_id": song.id}), 201
 
 
 @song_bp.route("/api/songs/<int:song_id>", methods=["PUT"])
