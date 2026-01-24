@@ -18,15 +18,24 @@ def search_suggestions():
     """
     name = request.args.get("q")
     type = request.args.get("type")
+    limit_str = request.args.get("limit")
 
     # validate search terms
     if name is None or len(name) < 3 or len(name) > 100:
         return []
     if type not in OPENSEARCH_DOC_TYPES:
         type = None
+    if limit_str is None:
+        limit = 6
+    else:
+        try: limit = int(limit_str)
+        except: limit = 6
+
+    limit = min(limit, 20)
+    limit = max(limit, 1)
     
     # get opensearch results, use multi-match for name
-    results = opensearch.search(name, type=type, multi_match=True, limit=6)
+    results = opensearch.search(name, type=type, multi_match=True, limit=limit)
 
     return jsonify(results), 200
 
@@ -39,15 +48,24 @@ def search_full():
     """
     name = request.args.get("q")
     type = request.args.get("type")
+    limit_str = request.args.get("limit")
 
     # validate search terms
     if name is None or len(name) < 3 or len(name) > 100:
         return []
     if type not in OPENSEARCH_DOC_TYPES:
         type = None
+    if limit_str is None:
+        limit = 12
+    else:
+        try: limit = int(limit_str)
+        except: limit = 12
+
+    limit = min(limit, 20)
+    limit = max(limit, 1)
     
     # get opensearch results, use full-text search for name
-    results = opensearch.search(name, type=type, multi_match=False, limit=12)
+    results = opensearch.search(name, type=type, multi_match=False, limit=limit)
 
     # add details from db
     full_results = []
