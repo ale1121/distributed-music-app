@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, request, current_app, jsonify, render_template, url_for
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, HTTPException
 from app.auth.decorators import role_required, login_required
 from app.database.db_helpers import get_album, get_song
 from app.auth.auth_ctx import get_user_roles, get_user_id
@@ -36,23 +36,28 @@ def add_song(album_id):
     album = get_album(album_id, artist_required=True)
 
     title = (request.form.get("title") or "").strip()
-    position = request.form.get("position") or ""
+    position = request.form.get("position") or 0
     audio = request.files.get("audio")
 
     # validate song details
-    if not title or not position or not audio or not audio.filename:
+    if not title or not audio or not audio.filename:
         raise BadRequest("Missing song details")
     
+    if len(title) > 100:
+        raise BadRequest("Title too long")
+
     position = int(position)
-    if position < 0:
+    if position < 0 or position > 1000:
         raise BadRequest('Invalid position')
 
     out_dir = current_app.config['AUDIO_PATH']
     try:
         out_file, duration = save_audio_file(
             audio, out_dir, f"audio-{album.id}")
-    except Exception as e:
-        raise BadRequest(str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        raise BadRequest("Invalid audio file")
 
     # add song to db
     song = Song(
@@ -118,7 +123,8 @@ def delete_song(song_id):
     song = get_song(song_id, artist_required=True)
 
     # remove audio file
-    try: os.remove(song.audio_file)
+    audio_dir = current_app.config['AUDIO_PATH']
+    try: os.remove(os.path.join(audio_dir, song.audio_file))
     except: pass
     
     # delete song from db

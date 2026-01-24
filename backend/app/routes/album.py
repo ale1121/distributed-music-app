@@ -142,10 +142,11 @@ def delete_album(album_id):
     opensearch.delete_album(album)
 
     # delete all songs from db
+    audio_dir = current_app.config['AUDIO_PATH']
     songs = Session.scalars(select(Song).where(Song.album == album))
     for song in songs:
         if song.audio_file:
-            try: os.remove(song.audio_file)
+            try: os.remove(os.path.join(audio_dir, song.audio_file))
             except: pass
         Session.delete(song)
 
