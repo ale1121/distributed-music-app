@@ -8,7 +8,7 @@ from ..database.db import Session
 from .conf import OPENSEARCH_URL, INDEX_NAME
 from .search_queries import get_query, match_name, multi_match_name, name_type_query
 from .bulk_index import bulk_index, bulk_index_catalog
-from .index import create_index, check_index_exists
+from .index import create_index, check_index_exists, delete_index
 
 
 def search(name, type=None, multi_match=False, limit=6):
@@ -147,8 +147,7 @@ def reindex_all():
     Reindex entire catalog from db
     Create index if it doesn't exist
     """
-    if not check_index_exists():
-        create_index()
+    delete_index()
     bulk_index_catalog()
 
 
