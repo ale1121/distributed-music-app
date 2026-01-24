@@ -4,8 +4,8 @@
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
-  "accessTokenLifespan": 900,
-  "accessTokenLifespanForImplicitFlow": 900,
+  "accessTokenLifespan": 3600,
+  "accessTokenLifespanForImplicitFlow": 3600,
   "ssoSessionIdleTimeout": 1800,
   "ssoSessionMaxLifespan": 36000,
   "ssoSessionIdleTimeoutRememberMe": 0,
@@ -1525,7 +1525,67 @@
   },
   "users": [
     {
-      "username": "muzo-admin",
+      "username": "user1",
+      "email": "user1@email.com",
+      "attributes": {
+        "displayName": ["User 1"]
+      },
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-muzo-realm"
+      ]
+    },
+    {
+      "username": "artist1",
+      "email": "artist1@email.com",
+      "attributes": {
+        "displayName": ["Artist 1"]
+      },
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ROLE_ARTIST",
+        "default-roles-muzo-realm"
+      ]
+    },
+    {
+      "username": "artist2",
+      "email": "artist2@email.com",
+      "attributes": {
+        "displayName": ["Artist 2"]
+      },
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ROLE_ARTIST",
+        "default-roles-muzo-realm"
+      ]
+    },
+    {
+      "username": "admin1",
+      "email": "admin1@email.com",
+      "attributes": {
+        "displayName": ["Admin 1"]
+      },
       "enabled": true,
       "credentials": [
         {
