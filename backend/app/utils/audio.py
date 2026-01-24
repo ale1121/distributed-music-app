@@ -1,6 +1,7 @@
 import os
 from mutagen.mp3 import MP3
 from uuid import uuid4
+from werkzeug.exceptions import UnsupportedMediaType
 
 ACCEPT = {'.mp3'}
 
@@ -8,7 +9,7 @@ def save_audio_file(in_file, out_dir, file_name):
     # check file extension
     file_ext = os.path.splitext(in_file.filename)[1]
     if file_ext not in ACCEPT:
-        raise Exception('Unsupported file type')
+        raise UnsupportedMediaType('Unsupported file type')
 
     # save file
     os.makedirs(out_dir, exist_ok=True)
