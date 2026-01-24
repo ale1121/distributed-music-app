@@ -50,9 +50,9 @@ services:
         delay: 10s
         max_attempts: 20
     volumes:
-      - ./images_data:/data/uploads
-      - ./audio_data:/data/audio
-    networks: [front, backend, search]
+      - images_data:/data/uploads
+      - audio_data:/data/audio
+    networks: [auth, backend, search]
 
   streaming:
     image: muzo-streaming
@@ -67,7 +67,7 @@ services:
       restart_policy:
         condition: on-failure
     volumes:
-      - ./audio_data:/audio_data:ro
+      - audio_data:/audio_data:ro
     networks: [stream]
 
   keycloak:
@@ -84,7 +84,7 @@ services:
       - ./keycloak-config:/opt/keycloak/data/import:ro
     ports:
       - "5002:8080"
-    networks: [front]
+    networks: [auth]
 
   opensearch:
     image: opensearchproject/opensearch:3
@@ -119,8 +119,6 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-    depends_on:
-      - postgres
     networks: [stats]
 
 volumes:
@@ -128,10 +126,10 @@ volumes:
     driver: local
   keycloak_data:
     driver: local
-  # images_data:
-  #   driver: local
-  # audio_data:
-  #   driver: local
+  images_data:
+    driver: local
+  audio_data:
+    driver: local
   opensearch_data:
     driver: local
   grafana_data:
@@ -140,7 +138,7 @@ volumes:
 networks:
   backend:
     driver: overlay
-  front:
+  auth:
     driver: overlay
   stream:
     driver: overlay
