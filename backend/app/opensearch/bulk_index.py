@@ -73,6 +73,9 @@ def bulk_index(artists, albums, songs):
             "url": f"/song/{song.id}"
         }))
 
+    if not lines:
+        return
+
     payload = "\n".join(lines) + "\n"
 
     r = requests.post(f"{OPENSEARCH_URL}/_bulk", data=payload,
