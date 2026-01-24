@@ -1,0 +1,2349 @@
+{
+  "info": {
+    "_postman_id": "e6609b92-f6d1-4e49-8330-dad7d5eab3ff",
+    "name": "muzo-tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49117255"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "GET / (unauthenticated)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Unauthenticated request rejected\", () => {\r",
+                  "    pm.response.to.have.status(401);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Keycloak token (user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Keycloak token endpoint response ok\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "const body = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Access token exists\", () => {\r",
+                  "    pm.expect(body).to.have.property(\"access_token\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.environment.set(\"user_token\", body.access_token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text",
+                  "uuid": "494bf1d0-e4eb-4504-8257-801a8a3a2b78"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{kc_client_id}}",
+                  "type": "text",
+                  "uuid": "abcb5eb7-8e68-40b2-bca2-fd9151048463"
+                },
+                {
+                  "key": "username",
+                  "value": "{{user_user}}",
+                  "type": "text",
+                  "uuid": "717c48de-173c-4100-bef5-9b1a1f52d5eb"
+                },
+                {
+                  "key": "password",
+                  "value": "{{user_pass}}",
+                  "type": "text",
+                  "uuid": "9d3b96c3-cc61-4d31-a450-65338d9a81ca"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{kc_url}}/realms/{{kc_realm}}/protocol/openid-connect/token",
+              "host": [
+                "{{kc_url}}"
+              ],
+              "path": [
+                "realms",
+                "{{kc_realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET / (authenticated)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Authenticated request ok\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "tokens (test users)",
+      "item": [
+        {
+          "name": "POST Keycloak token (artist1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();\r",
+                  "pm.test(\"Access token exists\", () => {\r",
+                  "    pm.expect(body).to.have.property(\"access_token\");\r",
+                  "});\r",
+                  "pm.environment.set(\"artist1_token\", body.access_token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text",
+                  "uuid": "494bf1d0-e4eb-4504-8257-801a8a3a2b78"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{kc_client_id}}",
+                  "type": "text",
+                  "uuid": "abcb5eb7-8e68-40b2-bca2-fd9151048463"
+                },
+                {
+                  "key": "username",
+                  "value": "{{artist1_user}}",
+                  "type": "text",
+                  "uuid": "717c48de-173c-4100-bef5-9b1a1f52d5eb"
+                },
+                {
+                  "key": "password",
+                  "value": "{{artist1_pass}}",
+                  "type": "text",
+                  "uuid": "9d3b96c3-cc61-4d31-a450-65338d9a81ca"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{kc_url}}/realms/{{kc_realm}}/protocol/openid-connect/token",
+              "host": [
+                "{{kc_url}}"
+              ],
+              "path": [
+                "realms",
+                "{{kc_realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Keycloak token (artist2)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();\r",
+                  "pm.test(\"Access token exists\", () => {\r",
+                  "    pm.expect(body).to.have.property(\"access_token\");\r",
+                  "});\r",
+                  "pm.environment.set(\"artist2_token\", body.access_token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text",
+                  "uuid": "494bf1d0-e4eb-4504-8257-801a8a3a2b78"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{kc_client_id}}",
+                  "type": "text",
+                  "uuid": "abcb5eb7-8e68-40b2-bca2-fd9151048463"
+                },
+                {
+                  "key": "username",
+                  "value": "{{artist2_user}}",
+                  "type": "text",
+                  "uuid": "717c48de-173c-4100-bef5-9b1a1f52d5eb"
+                },
+                {
+                  "key": "password",
+                  "value": "{{artist2_pass}}",
+                  "type": "text",
+                  "uuid": "9d3b96c3-cc61-4d31-a450-65338d9a81ca"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{kc_url}}/realms/{{kc_realm}}/protocol/openid-connect/token",
+              "host": [
+                "{{kc_url}}"
+              ],
+              "path": [
+                "realms",
+                "{{kc_realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Keycloak token (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();\r",
+                  "pm.test(\"Access token exists\", () => {\r",
+                  "    pm.expect(body).to.have.property(\"access_token\");\r",
+                  "});\r",
+                  "pm.environment.set(\"admin_token\", body.access_token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text",
+                  "uuid": "494bf1d0-e4eb-4504-8257-801a8a3a2b78"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{kc_client_id}}",
+                  "type": "text",
+                  "uuid": "abcb5eb7-8e68-40b2-bca2-fd9151048463"
+                },
+                {
+                  "key": "username",
+                  "value": "{{admin_user}}",
+                  "type": "text",
+                  "uuid": "717c48de-173c-4100-bef5-9b1a1f52d5eb"
+                },
+                {
+                  "key": "password",
+                  "value": "{{admin_pass}}",
+                  "type": "text",
+                  "uuid": "9d3b96c3-cc61-4d31-a450-65338d9a81ca"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{kc_url}}/realms/{{kc_realm}}/protocol/openid-connect/token",
+              "host": [
+                "{{kc_url}}"
+              ],
+              "path": [
+                "realms",
+                "{{kc_realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "access control",
+      "item": [
+        {
+          "name": "roles",
+          "item": [
+            {
+              "name": "GET /artist-account (user)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Normal user not allowed (403)\", () => {\r",
+                      "    pm.response.to.have.status(403);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{user_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_url}}/artist-account",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "artist-account"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET /artist-account (artist1)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Artist user allowed (200)\", () => {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist1_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_url}}/artist-account",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "artist-account"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET /admin (user)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Normal user not allowed (403)\", () => {\r",
+                      "    pm.response.to.have.status(403);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{user_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_url}}/admin",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "admin"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET /admin (admin)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Admin user allowed /admin (200)\", () => {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_url}}/admin",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "admin"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "album ownership",
+          "item": [
+            {
+              "name": "POST /api/albums (artist1) - create draft album",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Redirects after album creation\", () => {\r",
+                      "    pm.response.to.have.status(303);\r",
+                      "});\r",
+                      "\r",
+                      "const location = pm.response.headers.get(\"Location\");\r",
+                      "\r",
+                      "const match = location.match(/\\/album\\/(\\d+)/);\r",
+                      "const albumId = match[1];\r",
+                      "\r",
+                      "pm.environment.set(\"album_id\", albumId);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "followRedirects": false
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist1_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{api_url}}/api/albums",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "albums"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET /album/{id}/edit (owner artist1)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Album owner allowed\", () => {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist1_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_url}}/album/{{album_id}}/edit",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "album",
+                    "{{album_id}}",
+                    "edit"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET /album/{id}/edit (non-owner artist2)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Non-owner artist not allowed\", () => {\r",
+                      "    pm.response.to.have.status(403);\r",
+                      "});\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist2_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_url}}/album/{{album_id}}/edit",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "album",
+                    "{{album_id}}",
+                    "edit"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "artist requests consistency",
+      "item": [
+        {
+          "name": "POST /api/artist-requests (user) - create request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Artist request for normal user created\", () => {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "})\r",
+                  "\r",
+                  "const json = pm.response.json();\r",
+                  "pm.environment.set(\"artist_request_id\", json.request_id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/api/artist-requests",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "api",
+                "artist-requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/artist-requests (user) - duplicate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Duplicate artist request not allowed\", () => {\r",
+                  "    pm.response.to.have.status(409);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/api/artist-requests",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "api",
+                "artist-requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/artist-requests (artist1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Artist request for artist not allowed\", () => {\r",
+                  "    pm.response.to.have.status(409);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{artist1_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/api/artist-requests",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "api",
+                "artist-requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/artist-requests/{id} (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Artist request deleted\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/api/artist-requests/{{artist_request_id}}",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "api",
+                "artist-requests",
+                "{{artist_request_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "validation",
+      "item": [
+        {
+          "name": "album",
+          "item": [
+            {
+              "name": "PUT /api/albums/{id} (artist1) - missing details",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Rejects missing details\", () => {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist1_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"release_year\": 2022\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{api_url}}/api/albums/{{album_id}}",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "albums",
+                    "{{album_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PUT /api/albums/{id} (artist1) - invalid year",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Invalid year (-1) rejected\", () => {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist1_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"Test Album\",\r\n    \"release_year\": -1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{api_url}}/api/albums/{{album_id}}",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "albums",
+                    "{{album_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PUT /api/albums/{id} (artist1) - long title",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Title > 100 chars rejected\", () => {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist1_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\",\r\n    \"release_year\": 2022\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{api_url}}/api/albums/{{album_id}}",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "albums",
+                    "{{album_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "PUT /api/albums/{id} (artist1) - valid",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Album details updated\", () => {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist1_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"Test Album\",\r\n    \"release_year\": 2022\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{api_url}}/api/albums/{{album_id}}",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "albums",
+                    "{{album_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "song",
+          "item": [
+            {
+              "name": "POST /api/albums/{id}/songs (artist1) - invalid file type",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Invalid file type rejected\", () => {\r",
+                      "    pm.expect(pm.response.code).to.be.oneOf([400, 415])\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist1_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "title",
+                      "value": "Test Song",
+                      "type": "text",
+                      "uuid": "f2e1c580-5e18-4be6-860b-26cc13966439"
+                    },
+                    {
+                      "key": "audio",
+                      "type": "file",
+                      "uuid": "da96f121-cb85-4721-9657-754f9442661b",
+                      "src": "sample-data/sample-file.txt"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{api_url}}/api/albums/{{album_id}}/songs",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "albums",
+                    "{{album_id}}",
+                    "songs"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /api/albums/{id}/songs (artist1) - invalid position",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Invalid position rejected\", () => {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist1_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "title",
+                      "value": "Test Song",
+                      "type": "text",
+                      "uuid": "f2e1c580-5e18-4be6-860b-26cc13966439"
+                    },
+                    {
+                      "key": "audio",
+                      "type": "file",
+                      "uuid": "da96f121-cb85-4721-9657-754f9442661b",
+                      "src": "sample-data/sample-audio.mp3"
+                    },
+                    {
+                      "key": "position",
+                      "value": "-1",
+                      "type": "text",
+                      "uuid": "ee4464b2-2b59-4e6f-956b-385540b45b73"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{api_url}}/api/albums/{{album_id}}/songs",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "albums",
+                    "{{album_id}}",
+                    "songs"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST /api/albums/{id}/songs (artist1) - valid",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Song created\", () => {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "const json = pm.response.json();\r",
+                      "pm.environment.set(\"song_id\", json.song_id);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{artist1_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "title",
+                      "value": "Test Song",
+                      "type": "text",
+                      "uuid": "f2e1c580-5e18-4be6-860b-26cc13966439"
+                    },
+                    {
+                      "key": "audio",
+                      "type": "file",
+                      "uuid": "da96f121-cb85-4721-9657-754f9442661b",
+                      "src": "sample-data/sample-audio.mp3"
+                    },
+                    {
+                      "key": "position",
+                      "value": "0",
+                      "type": "text",
+                      "uuid": "6f958aab-86a6-4b46-862b-88ccc89644f8"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{api_url}}/api/albums/{{album_id}}/songs",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "albums",
+                    "{{album_id}}",
+                    "songs"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "catalog visibility (public/private)",
+      "item": [
+        {
+          "name": "GET /album/{id} (user) - private album",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Private album not visible\", () => {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/album/{{album_id}}",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "album",
+                "{{album_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /song/{id} (user) - private album",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Song on private album not visible\", () => {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/song/{{song_id}}",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "song",
+                "{{song_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/albums/{id}/publish (owner artist1) - publish album",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Album published\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{artist1_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/api/albums/{{album_id}}/publish",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "api",
+                "albums",
+                "{{album_id}}",
+                "publish"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /album/{id} (user) - public album",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Public album visible\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/album/{{album_id}}",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "album",
+                "{{album_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /song/{id} (user) - public album",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Song on public album visible\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/song/{{song_id}}",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "song",
+                "{{song_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "search",
+      "item": [
+        {
+          "name": "GET /api/search/suggest - name=\"test\"",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status ok\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "const albumId = parseInt(pm.environment.get(\"album_id\"), 10);\r",
+                  "const songId = parseInt(pm.environment.get(\"song_id\"), 10);\r",
+                  "const results = pm.response.json();\r",
+                  "\r",
+                  "const albumPresent = results.some(\r",
+                  "    res => res.id === albumId && res.type === \"Album\");\r",
+                  "const songPresent = results.some(\r",
+                  "    res => res.id === songId && res.type === \"Song\");\r",
+                  "\r",
+                  "pm.test(\"Results include Test Album\", () => {\r",
+                  "    pm.expect(albumPresent).to.be.true;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Results include Test Song\", () => {\r",
+                  "    pm.expect(songPresent).to.be.true;\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/api/search/suggest?q=test&limit=20",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "suggest"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "test"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/search/suggest - name=\"test\", type=\"album\"",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status ok\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "const albumId = parseInt(pm.environment.get(\"album_id\"), 10);\r",
+                  "const songId = parseInt(pm.environment.get(\"song_id\"), 10);\r",
+                  "const results = pm.response.json();\r",
+                  "\r",
+                  "const albumPresent = results.some(\r",
+                  "    res => res.id === albumId && res.type === \"Album\");\r",
+                  "const songPresent = results.some(\r",
+                  "    res => res.id === songId && res.type === \"Song\");\r",
+                  "\r",
+                  "pm.test(\"Results include Test Album\", () => {\r",
+                  "    pm.expect(albumPresent).to.be.true;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Results do not include Test Song\", () => {\r",
+                  "    pm.expect(songPresent).to.be.false;\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/api/search/suggest?q=Test&type=album&limit=20",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "suggest"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Test"
+                },
+                {
+                  "key": "type",
+                  "value": "album"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "streaming",
+      "item": [
+        {
+          "name": "url validation",
+          "item": [
+            {
+              "name": "GET /api/songs/{id}/play - get stream url",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status ok\", () => {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const json = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"Stream url present\", () => {\r",
+                      "    pm.expect(json).to.have.property(\"stream_url\");\r",
+                      "});\r",
+                      "\r",
+                      "const streamUrl  = json.stream_url;\r",
+                      "pm.environment.set(\"stream_url\", streamUrl);\r",
+                      "\r",
+                      "\r",
+                      "const noSigUrl = streamUrl.split(\"&\")[0];\r",
+                      "const badSigUrl = streamUrl.split(\"&\")[0] + \"&sig=XXX\";\r",
+                      "\r",
+                      "pm.environment.set(\"stream_url_no_sig\", noSigUrl);\r",
+                      "pm.environment.set(\"stream_url_bad_sig\", badSigUrl);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{user_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_url}}/api/songs/{{song_id}}/play",
+                  "host": [
+                    "{{api_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "songs",
+                    "{{song_id}}",
+                    "play"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET stream (missing signature)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Missing signature rejected\", () => {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{stream_url_no_sig}}",
+                  "host": [
+                    "{{stream_url_no_sig}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET stream (bad signature)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Bad signature rejected\", () => {\r",
+                      "    pm.response.to.have.status(403);\r",
+                      "});\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{stream_url_bad_sig}}",
+                  "host": [
+                    "{{stream_url_bad_sig}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET stream (valid)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Response ok\", () => {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{stream_url}}",
+                  "host": [
+                    "{{stream_url}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "range requests",
+          "item": [
+            {
+              "name": "GET stream (valid range)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Partial content ok\", () => {\r",
+                      "    pm.response.to.have.status(206);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Range",
+                    "value": "bytes=1000-2000",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{stream_url}}",
+                  "host": [
+                    "{{stream_url}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET stream (bad range)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Bad range rejected\", () => {\r",
+                      "    pm.response.to.have.status(416);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Range",
+                    "value": "bytes=2000-1000",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{stream_url}}",
+                  "host": [
+                    "{{stream_url}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "replicas",
+          "item": [
+            {
+              "name": "GET stream (1)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const replica = pm.response.headers.get(\"X-Replica\") || \"\";\r",
+                      "console.log(\"Replica: \" + replica);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{stream_url}}",
+                  "host": [
+                    "{{stream_url}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET stream (2)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const replica = pm.response.headers.get(\"X-Replica\") || \"\";\r",
+                      "console.log(\"Replica: \" + replica);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{stream_url}}",
+                  "host": [
+                    "{{stream_url}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET stream (3)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const replica = pm.response.headers.get(\"X-Replica\") || \"\";\r",
+                      "console.log(\"Replica: \" + replica);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{stream_url}}",
+                  "host": [
+                    "{{stream_url}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET stream (4)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const replica = pm.response.headers.get(\"X-Replica\") || \"\";\r",
+                      "console.log(\"Replica: \" + replica);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{stream_url}}",
+                  "host": [
+                    "{{stream_url}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET stream (5)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const replica = pm.response.headers.get(\"X-Replica\") || \"\";\r",
+                      "console.log(\"Replica: \" + replica);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{stream_url}}",
+                  "host": [
+                    "{{stream_url}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "delete album consistency",
+      "item": [
+        {
+          "name": "POST /api/albums/{id}/delete - delete album",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Redirects after album deletion\", () => {\r",
+                  "    pm.response.to.have.status(303);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{artist1_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/api/albums/{{album_id}}/delete",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "api",
+                "albums",
+                "{{album_id}}",
+                "delete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /album/{id} - deleted album",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Deleted album not found\", () => {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/album/{{album_id}}",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "album",
+                "{{album_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /song/{id} - deleted album",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Song on deleted album not found\", () => {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/song/{{song_id}}",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "song",
+                "{{song_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/search/suggest - search deleted album",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status ok\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "const albumId = parseInt(pm.environment.get(\"album_id\"), 10);\r",
+                  "const songId = parseInt(pm.environment.get(\"song_id\"), 10);\r",
+                  "const results = pm.response.json();\r",
+                  "\r",
+                  "const albumPresent = results.some(\r",
+                  "    res => res.id === albumId && res.type === \"Album\");\r",
+                  "const songPresent = results.some(\r",
+                  "    res => res.id === songId && res.type === \"Song\");\r",
+                  "\r",
+                  "pm.test(\"Results do not include Test Album\", () => {\r",
+                  "    pm.expect(albumPresent).to.be.false;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Results do not include Test Song\", () => {\r",
+                  "    pm.expect(songPresent).to.be.false;\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/api/search/suggest?q=test&limit=20",
+              "host": [
+                "{{api_url}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "suggest"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "test"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET stream - deleted song",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Deleted song not found\", () => {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stream_url}}",
+              "host": [
+                "{{stream_url}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "grafana",
+      "item": [
+        {
+          "name": "GET grafana",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Grafana responded\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{grafana_url}}",
+              "host": [
+                "{{grafana_url}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

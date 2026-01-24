@@ -1,0 +1,247 @@
+newman
+
+muzo-tests
+
+❏ auth
+↳ GET / (unauthenticated)
+  GET http://localhost:5000/ [401 UNAUTHORIZED, 1.69kB, 103ms]
+  ✓  Unauthenticated request rejected
+
+↳ POST Keycloak token (user)
+  POST http://localhost:5002/realms/muzo-realm/protocol/openid-connect/token [200 OK, 2.54kB, 189ms]
+  ✓  Keycloak token endpoint response ok
+  ✓  Access token exists
+
+↳ GET / (authenticated)
+  GET http://localhost:5000/ [200 OK, 19.01kB, 55ms]
+  ✓  Authenticated request ok
+
+❏ tokens (test users)
+↳ POST Keycloak token (artist1)
+  POST http://localhost:5002/realms/muzo-realm/protocol/openid-connect/token [200 OK, 2.56kB, 164ms]
+  ✓  Access token exists
+
+↳ POST Keycloak token (artist2)
+  POST http://localhost:5002/realms/muzo-realm/protocol/openid-connect/token [200 OK, 2.56kB, 93ms]
+  ✓  Access token exists
+
+↳ POST Keycloak token (admin)
+  POST http://localhost:5002/realms/muzo-realm/protocol/openid-connect/token [200 OK, 2.75kB, 158ms]
+  ✓  Access token exists
+
+❏ access control / roles
+↳ GET /artist-account (user)
+  GET http://localhost:5000/artist-account [403 FORBIDDEN, 1.7kB, 17ms]
+  ✓  Normal user not allowed (403)
+
+↳ GET /artist-account (artist1)
+  GET http://localhost:5000/artist-account [200 OK, 16.92kB, 56ms]
+  ✓  Artist user allowed (200)
+
+↳ GET /admin (user)
+  GET http://localhost:5000/admin [403 FORBIDDEN, 1.7kB, 46ms]
+  ✓  Normal user not allowed (403)
+
+↳ GET /admin (admin)
+  GET http://localhost:5000/admin [200 OK, 14.07kB, 34ms]
+  ✓  Admin user allowed /admin (200)
+
+❏ access control / album ownership
+↳ POST /api/albums (artist1) - create draft album
+  POST http://localhost:5000/api/albums [303 SEE OTHER, 419B, 94ms]
+  ✓  Redirects after album creation
+
+↳ GET /album/{id}/edit (owner artist1)
+  GET http://localhost:5000/album/4/edit [200 OK, 29.47kB, 46ms]
+  ✓  Album owner allowed
+
+↳ GET /album/{id}/edit (non-owner artist2)
+  GET http://localhost:5000/album/4/edit [403 FORBIDDEN, 1.7kB, 42ms]
+  ✓  Non-owner artist not allowed
+
+❏ artist requests consistency
+↳ POST /api/artist-requests (user) - create request
+  POST http://localhost:5000/api/artist-requests [201 CREATED, 192B, 29ms]
+  ✓  Artist request for normal user created
+
+↳ POST /api/artist-requests (user) - duplicate
+  POST http://localhost:5000/api/artist-requests [409 CONFLICT, 248B, 46ms]
+  ✓  Duplicate artist request not allowed
+
+↳ POST /api/artist-requests (artist1)
+  POST http://localhost:5000/api/artist-requests [409 CONFLICT, 248B, 27ms]
+  ✓  Artist request for artist not allowed
+
+↳ DELETE /api/artist-requests/{id} (admin)
+  DELETE http://localhost:5000/api/artist-requests/2 [200 OK, 182B, 30ms]
+  ✓  Artist request deleted
+
+❏ validation / album
+↳ PUT /api/albums/{id} (artist1) - missing details
+  PUT http://localhost:5000/api/albums/4 [400 BAD REQUEST, 241B, 9ms]
+  ✓  Rejects missing details
+
+↳ PUT /api/albums/{id} (artist1) - invalid year
+  PUT http://localhost:5000/api/albums/4 [400 BAD REQUEST, 240B, 40ms]
+  ✓  Invalid year (-1) rejected
+
+↳ PUT /api/albums/{id} (artist1) - long title
+  PUT http://localhost:5000/api/albums/4 [400 BAD REQUEST, 234B, 40ms]
+  ✓  Title > 100 chars rejected
+
+↳ PUT /api/albums/{id} (artist1) - valid
+  PUT http://localhost:5000/api/albums/4 [200 OK, 182B, 94ms]
+  ✓  Album details updated
+
+❏ validation / song
+↳ POST /api/albums/{id}/songs (artist1) - invalid file type
+  POST http://localhost:5000/api/albums/4/songs [415 UNSUPPORTED MEDIA TYPE, 263B, 68ms]
+  ✓  Invalid file type rejected
+
+↳ POST /api/albums/{id}/songs (artist1) - invalid position
+  POST http://localhost:5000/api/albums/4/songs [400 BAD REQUEST, 236B, 51ms]
+  ✓  Invalid position rejected
+
+↳ POST /api/albums/{id}/songs (artist1) - valid
+  POST http://localhost:5000/api/albums/4/songs [201 CREATED, 189B, 104ms]
+  ✓  Song created
+
+❏ catalog visibility (public/private)
+↳ GET /album/{id} (user) - private album
+  GET http://localhost:5000/album/4 [403 FORBIDDEN, 1.67kB, 32ms]
+  ✓  Private album not visible
+
+↳ GET /song/{id} (user) - private album
+  GET http://localhost:5000/song/4 [403 FORBIDDEN, 1.68kB, 40ms]
+  ✓  Song on private album not visible
+
+↳ POST /api/albums/{id}/publish (owner artist1) - publish album
+  POST http://localhost:5000/api/albums/4/publish [200 OK, 182B, 137ms]
+  ✓  Album published
+
+↳ GET /album/{id} (user) - public album
+  GET http://localhost:5000/album/4 [200 OK, 14.24kB, 24ms]
+  ✓  Public album visible
+
+↳ GET /song/{id} (user) - public album
+  GET http://localhost:5000/song/4 [200 OK, 14.48kB, 57ms]
+  ✓  Song on public album visible
+
+❏ search
+↳ GET /api/search/suggest - name="test"
+  GET http://localhost:5000/api/search/suggest?q=test&limit=20 [200 OK, 400B, 443ms]
+  ✓  Status ok
+  ✓  Results include Test Album
+  ✓  Results include Test Song
+
+↳ GET /api/search/suggest - name="test", type="album"
+  GET http://localhost:5000/api/search/suggest?q=Test&type=album&limit=20 [200 OK, 286B, 44ms]
+  ✓  Status ok
+  ✓  Results include Test Album
+  ✓  Results do not include Test Song
+
+❏ streaming / url validation
+↳ GET /api/songs/{id}/play - get stream url
+  GET http://localhost:5000/api/songs/4/play [200 OK, 326B, 32ms]
+  ✓  Status ok
+  ✓  Stream url present
+
+↳ GET stream (missing signature)
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947 [400 BAD REQUEST, 238B, 8ms]
+  ✓  Missing signature rejected
+
+↳ GET stream (bad signature)
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947&sig=XXX [403 FORBIDDEN, 229B, 7ms]
+  ✓  Bad signature rejected
+
+↳ GET stream (valid)
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947&sig=5SGfoEmwiMaY9oHSFy2lQHkkWP3yK-7Tp3ZkThviNKY= [200 OK, 52.29kB, 15ms]
+  ✓  Response ok
+
+❏ streaming / range requests
+↳ GET stream (valid range)
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947&sig=5SGfoEmwiMaY9oHSFy2lQHkkWP3yK-7Tp3ZkThviNKY= [206 PARTIAL CONTENT, 1.26kB, 11ms]
+  ✓  Partial content ok
+
+↳ GET stream (bad range)
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947&sig=5SGfoEmwiMaY9oHSFy2lQHkkWP3yK-7Tp3ZkThviNKY= [416 REQUESTED RANGE NOT SATISFIABLE, 307B, 17ms]
+  ✓  Bad range rejected
+
+❏ streaming / replicas
+↳ GET stream (1)
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947&sig=5SGfoEmwiMaY9oHSFy2lQHkkWP3yK-7Tp3ZkThviNKY= [200 OK, 52.29kB, 12ms]
+  ┌
+  │ 'Replica: b8b48dd22808'
+  └
+
+↳ GET stream (2)
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947&sig=5SGfoEmwiMaY9oHSFy2lQHkkWP3yK-7Tp3ZkThviNKY= [200 OK, 52.29kB, 8ms]
+  ┌
+  │ 'Replica: 052339f49795'
+  └
+
+↳ GET stream (3)
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947&sig=5SGfoEmwiMaY9oHSFy2lQHkkWP3yK-7Tp3ZkThviNKY= [200 OK, 52.29kB, 10ms]
+  ┌
+  │ 'Replica: 9b31d163fe1d'
+  └
+
+↳ GET stream (4)
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947&sig=5SGfoEmwiMaY9oHSFy2lQHkkWP3yK-7Tp3ZkThviNKY= [200 OK, 52.29kB, 7ms]
+  ┌
+  │ 'Replica: b8b48dd22808'
+  └
+
+↳ GET stream (5)
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947&sig=5SGfoEmwiMaY9oHSFy2lQHkkWP3yK-7Tp3ZkThviNKY= [200 OK, 52.29kB, 13ms]
+  ┌
+  │ 'Replica: 052339f49795'
+  └
+
+❏ delete album consistency
+↳ POST /api/albums/{id}/delete - delete album
+  POST http://localhost:5000/api/albums/4/delete [303 SEE OTHER, 425B, 67ms]
+  ✓  Redirects after album deletion
+
+↳ GET /album/{id} - deleted album
+  GET http://localhost:5000/album/4 [404 NOT FOUND, 1.66kB, 19ms]
+  ✓  Deleted album not found
+
+↳ GET /song/{id} - deleted album
+  GET http://localhost:5000/song/4 [404 NOT FOUND, 1.66kB, 10ms]
+  ✓  Song on deleted album not found
+
+↳ GET /api/search/suggest - search deleted album
+  GET http://localhost:5000/api/search/suggest?q=test&limit=20 [200 OK, 167B, 34ms]
+  ✓  Status ok
+  ✓  Results do not include Test Album
+  ✓  Results do not include Test Song
+
+↳ GET stream - deleted song
+  GET http://localhost:5001/stream/audio-4-a466c6b1846d4e479fcca20b91287359.mp3?exp=1768762947&sig=5SGfoEmwiMaY9oHSFy2lQHkkWP3yK-7Tp3ZkThviNKY= [404 NOT FOUND, 230B, 7ms]
+  ✓  Deleted song not found
+
+❏ grafana
+↳ GET grafana
+  GET http://localhost:5003 [200 OK, 58.04kB, 22ms]
+  ✓  Grafana responded
+
+┌─────────────────────────┬───────────────────┬──────────────────┐
+│                         │          executed │           failed │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              iterations │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│                requests │                48 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│            test-scripts │                48 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│      prerequest-scripts │                 0 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              assertions │                51 │                0 │
+├─────────────────────────┴───────────────────┴──────────────────┤
+│ total run duration: 19s                                        │
+├────────────────────────────────────────────────────────────────┤
+│ total data received: 501.44kB (approx)                         │
+├────────────────────────────────────────────────────────────────┤
+│ average response time: 56ms [min: 7ms, max: 443ms, s.d.: 71ms] │
+└────────────────────────────────────────────────────────────────┘
