@@ -27,7 +27,7 @@ def create():
     Session.add(new_request)
     Session.commit()
 
-    return jsonify(ok=True), 201
+    return jsonify({"request_id": user_id}), 201
 
 
 @artist_req_bp.route('/api/artist-requests/<int:request_id>', methods=['DELETE'])
