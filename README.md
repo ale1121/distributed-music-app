@@ -1,6 +1,6 @@
 # Muzo - Distributed Audio Streaming Platform
 
-A distributed, microservices-based audio streaming platform build with Docker Swarm
+A distributed, microservices-based audio streaming platform built with Docker Swarm
 
 It supports music discovery, on-demand streaming and content publishing in a horizontally scalable system
 
