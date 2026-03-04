@@ -21,13 +21,13 @@ __Artist page__
 
 __Album page__
 
-![almub page](images/screenshots/album-page.webp)
+![album page](images/screenshots/album-page.webp)
 
 __Search results__
 
 ![search results](images/screenshots/search-results.webp)
 
-Demo names and images are AI-generated
+_Demo names and images are AI-generated_
 
 ## Architecture Overview
 
@@ -58,8 +58,8 @@ Demo names and images are AI-generated
 
 ### Volumes
 * `audio_data` - stores audio files, shared between Web API and Streaming Service
-* `images_data` - stores album cover and artist avater images
-* `postgres_data`, `opensearch_data`, `keycloak_data`, `grafana_data` - services persistance
+* `images_data` - stores album cover and artist avatar images
+* `postgres_data`, `opensearch_data`, `keycloak_data`, `grafana_data` - services persistence
 
 
 ### Networks
@@ -74,7 +74,7 @@ Implements OIDC Authorization Code Flow using Keycloak <br>
 The Web API validates JWT tokens, syncs user identity in PostgreSQL and enforces RBAC based on extracted roles
 
 ### Search
-Queries OpenSearch for fast suggestions and consilidates full results with PostgreSQL
+Queries OpenSearch for fast suggestions and consolidates full results with PostgreSQL
 
 ### Streaming
 1. Client requests streaming URL from Web API
@@ -100,7 +100,7 @@ Queries OpenSearch for fast suggestions and consilidates full results with Postg
 * Replicated streaming workers
 * Centralized identity provider (SSO)
 * Eventual consistency with search indexing
-* HMAC-signed straming URLs
+* HMAC-signed streaming URLs
 * Overlay network isolation
 
 ## Build and Deploy
