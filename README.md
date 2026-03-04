@@ -15,15 +15,15 @@ Features:
 
 ## Preview
 
-Artist page
+__Artist page__
 
 ![artist page](images/screenshots/artist-page.webp)
 
-Album page
+__Album page__
 
 ![almub page](images/screenshots/album-page.webp)
 
-Search results
+__Search results__
 
 ![search results](images/screenshots/search-results.webp)
 
@@ -64,7 +64,7 @@ Demo names and images are AI-generated
 
 ### Networks
 
-![networks](images/diagrams/networks.png)
+<img src="images/diagrams/networks.png" width="800">
 
 ## Core Flows
 
@@ -83,7 +83,7 @@ Queries OpenSearch for fast suggestions and consilidates full results with Postg
 4. The browser requests audio directly from the replicated Streaming Service
 5. Streaming Service validates the signature and expiration, reads the file from shared storage and streams the bytes to the client
 
-![streaming flow](images/diagrams/streaming-flow.png)
+<img src="images/diagrams/streaming-flow.png" width="800">
 
 ## Access Control
 * Role-Based Access Control
@@ -120,11 +120,11 @@ Run with
 
 ## Screenshots
 
-Home page
+__Home page__
 
 ![home page](images/screenshots/home-page.webp)
 
-Search suggestions
+__Search suggestions__
 
 ![search suggestions](images/screenshots/search-suggestions.webp)
 
@@ -132,18 +132,18 @@ Trending page
 
 ![trending](images/screenshots/trending.webp)
 
-Account page
+__Account page__
 
 ![account page](images/screenshots/account-page.webp)
 
-Admin dashboard
+__Admin dashboard__
 
 ![admin dashboard](images/screenshots/admin-dashboard.webp)
 
-Artist account
+__Artist account__
 
 ![artist account](images/screenshots/artist-account.webp)
 
-Album edit page
+__Album edit page__
 
 ![album edit page](images/screenshots/album-edit-page.webp)
