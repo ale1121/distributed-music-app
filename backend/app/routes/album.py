@@ -189,7 +189,7 @@ def upload_cover_image(album_id):
         raise BadRequest("Invalid image file")
 
     Session.commit()
-    return jsonify(cover_url=out_path), 201
+    return jsonify(image_url=out_path), 201
 
 
 @album_bp.route("/api/albums/<int:album_id>/cover", methods=["DELETE"])

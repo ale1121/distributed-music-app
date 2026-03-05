@@ -9,7 +9,7 @@
         src="{{ url_for('uploads.get_cover', filename=album.cover_file) if album.cover_file
                 else url_for('static', filename='assets/placeholder-cover.webp') }}"
         onerror="this.src=`{{ url_for('static', filename='assets/placeholder-cover.webp') }}`">
-      <button id="playBtn" class="btn btn-transparent"
+      <button class="play-btn btn btn-transparent"
         data-song-id="{{ song.id }}"
         data-song-title="{{ song.title }}"
         data-album-title="{{ album.title }}"
@@ -77,25 +77,6 @@
   </div>
 </div>
 
-<script>
-  const playBtn = document.getElementById("playBtn");
-  const pauseBtn = document.getElementById("pauseBtn");
-
-  playBtn.addEventListener("click", async () => {
-    const songId = playBtn.dataset.songId;
-    const songTitle = playBtn.dataset.songTitle;
-    const albumTitle = playBtn.dataset.albumTitle;
-    const albumCover = playBtn.dataset.albumCover;
-    const songViewUrl = playBtn.dataset.songViewUrl;
-
-    try {
-      streamUrl = await getStreamUrl(songId);
-    } catch (err) {
-      showErrorToast(err.message || "Something went wrong");
-    }
-
-    setPlayer({songId, songTitle, albumTitle, albumCover, songViewUrl, streamUrl});
-  });
-</script>
+<script src="{{ url_for('static', filename='js/play_song.js') }}"></script>
 
 {% endblock %}

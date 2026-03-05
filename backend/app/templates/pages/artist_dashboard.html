@@ -14,7 +14,7 @@
 
   <div class="row my-4">
     <div class="col-12 col-md-auto col-lg-auto" width="250px">
-      <img id="avatarImg" class="rounded-circle" width="200px"
+      <img id="image" class="rounded-circle" width="200px"
         src="{{ url_for('uploads.get_avatar', filename=avatar_file) if avatar_file
                 else url_for('static', filename='assets/placeholder-avatar.webp') }}"
         onerror="this.src=`{{ url_for('static', filename='assets/placeholder-avatar.webp') }}`">

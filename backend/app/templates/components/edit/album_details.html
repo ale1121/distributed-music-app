@@ -17,7 +17,8 @@
     <i class="bi bi-globe-americas"></i> View
   </a>
   <button id="publishAlbumBtn"
-    class="btn btn-primary mt-1 {{ 'd-none' if album.published else '' }}">
+    class="btn btn-primary mt-1 {{ 'd-none' if album.published else '' }}"
+    data-publish-url="{{ url_for('album.publish_album', album_id=album.id) }}">
     <i class="bi bi-globe-americas"></i> Publish
   </button>
 </div>
@@ -27,7 +28,8 @@
   <div class="col-12 col-md-auto col-lg-auto" style="width: 600px;">
     <div class="d-flex align-items-center justify-content-between mt-2" style="max-width: 500px;">
       <h5>Album Details</h5>
-      <button id="saveAlbumDetailsBtn" class="btn btn-sm btn-primary">
+      <button id="saveAlbumDetailsBtn" class="btn btn-sm btn-primary"
+        data-save-url="{{ url_for('album.save_details', album_id=album.id) }}">
         <i class="bi bi-check-lg"></i> Save
       </button>
     </div>
@@ -67,82 +69,4 @@
   {% include "components/edit/album_cover.html" %}
 </div>
 
-<script>
-  const saveAlbumDetailsBtn = document.getElementById("saveAlbumDetailsBtn");
-
-  saveAlbumDetailsBtn.addEventListener("click", async () => {
-    const title = document.getElementById("inputAlbumTitle").value;
-    const yearRaw = document.getElementById("inputAlbumYear").value;
-    if (!title) {
-      showErrorToast("Missing album title");
-      return;
-    }
-    if (!yearRaw) {
-      showErrorToast("Missing release year");
-      return;
-    }
-    year = parseInt(yearRaw, 10) || 0;
-    const formData = {
-      title: title,
-      release_year: year
-    };
-
-    try {
-      const res = await fetch("{{ url_for('album.save_details', album_id=album.id) }}", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Something went wrong");
-    
-      document.getElementById("albumTitle").textContent = title;
-      showSuccessToast("Album details updated");
-
-    } catch (err) {
-      showErrorToast(err.message || "Something went wrong");
-    }
-  });
-
-  const publishAlbumBtn = document.getElementById("publishAlbumBtn");
-
-  if (publishAlbumBtn) publishAlbumBtn.addEventListener("click", async () => {
-    try {
-      const res = await fetch("{{ url_for('album.publish_album', album_id=album.id) }}", {
-        method: "POST",
-        headers: {
-          "Accept": "application/json"
-        }
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Something went wrong");
-
-      document.getElementById("publishedStatusBadge").innerHTML = `Published <i class="bi bi-globe-americas"></i>`;
-      publishAlbumBtn.classList.add("d-none");
-      document.getElementById("viewAlbumBtn").classList.remove("d-none");
-
-      showSuccessToast("Album published");
-    } catch (err) {
-      showErrorToast(err.message || "Something went wrong");
-    }
-  });
-
-  const deleteAlbumBtn = document.getElementById("deleteAlbumBtn");
-  const confirmDeleteAlbum = document.getElementById("confirmDeleteAlbum");
-  const cancelDeleteAlbumBtn = document.getElementById("cancelDeleteAlbumBtn");
-  
-  deleteAlbumBtn.addEventListener("click", () => {
-    confirmDeleteAlbum.classList.remove("d-none");
-    deleteAlbumBtn.classList.add("d-none");
-  });
-
-  cancelDeleteAlbumBtn.addEventListener("click", () => {
-    confirmDeleteAlbum.classList.add("d-none");
-    deleteAlbumBtn.classList.remove("d-none");
-  });
-</script>
+<script src="{{ url_for('static', filename='js/album_details.js') }}"></script>

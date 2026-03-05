@@ -1,0 +1,200 @@
+const STORAGE_KEY = "playerState"
+
+function savePlayerState(state) {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function getPlayerState() {
+    const state = sessionStorage.getItem(STORAGE_KEY);
+    return state ? JSON.parse(state) : null;
+}
+
+const audio = document.getElementById("playerAudio");
+
+window.setPlayer = function ({
+    songId, songTitle, albumTitle, albumCover, songViewUrl, streamUrl
+}) {
+    document.getElementById("playerTitle").textContent = songTitle;
+    document.getElementById("playerAlbum").textContent = albumTitle;
+    document.getElementById("playerCover").src = albumCover;
+    document.getElementById("playerInfo").href = songViewUrl;
+
+    savePlayerState({
+        songId, songTitle, albumTitle, albumCover, songViewUrl, streamUrl,
+        isPlaying: true, currentTime: 0
+    });
+
+    audio.src = streamUrl;
+    audio.play();
+    playerPlayBtn.classList.add("d-none");
+    playerPauseBtn.classList.remove("d-none");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const state = getPlayerState();
+    if (!state) return;
+
+    document.getElementById("playerTitle").textContent = state.songTitle;
+    document.getElementById("playerAlbum").textContent = state.albumTitle;
+    document.getElementById("playerCover").src = state.albumCover;
+    document.getElementById("playerInfo").href = state.songViewUrl;
+
+    audio.src = state.streamUrl;
+    audio.currentTime = state.currentTime;
+    if (state.isPlaying) {
+        audio.play().catch(() => { });
+        playerPlayBtn.classList.add("d-none");
+        playerPauseBtn.classList.remove("d-none");
+    }
+});
+
+audio.addEventListener("timeupdate", () => {
+    const state = getPlayerState();
+    if (!state) return;
+
+    state.currentTime = audio.currentTime;
+    savePlayerState(state);
+});
+
+audio.addEventListener("play", () => {
+    const state = getPlayerState();
+    if (!state) return;
+    state.isPlaying = true;
+    savePlayerState(state);
+});
+
+audio.addEventListener("pause", () => {
+    const state = getPlayerState();
+    if (!state) return;
+    state.isPlaying = false;
+    savePlayerState(state);
+});
+
+audio.addEventListener("ended", () => {
+    const state = getPlayerState();
+    if (!state) return;
+
+    state.isPlaying = false;
+    state.currentTime = 0;
+    savePlayerState(state);
+
+    playerPauseBtn.classList.add("d-none");
+    playerPlayBtn.classList.remove("d-none");
+
+    try { audio.currentTime = 0; } catch { };
+})
+
+window.getStreamUrl = async function (songId) {
+    const res = await fetch(`/api/songs/${songId}/play`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Something went wrong");
+
+    const streamUrl = data["stream_url"];
+    if (!streamUrl) throw new Error("Missing stream URL");
+
+    return streamUrl;
+}
+
+audio.addEventListener("error", async () => {
+    const state = getPlayerState();
+    if (!state?.songId) return;
+
+    try {
+        const ts = audio.currentTime || state.currentTime || 0;
+        const streamUrl = await getStreamUrl(state.songId);
+
+        audio.src = streamUrl;
+        audio.currentTime = ts;
+
+        if (state.isPlaying) {
+            resumeSong();
+        } else {
+            pauseSong();
+        }
+
+        state.streamUrl = streamUrl;
+        savePlayerState(state);
+    } catch (e) {
+        console.error("Failed to refresh stream url", e);
+    }
+})
+
+window.pauseSong = function () {
+    const state = getPlayerState();
+    if (state && state.isPlaying) {
+        audio.pause();
+    }
+    playerPauseBtn.classList.add("d-none");
+    playerPlayBtn.classList.remove("d-none");
+}
+
+window.resumeSong = function () {
+    const state = getPlayerState();
+    if (!state) {
+        showErrorToast("No song playing");
+        return;
+    }
+    audio.play();
+    playerPlayBtn.classList.add("d-none");
+    playerPauseBtn.classList.remove("d-none");
+}
+
+window.skipSeconds = function (seconds) {
+    const state = getPlayerState();
+    if (!state) return;
+    const duration = Number.isFinite(audio.duration) ? audio.duration : audio.currentTime;
+    const newTime = audio.currentTime + seconds;
+    audio.currentTime = Math.min(Math.max(newTime, 0), duration);
+    state.currentTime = audio.currentTime;
+    savePlayerState(state);
+}
+
+const playerPlayBtn = document.getElementById("playerPlayBtn");
+const playerPauseBtn = document.getElementById("playerPauseBtn");
+const playerBackBtn = document.getElementById("playerBackBtn");
+const playerFwdBtn = document.getElementById("playerFwdBtn");
+
+playerPlayBtn.addEventListener("click", () => {
+    resumeSong();
+});
+
+playerPauseBtn.addEventListener("click", () => {
+    pauseSong();
+});
+
+playerBackBtn.addEventListener("click", () => {
+    skipSeconds(-10);
+});
+
+playerFwdBtn.addEventListener("click", () => {
+    skipSeconds(10);
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.code !== "Space") return;
+
+    const activeEl = document.activeElement;
+    if (activeEl && activeEl.tagName === "INPUT") return;
+
+    e.preventDefault();
+
+    if (e.key === " ") {
+        const state = getPlayerState();
+        if (!state) return;
+        if (state.isPlaying) {
+            audio.pause();
+            playerPauseBtn.classList.add("d-none");
+            playerPlayBtn.classList.remove("d-none");
+        } else {
+            audio.play();
+            playerPlayBtn.classList.add("d-none");
+            playerPauseBtn.classList.remove("d-none");
+        }
+    }
+});

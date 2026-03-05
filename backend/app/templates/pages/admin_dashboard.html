@@ -36,7 +36,8 @@
             rel="noopener noreferrer" class="btn btn-sm btn-table">
             Admin console
           </a>
-          <button class="btn btn-sm btn-table delete-btn" data-delete-url="{{ url_for('artist_req.delete', request_id=user.id) }}">
+          <button class="btn btn-sm btn-table delete-btn"
+            data-delete-url="{{ url_for('artist_req.delete', request_id=user.id) }}">
             <i class="bi bi-check-lg"></i>
           </button>
         </td>
@@ -47,49 +48,13 @@
 
   <h5 class="mt-4">OpenSeach</h5>
   <p>Reindex documents from database</p>
-  <button id="reindexBtn" class="btn btn-primary">Reindex</button>
+  <button id="reindexBtn" class="btn btn-primary"
+    data-reindex-url="{{ url_for('search.reindex_catalog') }}">
+    Reindex
+  </button>
 </div>
 
-<script>
-  document.querySelectorAll(".delete-btn").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-        const deleteUrl = btn.dataset.deleteUrl;
-
-        try {
-          const res = await fetch(deleteUrl, {
-            method: "DELETE",
-            headers: { "Accept": "application/json" }
-          });
-
-          const data = await res.json();
-
-          if (!res.ok) throw new Error(data.message || "Something went wrong");
-          
-          btn.closest("tr")?.remove();
-
-          showSuccessToast("Request removed");
-        } catch (err) {
-          showErrorToast(err.message || "Something went wrong");
-        }
-    });
-  });
-
-  document.getElementById("reindexBtn").addEventListener("click", async () => {
-    try {
-      const res = await fetch("{{ url_for('search.reindex_catalog') }}", {
-        method: "POST",
-        headers: {
-          "Accept": "application/json"
-        }
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Something went wrong");
-      showSuccessToast("Bulk index successful");
-    } catch (err) {
-      showErrorToast(err.message || "Something went wrong");
-    }
-  });
-
-</script>
+<script src="{{ url_for('static', filename='js/artist_request.js') }}"></script>
+<script src="{{ url_for('static', filename='js/opensearch_reindex.js') }}"></script>
 
 {% endblock %}

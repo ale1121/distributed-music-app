@@ -52,7 +52,7 @@ def edit_view():
                 roles=get_user_roles()), 200
 
 
-@artist_bp.route("/api/artists/<int:artist_id>/avatar", methods=['POST'])
+@artist_bp.route("/api/artists/<int:artist_id>/avatar", methods=['PUT'])
 @role_required("ROLE_ARTIST")
 def upload_avatar(artist_id):
     """ Upload artist avatar """
@@ -89,7 +89,7 @@ def upload_avatar(artist_id):
 
     artist.avatar_file = out_file
     Session.commit()
-    return jsonify(profile_url=out_path), 201
+    return jsonify(image_url=out_path), 201
 
 
 @artist_bp.route("/api/artists/<int:artist_id>/avatar", methods=["DELETE"])
