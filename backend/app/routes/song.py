@@ -132,7 +132,8 @@ def delete_song(song_id):
     Session.commit()
 
     # delete song from index
-    opensearch.delete_document(song.id, 'song')
+    if song.album.published:
+        opensearch.delete_document(song.id, 'song')
 
     return jsonify(ok=True), 200
 
