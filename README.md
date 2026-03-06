@@ -27,18 +27,18 @@ __Search results__
 
 ![search results](images/screenshots/search-results.webp)
 
-_Demo names and images are AI-generated_
+_Demo names and cover images are AI-generated_
 
 ## Architecture Overview
 
 ### Services
 
 #### Web API (Python, Flask, SQLAlchemy)
-* Central application service handling REST endpoints, authentication, authorization, persistence and search indexing
+* Central application service handling REST endpoints, authentication, authorization and CRUD operations on application data
 * Generates signed streaming URLs
 * Renders the frontend using Jinja templates, Bootstrap and JavaScript
 
-#### Streaming Service (replicated)
+#### Streaming Service - Replicated (Flask)
 * Dedicated audio delivery service supporting full and HTTP range requests
 * Validates signed URLs and runs with multiple replicas for horizontal scalability
 
@@ -50,10 +50,10 @@ _Demo names and images are AI-generated_
 * Persistent storage for users, artists, albums, songs and play history
 
 #### OpenSearch
-* Full-text search engine powering search suggestions and filtered results
+* Full-text search engine used for fast search suggestions and filtered results
 
 #### Grafana
-* Dashboard visualization for platform statistics powered by PostgreSQL queries
+* Statistics dashboards based on PostgreSQL queries, embedded in the frontend
 
 
 ### Volumes
@@ -70,8 +70,7 @@ _Demo names and images are AI-generated_
 
 ### Authentication
 
-Implements OIDC Authorization Code Flow using Keycloak <br>
-The Web API validates JWT tokens, syncs user identity in PostgreSQL and enforces RBAC based on extracted roles
+Implements OIDC Authorization Code Flow using Keycloak. The Web API validates JWT tokens, syncs user identity in PostgreSQL and enforces RBAC based on extracted roles.
 
 ### Search
 Queries OpenSearch for fast suggestions and consolidates full results with PostgreSQL
