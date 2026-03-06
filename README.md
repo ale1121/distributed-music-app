@@ -109,13 +109,9 @@ Queries OpenSearch for fast suggestions and consolidates full results with Postg
 
 ## Testing
 
-Postman collection included in [tests/collection.json](tests/collection.json) covers authentication, access control, CRUD operations, search indexing and streaming functionality
+Postman/Newman collection included in [`tests/`](tests) covers authentication, access control, CRUD operations, search indexing and streaming functionality.
 
-Run with
-
-    newman run collection.json -e env.json --delay-request 300
-
-[Tests results](tests/test-results)
+[Example output](tests/test-results)
 
 ## Screenshots
 
