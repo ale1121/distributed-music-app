@@ -8,7 +8,7 @@ Features:
 * Replicated streaming workers
 * Full-text search across songs, albums and artists using OpenSearch
 * Single Sign-On (SSO) via OAuth2/OpenID Connect (OIDC)
-* Role-Based Access Control (RBAC) with ownership-based permissions
+* Role-Based Access Control (RBAC) with ownership permissions
 * Signed, expiring streaming URLs (HMAC)
 * Real-time statistics through Grafana
 
