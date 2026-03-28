@@ -1,6 +1,6 @@
 # Muzo - Distributed Audio Streaming Platform
 
-A distributed, microservices-based audio streaming platform built with Docker Swarm
+A distributed audio streaming platform built with microservices and Docker Swarm
 
 It supports music discovery, on-demand streaming and content publishing in a horizontally scalable system
 
@@ -9,7 +9,7 @@ Features:
 * Full-text search across songs, albums and artists using OpenSearch
 * Single Sign-On (SSO) via OAuth2/OpenID Connect (OIDC)
 * Role-Based Access Control (RBAC) with ownership-based permissions
-* Signed, expiring streaming URLs (HMAC-based)
+* Signed, expiring streaming URLs (HMAC)
 * Real-time statistics through Grafana
 
 
